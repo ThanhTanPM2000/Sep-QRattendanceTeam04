@@ -9,7 +9,10 @@ const classes = require("./routes/classes");
 const app = express();
 
 mongoose
-  .connect("mongodb://localhost/qrcode", { useUnifiedTopology: true })
+  .connect("mongodb://localhost/qrcode", {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
   .then(console.log("ket noi toi database thanh cong"))
   .catch((err) => {
     console.log("fail roi ban oi", err);
