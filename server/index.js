@@ -1,5 +1,14 @@
-import express from 'express'
-import winston from 'winston'
+const express = require("express");
 
 const app = express();
 
+require("./startup/logging")();
+require("./startup/prod")();
+require("./startup/db")();
+require("./startup/routes")(app);
+
+const server = app.listen(3000, () => {
+  console.log(`Listening on Port ${3000}...`);
+});
+
+module.exports = server;
