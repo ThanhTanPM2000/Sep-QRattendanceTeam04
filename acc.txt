@@ -4,3 +4,6 @@ git config --global user.name "Nguyen Thanh Tan"
 
 git config --global user.email "thanh.187pm14010@vanlanguni.vn"
 git config --global user.name "Luu Trung Thanh"
+
+git config --global user.email "Nguyentanmanh2323@gmail.com"
+git config --global user.name "Tran Nhat Thien"
