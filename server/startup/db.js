@@ -1,6 +1,6 @@
-import winston from "winston";
-import mongoose from "mongoose";
-import config from "config";
+const winston = require("winston");
+const mongoose = require("mongoose");
+const config = require("config");
 
 module.exports = function () {
   const db = config.get("db");

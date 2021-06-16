@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 
 require("./startup/logging")();
-require("./startup/prod")();
+require("./startup/prod")(app);
 require("./startup/db")();
 require("./startup/routes")(app);
 

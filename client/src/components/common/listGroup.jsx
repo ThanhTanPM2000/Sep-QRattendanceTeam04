@@ -7,7 +7,6 @@ const ListGroup = ({
   selectedItem,
   onItemSelect,
 }) => {
-  console.log(selectedItem);
   return (
     <ul className="list-group">
       {items.map((item) => (
@@ -31,4 +30,3 @@ ListGroup.defaultProps = {
 };
 
 export default ListGroup;
-

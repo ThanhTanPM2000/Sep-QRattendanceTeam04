@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import _ from "lodash";
+import { Link } from "react-router-dom";
+
 import UsersTable from "./usersTable";
 import ListGroup from "./common/listGroup";
 import Pagination from "./common/pagination";
-import _ from "lodash";
+import SearchBox from "./common/searchBox";
 import { getUsers } from "../services/fakeUsersService.js";
 import { getFaculties } from "../services/fakeFacultiesService";
 import { paginate } from "../utils/paginate";
@@ -13,6 +16,7 @@ class Users extends Component {
     faculties: [],
     currentPage: 1,
     selectedFaculty: { _id: "", name: "All Faculties" },
+    searchQuery: "",
     pageSize: 3,
     sortColumn: { path: "displayName", order: "asc" },
   };
@@ -32,26 +36,42 @@ class Users extends Component {
   };
 
   handleFacultiesSelect = (faculty) => {
-    this.setState({ selectedFaculty: faculty, currentPage: 1 });
+    this.setState({
+      selectedFaculty: faculty,
+      searchQuery: "",
+      currentPage: 1,
+    });
   };
 
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
+  handleSearch = (query) => {
+    this.setState({
+      searchQuery: query,
+      selectedFaculty: this.state.faculties[0],
+      currentPage: 1,
+    });
+  };
+
   getPagedData = () => {
     const {
       pageSize,
       currentPage,
+      searchQuery,
       selectedFaculty,
       sortColumn,
       users: allUsers,
     } = this.state;
 
-    const filtered =
-      selectedFaculty && selectedFaculty._id
-        ? allUsers.filter((m) => m.faculty._id === selectedFaculty._id)
-        : allUsers;
+    let filtered = allUsers;
+    if (searchQuery) {
+      filtered = allUsers.filter((x) =>
+        x.displayName.toLowerCase().startsWith(searchQuery.toLowerCase())
+      );
+    } else if (selectedFaculty && selectedFaculty._id)
+      filtered = allUsers.filter((m) => m.faculty._id === selectedFaculty._id);
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
@@ -61,7 +81,7 @@ class Users extends Component {
 
   render() {
     const { length: count } = this.state.users;
-    const { pageSize, currentPage, sortColumn } = this.state;
+    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
 
     if (count === 0) return <p>There are no users in the database</p>;
     const { totalCount, data: users } = this.getPagedData();
@@ -74,17 +94,18 @@ class Users extends Component {
             selectedItem={this.state.selectedFaculty}
             onItemSelect={this.handleFacultiesSelect}
           />
-
-          <div className="mt-5">
-            <ListGroup
-              items={this.state.faculties}
-              selectedItem={this.state.selectedFaculty}
-              onItemSelect={this.handleFacultiesSelect}
-            />
-          </div>
         </div>
+
         <div className="col">
+          <Link
+            to="/users/new"
+            className="btn btn-primary"
+            style={{ marginBottom: 20 }}
+          >
+            Create User
+          </Link>
           <p>Showing {totalCount} users in the database</p>
+          <SearchBox value={searchQuery} onChange={this.handleSearch} />
           <UsersTable
             users={users}
             sortColumn={sortColumn}

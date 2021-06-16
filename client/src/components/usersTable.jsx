@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+
 import Table from "./common/table";
 
 class UsersTable extends Component {
@@ -17,7 +18,9 @@ class UsersTable extends Component {
     {
       key: "edit",
       content: (user) => (
-        <button className="btn btn-primary btn-sm">Edit</button>
+        <Link to={`/users/${user._id}`} className="btn btn-primary btn-sm">
+          Edit
+        </Link>
       ),
     },
     {
