@@ -4,10 +4,18 @@ import TableBody from "./tableBody";
 
 const Table = ({ columns, sortColumn, onSort, data }) => {
   return (
-    <table className="table">
-      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
-      <TableBody columns={columns} data={data} />
-    </table>
+    <div className="card">
+      <div className="card-body">
+        <table className="table table-hover">
+          <TableHeader
+            columns={columns}
+            sortColumn={sortColumn}
+            onSort={onSort}
+          />
+          <TableBody columns={columns} data={data} />
+        </table>
+      </div>
+    </div>
   );
 };
 

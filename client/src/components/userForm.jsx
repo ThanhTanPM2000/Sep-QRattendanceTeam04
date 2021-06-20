@@ -44,7 +44,7 @@ class UserForm extends Form {
 
   render() {
     return (
-      <div>
+      <div className="card mt-2" style={{ padding: 20 }}>
         <h1> User Form</h1>
         <form>
           {this.renderInput("displayName", "Display Name")}

@@ -12,7 +12,11 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <NavBar />
+        <header>
+          <div className="card">
+            <NavBar />
+          </div>
+        </header>
         <main className="container-fluid">
           <Switch>
             <Route path="/users/:id" component={UserForm} />
@@ -22,6 +26,7 @@ class App extends Component {
             <Redirect to="/not-found" />
           </Switch>
         </main>
+        <footer></footer>
       </React.Fragment>
     );
   }

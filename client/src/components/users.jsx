@@ -88,36 +88,45 @@ class Users extends Component {
 
     return (
       <div className="row ml-2 mt-3">
-        <div className="col-2">
-          <ListGroup
-            items={this.state.faculties}
-            selectedItem={this.state.selectedFaculty}
-            onItemSelect={this.handleFacultiesSelect}
-          />
+        <div className="col-md-2">
+          <div className="card">
+            <ListGroup
+              items={this.state.faculties}
+              selectedItem={this.state.selectedFaculty}
+              onItemSelect={this.handleFacultiesSelect}
+            />
+          </div>
         </div>
 
-        <div className="col">
-          <Link
-            to="/users/new"
-            className="btn btn-primary"
-            style={{ marginBottom: 20 }}
-          >
-            Create User
-          </Link>
-          <p>Showing {totalCount} users in the database</p>
-          <SearchBox value={searchQuery} onChange={this.handleSearch} />
-          <UsersTable
-            users={users}
-            sortColumn={sortColumn}
-            onDelete={this.handleDelete}
-            onSort={this.handleSort}
-          />
-          <Pagination
-            itemsCount={totalCount}
-            pageSize={pageSize}
-            currentPage={currentPage}
-            onPageChange={this.handlePageChange}
-          />
+        <div className="col-md">
+          <div className="card" style={{ padding: 25 }}>
+            <Link
+              to="/users/new"
+              className="btn btn-primary"
+              style={{ marginBottom: 20, width: 150 }}
+            >
+              Create User
+            </Link>
+            <p>
+              Showing <span class="badge badge-primary">{totalCount}</span>{" "}
+              users in the database
+            </p>
+            <SearchBox value={searchQuery} onChange={this.handleSearch} />
+            <div className="card mb-3">
+              <UsersTable
+                users={users}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
+              />
+            </div>
+            <Pagination
+              itemsCount={totalCount}
+              pageSize={pageSize}
+              currentPage={currentPage}
+              onPageChange={this.handlePageChange}
+            />
+          </div>
         </div>
       </div>
     );
