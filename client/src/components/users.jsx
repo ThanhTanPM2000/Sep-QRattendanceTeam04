@@ -24,6 +24,13 @@ class Users extends Component {
   componentDidMount() {
     const faculties = [this.state.selectedFaculty, ...getFaculties()];
     this.setState({ users: getUsers(), faculties });
+ try {
+      const { data: genresData } = await getGenres();
+      const genres = [this.state.selectedGenre, ...genresData];
+
+      const { data: movies } = await getMovies();
+      this.setState({ movies, genres });
+    } catch (error) {}
   }
 
   handleDelete = (user) => {

@@ -7,15 +7,12 @@ function userUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export async function getUsers() {
-  try {
-    const response = await http.get(apiEndpoint);
-    return response;
-  } catch (error) {}
+export function getUsers() {
+  return http.get(apiEndpoint);
 }
 
 export function getUser(id) {
-  return http.get(movieUrl(id));
+  return http.get(userUrl(id));
 }
 
 export function saveUser(user) {
