@@ -4,6 +4,7 @@ const users = require("../routes/users");
 const semesters = require("../routes/semesters");
 const classes = require("../routes/classes");
 const faculties = require("../routes/faculties");
+const roles = require("../routes/roles");
 const error = require("../middleware/error");
 
 module.exports = function (app) {
