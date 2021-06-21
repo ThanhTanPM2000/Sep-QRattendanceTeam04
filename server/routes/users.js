@@ -1,8 +1,12 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const _ = require("lodash");
+
 const { Users, validateUser } = require("../models/users");
 const validate = require("../middleware/validate");
-const _ = require("lodash");
 const validateObjectId = require("../middleware/validateObjectId");
+const { Faculties } = require("../models/faculties");
+const { Roles } = require("../models/roles");
 
 const router = express.Router();
 
@@ -15,12 +19,37 @@ router.post("/", validate(validateUser), async (req, res, next) => {
   let user = await Users.findOne({ mail: req.body.mail });
   if (user) return res.status(400).send("User already registered");
 
-  user = new Users(
-    _.pick(req.body, ["id", "displayName", "mail", "degree", "faculty", "role"])
-  );
+  user = await Users.findOne({ userId: req.body.userId });
+  if (user) return res.status(400).send("User Id was exist");
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.facultyId)) {
+    return res.status(404).send("Invalid Id");
+  }
+  console.log(Faculties);
+  const faculty = await Faculties.findById(req.body.facultyId);
+  if (!faculty) return res.status(400).send("Faculty not found");
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.roleId)) {
+    return res.status(404).send("Invalid Id");
+  }
+  const role = await Roles.findById(req.body.roleId);
+  if (!role) return res.status(400).send("Role not found");
+
+  user = new Users({
+    ..._.pick(req.body, ["userId", "name", "mail", "degree"]),
+    faculty: {
+      _id: faculty._id,
+      facultyName: faculty.facultyName,
+      majorName: faculty.majorName,
+    },
+    role: {
+      _id: role._id,
+      name: role.name,
+    },
+  });
 
   await user.save();
-  res.send(_.pick(user, ["_id", "displayName", "email"]));
+  res.send(_.pick(user, ["_id", "name", "mail"]));
 });
 
 router.put(
@@ -58,4 +87,3 @@ router.delete("/:id", validateObjectId, async (req, res) => {
 });
 
 module.exports = router;
-

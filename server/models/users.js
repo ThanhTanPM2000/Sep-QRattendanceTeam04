@@ -1,25 +1,28 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
+const { schemaFaculty } = require("./faculties");
+const { schemaRole } = require("./roles");
+
 const schemaUser = new mongoose.Schema({
-  id: { type: String, required: true },
-  displayName: { type: String, required: true },
-  mail: { type: String, required: true },
+  userId: { type: String, required: true, index: true },
+  name: { type: String, required: true },
+  mail: { type: String, required: true, index: true },
   degree: { type: String, required: true },
-  faculty: { type: String, required: true },
-  role: { type: String, required: true },
+  faculty: { type: schemaFaculty, required: true },
+  role: { type: schemaRole, required: true },
 });
 
 const Users = mongoose.model("Users", schemaUser);
 
 function validateUser(reqBodyUser) {
   const schema = Joi.object({
-    id: Joi.string().required(),
-    displayName: Joi.string().required(),
+    userId: Joi.string().required(),
+    name: Joi.string().required(),
     mail: Joi.string().email().required(),
     degree: Joi.string().required(),
-    faculty: Joi.string().required(),
-    role: Joi.string().required(),
+    facultyId: Joi.objectId().required(),
+    roleId: Joi.objectId().required(),
   });
 
   return schema.validate(reqBodyUser);

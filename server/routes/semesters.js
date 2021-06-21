@@ -13,14 +13,12 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  let semester = await Semesters.findOne({ _id: req.params.id });
+  let semester = await Semesters.findOne({ semesterId: req.body.semesterId });
   res.send(semester);
 });
 
 router.post("/", validate(validateSemester), async (req, res) => {
-  const semester = new Semesters(
-    _.pick(req.body, ["acronym", "semesterName", "years"])
-  );
+  const semester = new Semesters(_.pick(req.body, ["name", "year", "symbol"]));
 
   await semester.save();
   res.send(semester);
@@ -32,7 +30,9 @@ router.put(
   async (req, res) => {
     const semester = await Semesters.findByIdAndUpdate(
       req.params.id,
-      _pick(req.body, ["acronym", "semesterName", "years"]),
+      {
+        ..._.pick(req.body, ["name", "year", "symbol"]),
+      },
       { new: true }
     );
 
@@ -56,4 +56,3 @@ router.delete("/:id", validateObjectId, async (req, res) => {
 });
 
 module.exports = router;
-
