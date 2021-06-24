@@ -2,12 +2,12 @@ import React from "react";
 import Joi from "joi";
 
 import Form from "./common/form";
+import { saveUser } from "../services/userService";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
-import { getUser, saveUser } from "../services/userService";
-import { toast } from "react-toastify";
+import auth from "../services/authService";
 
-class UserForm extends Form {
+class RegisterForm extends Form {
   state = {
     data: {
       userId: "",
@@ -23,7 +23,6 @@ class UserForm extends Form {
   };
 
   schema = Joi.object({
-    _id: Joi.string(),
     userId: Joi.string().min(5).max(10).required().label("User Id"),
     name: Joi.string().required().label("Display Name"),
     mail: Joi.string().required().label("Mail"),
@@ -42,54 +41,36 @@ class UserForm extends Form {
     this.setState({ roles });
   }
 
-  async populateUsers() {
-    try {
-      const id = this.props.match.params.id;
-      if (id === "new") return;
-
-      const { data: user } = await getUser(id);
-      this.setState({ data: this.mapToViewModel(user), disable: true });
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        this.props.history.replace("/not-found");
-      }
-    }
-  }
-
   async componentDidMount() {
     await this.populateFaculties();
     await this.populateRoles();
-    await this.populateUsers();
-  }
 
-  mapToViewModel = (user) => {
-    return {
-      _id: user._id,
-      userId: user.userId,
-      name: user.name,
-      mail: user.mail,
-      degree: user.degree,
-      facultyId: user.faculty._id,
-      roleId: user.role._id,
-    };
-  };
+    const { user } = this.props.location.state;
+    const data = { ...this.state.data };
+    data.name = user.name;
+    data.mail = user.mail;
+    this.setState({ data });
+  }
 
   doSubmit = async () => {
     try {
-      await saveUser(this.state.data);
-      this.props.history.push("/users");
-    } catch (err) {
-      console.log(err);
+      const response = await saveUser(this.state.data);
+      auth.loginWithJwt(response.headers["x-auth-token"]);
+      this.props.history.push("/");
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.username = error.response.data;
+        this.setState({ errors });
+      }
     }
   };
 
   render() {
-    const { disable, faculties, roles } = this.state;
-    console.log("faculties la", faculties);
-    console.log("role la", roles);
+    const { faculties, roles } = this.state;
     return (
-      <div className="auth-wrapper auth-inner">
-        {this.state.data.name ? <h1>Update User</h1> : <h1>Create new User</h1>}
+      <div>
+        <h1>Register</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("userId", "User Id")}
           {this.renderInput("name", "Display Name")}
@@ -104,5 +85,4 @@ class UserForm extends Form {
   }
 }
 
-export default UserForm;
-
+export default RegisterForm;

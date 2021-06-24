@@ -1,20 +1,19 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-
 import Table from "./common/table";
 
 class UsersTable extends Component {
   columns = [
-    { path: "id", label: "Id" },
+    { path: "userId", label: "UserId" },
     {
-      path: "displayName",
+      path: "name",
       label: "Display Name",
-      content: (user) => (
-        <Link to={`/users/${user._id}`}>{user.displayName}</Link>
-      ),
+      content: (user) => <Link to={`/users/${user._id}`}>{user.name}</Link>,
     },
     { path: "mail", label: "Mail" },
-    { path: "role", label: "Role" },
+    { path: "degree", label: "Degree" },
+    { path: "faculty.name", label: "Faculty Name" },
+    { path: "role.name", label: "Role" },
     {
       key: "edit",
       content: (user) => (
@@ -49,3 +48,4 @@ class UsersTable extends Component {
 }
 
 export default UsersTable;
+

@@ -27,3 +27,4 @@ export function saveUser(user) {
 export function deleteUser(user) {
   return http.delete(userUrl(user._id));
 }
+

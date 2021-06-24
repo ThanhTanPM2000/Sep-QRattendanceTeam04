@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Joi from "joi";
 
 import Input from "./input";
+import Select from "./select";
 
 class Form extends Component {
   state = {
@@ -16,7 +17,7 @@ class Form extends Component {
     const { error } = this.schema.validate(data, { abortEarly: false });
     if (!error) return null;
 
-    for (let item of error.details) errors[item.path] = item.message;
+    for (let item of error.details) errors[item.path[0]] = item.message;
 
     return errors;
   };
@@ -50,7 +51,7 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  renderInput = (name, label, type = "text") => {
+  renderInput = (name, label) => {
     const { data, errors } = this.state;
 
     return (
@@ -59,7 +60,6 @@ class Form extends Component {
         label={label}
         value={data[name]}
         errors={errors}
-        type={type}
         onChange={this.handleChange}
       />
     );
@@ -72,6 +72,22 @@ class Form extends Component {
       </button>
     );
   };
+
+  renderSelect = (name, label, options) => {
+    const { data, errors } = this.state;
+
+    return (
+      <Select
+        name={name}
+        label={label}
+        options={options}
+        value={data[name]}
+        onChange={this.handleChange}
+        error={errors[name]}
+      />
+    );
+  };
 }
 
 export default Form;
+

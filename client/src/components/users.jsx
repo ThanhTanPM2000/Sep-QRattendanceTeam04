@@ -6,36 +6,54 @@ import UsersTable from "./usersTable";
 import ListGroup from "./common/listGroup";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
-import { getUsers } from "../services/fakeUsersService.js";
-import { getFaculties } from "../services/fakeFacultiesService";
+import { deleteUser, getUsers } from "../services/userService.js";
+import { getFaculties } from "../services/facultyService";
+import { getRoles } from "../services/roleService";
 import { paginate } from "../utils/paginate";
+import { toast } from "react-toastify";
 
 class Users extends Component {
   state = {
     users: [],
     faculties: [],
+    roles: [],
     currentPage: 1,
     selectedFaculty: { _id: "", name: "All Faculties" },
+    selectedRole: { _id: "", name: "All Roles" },
     searchQuery: "",
-    pageSize: 3,
-    sortColumn: { path: "displayName", order: "asc" },
+    pageSize: 10,
+    sortColumn: { path: "name", order: "asc" },
   };
 
-  componentDidMount() {
-    const faculties = [this.state.selectedFaculty, ...getFaculties()];
-    this.setState({ users: getUsers(), faculties });
- try {
-      const { data: genresData } = await getGenres();
-      const genres = [this.state.selectedGenre, ...genresData];
+  async componentDidMount() {
+    try {
+      let { data: faculties } = await getFaculties();
+      faculties = [this.state.selectedFaculty, ...faculties];
 
-      const { data: movies } = await getMovies();
-      this.setState({ movies, genres });
+      let { data: roles } = await getRoles();
+      roles = [this.state.selectedRole, ...roles];
+
+      let { data: users } = await getUsers();
+      this.setState({ users, faculties, roles });
     } catch (error) {}
   }
 
-  handleDelete = (user) => {
-    const users = this.state.users.filter((m) => m._id !== user._id);
+  handleDelete = async (user) => {
+    const originalUser = [...this.state.users];
+
+    const users = originalUser.filter((m) => m._id !== user._id);
     this.setState({ users });
+
+    try {
+      await deleteUser(user);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        toast.error("This user has already delete");
+      } else if (error.response && error.response.status === 403) {
+        toast.error("Access denied");
+      }
+      this.setState({ users: originalUser });
+    }
   };
 
   handlePageChange = (page) => {
@@ -50,6 +68,14 @@ class Users extends Component {
     });
   };
 
+  handleRolesSelect = (role) => {
+    this.setState({
+      selectedRole: role,
+      searchQuery: "",
+      currentPage: 1,
+    });
+  };
+
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
@@ -58,6 +84,7 @@ class Users extends Component {
     this.setState({
       searchQuery: query,
       selectedFaculty: this.state.faculties[0],
+      selectedRole: this.state.roles[0],
       currentPage: 1,
     });
   };
@@ -68,6 +95,7 @@ class Users extends Component {
       currentPage,
       searchQuery,
       selectedFaculty,
+      selectedRole,
       sortColumn,
       users: allUsers,
     } = this.state;
@@ -75,65 +103,81 @@ class Users extends Component {
     let filtered = allUsers;
     if (searchQuery) {
       filtered = allUsers.filter((x) =>
-        x.displayName.toLowerCase().startsWith(searchQuery.toLowerCase())
+        x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    } else if (selectedFaculty && selectedFaculty._id)
-      filtered = allUsers.filter((m) => m.faculty._id === selectedFaculty._id);
+    } else if (
+      (selectedFaculty && selectedFaculty._id) ||
+      (selectedRole && selectedRole._id)
+    ) {
+      if (selectedFaculty && selectedFaculty._id)
+        filtered = allUsers.filter(
+          (m) => m.faculty._id === selectedFaculty._id
+        );
+      if (selectedRole && selectedRole._id)
+        filtered = allUsers.filter((m) => m.role._id === selectedRole._id);
+    }
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
     const users = paginate(sorted, currentPage, pageSize);
+
     return { totalCount: filtered.length, data: users };
   };
 
   render() {
     const { length: count } = this.state.users;
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
-
-    if (count === 0) return <p>There are no users in the database</p>;
     const { totalCount, data: users } = this.getPagedData();
 
     return (
-      <div className="row ml-2 mt-3">
-        <div className="col-md-2">
-          <div className="card">
+      <div className="row">
+        <div className="col-md-3">
+          <div style={{ marginBottom: 29 }}>
             <ListGroup
               items={this.state.faculties}
               selectedItem={this.state.selectedFaculty}
               onItemSelect={this.handleFacultiesSelect}
             />
           </div>
+          <ListGroup
+            items={this.state.roles}
+            selectedItem={this.state.selectedRole}
+            onItemSelect={this.handleRolesSelect}
+          />
         </div>
 
-        <div className="col-md">
-          <div className="card" style={{ padding: 25 }}>
-            <Link
-              to="/users/new"
-              className="btn btn-primary"
-              style={{ marginBottom: 20, width: 150 }}
-            >
-              Create User
-            </Link>
-            <p>
-              Showing <span class="badge badge-primary">{totalCount}</span>{" "}
-              users in the database
-            </p>
-            <SearchBox value={searchQuery} onChange={this.handleSearch} />
-            <div className="card mb-3">
-              <UsersTable
-                users={users}
-                sortColumn={sortColumn}
-                onDelete={this.handleDelete}
-                onSort={this.handleSort}
-              />
+        <div className="auth-wrapper auth-inner col-md" style={{ padding: 20 }}>
+          <div className="row">
+            <div className="col-md">
+              <p>
+                Showing{" "}
+                <span className="badge badge-primary">{totalCount}</span> users
+                in the database
+              </p>
             </div>
-            <Pagination
-              itemsCount={totalCount}
-              pageSize={pageSize}
-              currentPage={currentPage}
-              onPageChange={this.handlePageChange}
-            />
+            <div className="col-md-3">
+              <Link
+                to="/users/new"
+                className="btn btn-primary"
+                style={{ marginBottom: 20, width: 150 }}
+              >
+                Create User
+              </Link>
+            </div>
           </div>
+          <SearchBox value={searchQuery} onChange={this.handleSearch} />
+          <UsersTable
+            users={users}
+            sortColumn={sortColumn}
+            onDelete={this.handleDelete}
+            onSort={this.handleSort}
+          />
+          <Pagination
+            itemsCount={totalCount}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={this.handlePageChange}
+          />
         </div>
       </div>
     );
