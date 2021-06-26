@@ -70,7 +70,7 @@ class FormCommon extends Component {
 
   renderSubmit = (label) => {
     return (
-      <Button onClick={this.handleSubmit} className="btn btn-primary btn-sm">
+      <Button onClick={this.handleSubmit} className="btn btn-primary btn-lg">
         {label}
       </Button>
     );

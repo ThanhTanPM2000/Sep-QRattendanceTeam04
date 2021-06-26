@@ -11,6 +11,9 @@ import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
 
+import ModalCommon from "../components/common/modal";
+import { Modal, Button } from "react-bootstrap";
+
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);
   const [color, setColor] = React.useState("black");
@@ -59,6 +62,7 @@ function Admin() {
         />
         <div className="main-panel" ref={mainPanel}>
           <AdminNavbar />
+
           <div className="content">
             <div className="rna-container">
               <ToastContainer />

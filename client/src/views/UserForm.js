@@ -1,5 +1,6 @@
 import React from "react";
 import Joi from "joi";
+import _ from "lodash";
 
 import FormCommon from "../components/common/form";
 import LoadingPage from "../components/loadingPage";
@@ -60,17 +61,19 @@ class UserForm extends FormCommon {
   }
 
   async populateUsers() {
-    try {
-      const id = this.props.match.params.id;
-      if (id === "new") return;
+    const { user } = this.props;
+    if (_.isEmpty(user)) return;
+    this.setState({ data: this.mapToViewModel(user) });
+    // try {
+    //   const id = this.props.match.params.id;
+    //   if (id === "new") return;
 
-      const { data: user } = await getUser(id);
-      this.setState({ data: this.mapToViewModel(user), disable: true });
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        this.props.history.replace("/not-found");
-      }
-    }
+    //   const { data: user } = await getUser(id);
+    // } catch (error) {
+    //   if (error.response && error.response.status === 404) {
+    //     this.props.history.replace("/not-found");
+    //   }
+    // }
   }
 
   async componentDidMount() {
@@ -104,31 +107,23 @@ class UserForm extends FormCommon {
     const { faculties, roles } = this.state;
     return (
       <>
-        <Container fluid>
+        <Form onSubmit={this.handleSubmit}>
           <Row>
-            <Col md="12">
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h4">Edit Profile</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Form onSubmit={this.handleSubmit}>
-                    <Row>
-                      <Col className="pr-1" md="2">
-                        {this.renderInput("userId", "User Id", "Id")}
-                      </Col>
-                      <Col className="px-1" md="5">
-                        {this.renderInput("name", "Display Name", "Name")}
-                      </Col>
-                      <Col className="pl-1" md="5">
-                        {this.renderInput("mail", "Email Address", "Mail")}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="pr-1" md="6">
-                        {this.renderInput("degree", "Degree", "Degree")}
-                      </Col>
-                      {/* <Col className="pl-1" md="6">
+            <Col className="pr-1" md="2">
+              {this.renderInput("userId", "User Id", "Id")}
+            </Col>
+            <Col className="px-1" md="5">
+              {this.renderInput("name", "Display Name", "Name")}
+            </Col>
+            <Col className="pl-1" md="5">
+              {this.renderInput("mail", "Email Address", "Mail")}
+            </Col>
+          </Row>
+          <Row>
+            <Col className="pr-1" md="6">
+              {this.renderInput("degree", "Degree", "Degree")}
+            </Col>
+            {/* <Col className="pl-1" md="6">
                         <Form.Group>
                           <label>Last Name</label>
                           <Form.Control
@@ -138,11 +133,11 @@ class UserForm extends FormCommon {
                           ></Form.Control>
                         </Form.Group>
                       </Col> */}
-                    </Row>
-                    <Row>
-                      <Col md="12">
-                        {this.renderSelect("facultyId", "Faculties", faculties)}
-                        {/* <Form.Group>
+          </Row>
+          <Row>
+            <Col md="12">
+              {this.renderSelect("facultyId", "Faculties", faculties)}
+              {/* <Form.Group>
                           <label>Address</label>
                           <Form.Control
                             defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
@@ -150,12 +145,12 @@ class UserForm extends FormCommon {
                             type="text"
                           ></Form.Control>
                         </Form.Group> */}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="12">
-                        {this.renderSelect("roleId", "Roles", roles)}
-                        {/* <Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12">
+              {this.renderSelect("roleId", "Roles", roles)}
+              {/* <Form.Group>
                           <label>City</label>
                           <Form.Control
                             defaultValue="Mike"
@@ -163,8 +158,8 @@ class UserForm extends FormCommon {
                             type="text"
                           ></Form.Control>
                         </Form.Group> */}
-                      </Col>
-                      {/* <Col className="px-1" md="4">
+            </Col>
+            {/* <Col className="px-1" md="4">
                         <Form.Group>
                           <label>Country</label>
                           <Form.Control
@@ -183,8 +178,8 @@ class UserForm extends FormCommon {
                           ></Form.Control>
                         </Form.Group>
                       </Col> */}
-                    </Row>
-                    {/* <Row>
+          </Row>
+          {/* <Row>
                       <Col md="12">
                         <Form.Group>
                           <label>About Me</label>
@@ -199,14 +194,8 @@ class UserForm extends FormCommon {
                         </Form.Group>
                       </Col>
                     </Row> */}
-                    {this.renderSubmit("Save")}
-                    <div className="clearfix"></div>
-                  </Form>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+          {this.renderSubmit("Save")}
+        </Form>
       </>
     );
   }

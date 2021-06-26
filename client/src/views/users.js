@@ -26,6 +26,8 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import ModalCommon from "components/common/modal";
+import UserForm from "./UserForm";
 
 function Users() {
   const [usersList, setUsers] = React.useState([]);
@@ -46,6 +48,8 @@ function Users() {
     path: "name",
     order: "asc",
   });
+  const [selectedUser, setSelectedUser] = React.useState({});
+  const [modalShow, setModalShow] = React.useState(false);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -103,15 +107,20 @@ function Users() {
     setCurrentPage(1);
   };
 
-  const handleSort = async (sortColumn) => {
-    await setSortColumn(sortColumn);
+  const handleUserSelect = (user) => {
+    setSelectedUser(user);
+    setModalShow(true);
   };
 
-  const handleSearch = async (query) => {
-    await setSearchQuery(query);
-    await setSelectedFaculty(faculties[0]);
-    await setSelectedRole(roles[0]);
-    await setCurrentPage(1);
+  const handleSort = (sortColumn) => {
+    setSortColumn(sortColumn);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setSelectedFaculty(faculties[0]);
+    setSelectedRole(roles[0]);
+    setCurrentPage(1);
   };
 
   const getPagedData = () => {
@@ -144,6 +153,13 @@ function Users() {
   return (
     <>
       <Container fluid>
+        <ModalCommon
+          titleHeader="Create User"
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        >
+          <UserForm user={selectedUser} />
+        </ModalCommon>
         <Row>
           <Col md="12">
             <Card className="card-plain table-plain-bg">
@@ -159,13 +175,15 @@ function Users() {
                   </Col>
 
                   <Col md="2">
-                    <Link
-                      to="/users/new"
-                      className="btn btn-primary"
-                      style={{ marginBottom: 20, width: 150 }}
+                    <Button
+                      onClick={() => {
+                        setSelectedUser({});
+                        setModalShow(true);
+                      }}
+                      variant="primary"
                     >
                       Create User
-                    </Link>
+                    </Button>
                   </Col>
                 </Row>
               </Card.Header>
@@ -177,6 +195,7 @@ function Users() {
                     sortColumn={sortColumn}
                     onDelete={handleDelete}
                     onSort={handleSort}
+                    onSelectedUser={handleUserSelect}
                   />
                   <Pagination
                     itemsCount={totalCount}
