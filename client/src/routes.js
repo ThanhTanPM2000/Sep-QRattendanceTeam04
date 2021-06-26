@@ -22,6 +22,7 @@ import Users from "views/users";
 import Semesters from "views/semesters";
 import Typography from "views/Typography.js";
 import UserForm from "views/UserForm.js";
+import SemesterForm from "views/SemesterForm.js"
 import Icons from "views/Icons.js";
 import Maps from "views/Maps.js";
 import Notifications from "views/Notifications.js";
@@ -46,6 +47,12 @@ const dashboardRoutes = [
     name: "Users List",
     icon: "nc-icon nc-badge",
     component: Users,
+    layout: "/admin",
+  },
+  {
+    path: "/semesters/:id",
+    name: "Semester Form",
+    component: SemesterForm,
     layout: "/admin",
   },
   {
