@@ -21,6 +21,7 @@ import TableList from "views/TableList.js";
 import Users from "views/users";
 import Semesters from "views/semesters";
 import Typography from "views/Typography.js";
+import UserForm from "views/UserForm.js";
 import Icons from "views/Icons.js";
 import Maps from "views/Maps.js";
 import Notifications from "views/Notifications.js";
@@ -32,6 +33,12 @@ const dashboardRoutes = [
     name: "Dashboard",
     icon: "nc-icon nc-chart-pie-35",
     component: Dashboard,
+    layout: "/admin",
+  },
+  {
+    path: "/users/:id",
+    name: "User Form",
+    component: UserForm,
     layout: "/admin",
   },
   {

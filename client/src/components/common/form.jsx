@@ -4,7 +4,9 @@ import Joi from "joi";
 import Input from "./input";
 import Select from "./select";
 
-class Form extends Component {
+import { Form, Button } from "react-bootstrap";
+
+class FormCommon extends Component {
   state = {
     data: {},
     errors: {},
@@ -51,7 +53,7 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  renderInput = (name, label) => {
+  renderInput = (name, label, placeholder) => {
     const { data, errors } = this.state;
 
     return (
@@ -60,6 +62,7 @@ class Form extends Component {
         label={label}
         value={data[name]}
         errors={errors}
+        placeholder={placeholder}
         onChange={this.handleChange}
       />
     );
@@ -67,9 +70,9 @@ class Form extends Component {
 
   renderSubmit = (label) => {
     return (
-      <button onClick={this.handleSubmit} className="btn btn-primary btn-sm">
+      <Button onClick={this.handleSubmit} className="btn btn-primary btn-sm">
         {label}
-      </button>
+      </Button>
     );
   };
 
@@ -89,4 +92,4 @@ class Form extends Component {
   };
 }
 
-export default Form;
+export default FormCommon;

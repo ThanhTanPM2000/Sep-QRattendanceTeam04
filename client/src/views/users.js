@@ -148,25 +148,43 @@ function Users() {
           <Col md="12">
             <Card className="card-plain table-plain-bg">
               <Card.Header>
-                <Card.Title as="h4">Table on Plain Background</Card.Title>
-                <p className="card-category">
-                  Here is a subtitle for this table
-                </p>
+                <Row>
+                  <Col md="10">
+                    <Card.Title as="h4">Table on Plain Background</Card.Title>
+                    <p className="card-category">
+                      Showing{" "}
+                      <span className="badge badge-primary">{totalCount}</span>{" "}
+                      users in the database
+                    </p>
+                  </Col>
+
+                  <Col md="2">
+                    <Link
+                      to="/users/new"
+                      className="btn btn-primary"
+                      style={{ marginBottom: 20, width: 150 }}
+                    >
+                      Create User
+                    </Link>
+                  </Col>
+                </Row>
               </Card.Header>
               <Card.Body className="table-full-width table-responsive px-0">
-                <SearchBox value={searchQuery} onChange={handleSearch} />
-                <UserTable
-                  users={newUsers}
-                  sortColumn={sortColumn}
-                  onDelete={handleDelete}
-                  onSort={handleSort}
-                />
-                <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
+                <LoadingPage data={usersList}>
+                  <SearchBox value={searchQuery} onChange={handleSearch} />
+                  <UserTable
+                    users={newUsers}
+                    sortColumn={sortColumn}
+                    onDelete={handleDelete}
+                    onSort={handleSort}
+                  />
+                  <Pagination
+                    itemsCount={totalCount}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                  />
+                </LoadingPage>
               </Card.Body>
             </Card>
           </Col>

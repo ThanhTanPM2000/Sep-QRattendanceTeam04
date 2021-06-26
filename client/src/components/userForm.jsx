@@ -98,8 +98,8 @@ class UserForm extends Form {
             <h1>Create new User</h1>
           )}
           <form onSubmit={this.handleSubmit}>
-            {this.renderInput("userId", "User Id")}
-            {this.renderInput("name", "Display Name")}
+            {this.renderInput("userId", "User Id", "ID")}
+            {this.renderInput("name", "Display Name", "Name")}
             {this.renderInput("mail", "Mail", true)}
             {this.renderInput("degree", "Degree")}
             {this.renderSelect("facultyId", "Faculties", faculties)}
