@@ -34,7 +34,7 @@ const Users = () => {
     order: "asc",
   });
 
-  useEffect(async () => {
+  useEffect(() => {
     async function getDataFromApi() {
       try {
         let { data: newFaculties } = await getFaculties();

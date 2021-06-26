@@ -4,22 +4,31 @@ import { BrowserRouter } from "react-router-dom";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import { msalConfig } from "./authConfig";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "font-awesome/css/font-awesome.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./assets/css/animate.min.css";
+import "./assets/scss/light-bootstrap-dashboard-react.scss";
+import "./assets/css/demo.css";
 
-import "./index.css";
+// import "./index.css";
 import App from "./App";
+import AdminLayout from "./layouts/Admin";
 import reportWebVitals from "./reportWebVitals";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(
   <BrowserRouter>
-    <MsalProvider instance={msalInstance}>
+    {/* <MsalProvider instance={msalInstance}>
       <App />
-    </MsalProvider>
+    </MsalProvider> */}
+    <Switch>
+      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+      <Redirect from="/" to="/admin/dashboard" />
+    </Switch>
   </BrowserRouter>,
   document.getElementById("root")
 );

@@ -2,6 +2,7 @@ import React from "react";
 import Joi from "joi";
 
 import Form from "./common/form";
+import LoadingPage from "./loadingPage";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
 import { getUser, saveUser } from "../services/userService";
@@ -26,7 +27,10 @@ class UserForm extends Form {
     _id: Joi.string(),
     userId: Joi.string().min(5).max(10).required().label("User Id"),
     name: Joi.string().required().label("Display Name"),
-    mail: Joi.string().required().email({ tlds: {allow: false} }).label("Mail"),
+    mail: Joi.string()
+      .required()
+      .email({ tlds: { allow: false } })
+      .label("Mail"),
     degree: Joi.string().required().label("Degree"),
     facultyId: Joi.string().required().label("Faculty"),
     roleId: Joi.string().required().label("Role"),
@@ -86,18 +90,24 @@ class UserForm extends Form {
   render() {
     const { faculties, roles } = this.state;
     return (
-      <div className="auth-wrapper auth-inner">
-        {this.state.data.name ? <h1>Update User</h1> : <h1>Create new User</h1>}
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("userId", "User Id")}
-          {this.renderInput("name", "Display Name")}
-          {this.renderInput("mail", "Mail", true)}
-          {this.renderInput("degree", "Degree")}
-          {this.renderSelect("facultyId", "Faculties", faculties)}
-          {this.renderSelect("roleId", "Roles", roles)}
-          {this.renderSubmit("Save")}
-        </form>
-      </div>
+      <LoadingPage>
+        <div className="auth-wrapper auth-inner">
+          {this.state.data.name ? (
+            <h1>Update User</h1>
+          ) : (
+            <h1>Create new User</h1>
+          )}
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInput("userId", "User Id")}
+            {this.renderInput("name", "Display Name")}
+            {this.renderInput("mail", "Mail", true)}
+            {this.renderInput("degree", "Degree")}
+            {this.renderSelect("facultyId", "Faculties", faculties)}
+            {this.renderSelect("roleId", "Roles", roles)}
+            {this.renderSubmit("Save")}
+          </form>
+        </div>
+      </LoadingPage>
     );
   }
 }

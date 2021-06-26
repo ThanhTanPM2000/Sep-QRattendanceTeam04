@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import LoadingComponent from "react-spinners/ClipLoader";
 import "../preLoading.css";
 
 const LoadingPage = ({ children }) => {
@@ -13,8 +14,9 @@ const LoadingPage = ({ children }) => {
   return (
     <React.Fragment>
       {loading ? (
+        // <div id="status" />
         <div id="preloader">
-          <div id="status" />
+          <LoadingComponent  color="#D0021B" loading={loading} size={50} />
         </div>
       ) : (
         children

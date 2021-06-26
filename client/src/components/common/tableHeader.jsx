@@ -23,7 +23,7 @@ const tableHeader = ({ columns, sortColumn, onSort }) => {
       <tr>
         {columns.map((column) => (
           <th
-            className={column.path ? "clickable" : null}
+            className={column.path ? "clickable border-0" : "border-0"}
             key={column.path || column.key}
             onClick={() => (column.path ? raiseSort(column.path) : null)}
           >

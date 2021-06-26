@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
-import Table from "./common/table";
+import TableCommon from "./common/table";
 
 const UserTable = ({ onDelete, users, onSort, sortColumn }) => {
   const columns = [
@@ -37,7 +36,7 @@ const UserTable = ({ onDelete, users, onSort, sortColumn }) => {
   ];
 
   return (
-    <Table
+    <TableCommon
       columns={columns}
       data={users}
       sortColumn={sortColumn}

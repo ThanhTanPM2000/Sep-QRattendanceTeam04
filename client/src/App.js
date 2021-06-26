@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -28,6 +27,7 @@ function App() {
           <Redirect to="/not-found" />
         </Switch>
       </main>
+
     </div>
   );
 }
