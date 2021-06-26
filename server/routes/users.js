@@ -65,12 +65,12 @@ router.put(
     const user = await Users.findByIdAndUpdate(
       req.params.id,
       _.pick(req.body, [
-        "id",
-        "displayName",
+        "userId",
+        "name",
         "mail",
         "degree",
-        "faculty",
-        "role",
+        "facultyId",
+        "roleId",
       ]),
       { new: true }
     );
