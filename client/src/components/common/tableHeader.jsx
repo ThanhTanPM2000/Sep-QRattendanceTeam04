@@ -1,43 +1,38 @@
-import React, { Component } from "react";
+import React from "react";
 
-class TableHeader extends Component {
-  raiseSort = (path) => {
-    const sortColumn = { ...this.props.sortColumn };
-    if (sortColumn.path === path)
-      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+const tableHeader = ({ columns, sortColumn, onSort }) => {
+  const raiseSort = (path) => {
+    const newSortColumn = { ...sortColumn };
+    if (newSortColumn.path === path)
+      newSortColumn.order = newSortColumn.order === "asc" ? "desc" : "asc";
     else {
-      sortColumn.path = path;
-      sortColumn.order = "asc";
+      newSortColumn.path = path;
+      newSortColumn.order = "asc";
     }
-    this.props.onSort(sortColumn);
+    onSort(newSortColumn);
   };
 
-  renderSortIcon = (column) => {
-    const { sortColumn } = this.props;
-
+  const renderSortIcon = (column) => {
     if (column.path !== sortColumn.path) return null;
     if (sortColumn.order === "asc") return <i className="fa fa-sort-asc" />;
     return <i className="fa fa-sort-desc" />;
   };
 
-  render() {
-    return (
-      <thead>
-        <tr>
-          {this.props.columns.map((column) => (
-            <th
-              className="clickable"
-              key={column.path || column.key}
-              onClick={() => this.raiseSort(column.path)}
-            >
-              {column.label} {this.renderSortIcon(column)}
-            </th>
-          ))}
-        </tr>
-      </thead>
-    );
-  }
-}
+  return (
+    <thead>
+      <tr>
+        {columns.map((column) => (
+          <th
+            className={column.path ? "clickable" : null}
+            key={column.path || column.key}
+            onClick={() => (column.path ? raiseSort(column.path) : null)}
+          >
+            {column.label} {renderSortIcon(column)}
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
+};
 
-export default TableHeader;
-
+export default tableHeader;

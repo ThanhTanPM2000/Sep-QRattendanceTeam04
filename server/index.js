@@ -1,4 +1,5 @@
 const express = require("express");
+const config = require("config");
 
 const app = express();
 
@@ -8,8 +9,9 @@ require("./startup/validation")();
 require("./startup/db")();
 require("./startup/routes")(app);
 
-const server = app.listen(3000, () => {
-  console.log(`Listening on Port ${3000}...`);
+const port = config.get("port");
+const server = app.listen(port, () => {
+  console.log(`Listening on Port ${port}...`);
 });
 
 module.exports = server;

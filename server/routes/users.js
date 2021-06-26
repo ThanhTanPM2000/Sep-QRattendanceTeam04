@@ -15,6 +15,12 @@ router.get("/", async (req, res) => {
   res.send(users);
 });
 
+router.get("/:id", async (req, res) => {
+  const users = await Users.findById(req.params.id);
+  if (!users) return res.status(404).send("User not found");
+  res.send(users);
+});
+
 router.post("/", validate(validateUser), async (req, res, next) => {
   let user = await Users.findOne({ mail: req.body.mail });
   if (user) return res.status(400).send("User already registered");
@@ -39,7 +45,7 @@ router.post("/", validate(validateUser), async (req, res, next) => {
     ..._.pick(req.body, ["userId", "name", "mail", "degree"]),
     faculty: {
       _id: faculty._id,
-      facultyName: faculty.facultyName,
+      name: faculty.name,
       majorName: faculty.majorName,
     },
     role: {

@@ -1,34 +1,28 @@
-import React, { Component } from "react";
+import React from "react";
 import _ from "lodash";
 
-class TableBody extends Component {
-  renderCall = (item, column) => {
+const tableBody = ({ columns, data }) => {
+  const renderCall = (item, column) => {
     if (column.content) return column.content(item);
 
     return _.get(item, column.path);
   };
 
-  createKey = (item, column) => {
+  const createKey = (item, column) => {
     return item._id + (column.path || column.key);
   };
-  render() {
-    const { data, columns } = this.props;
 
-    return (
-      <tbody>
-        {data.map((item) => (
-          <tr key={item._id}>
-            {columns.map((column) => (
-              <td key={this.createKey(item, column)}>
-                {this.renderCall(item, column)}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    );
-  }
-}
+  return (
+    <tbody>
+      {data.map((item) => (
+        <tr key={item._id}>
+          {columns.map((column) => (
+            <td key={createKey(item, column)}>{renderCall(item, column)}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  );
+};
 
-export default TableBody;
-
+export default tableBody;

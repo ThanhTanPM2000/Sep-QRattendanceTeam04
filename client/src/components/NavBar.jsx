@@ -7,7 +7,7 @@ const NavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light mb-3">
       <div className="container">
-        <Link classname="navbar-brand" to="/">
+        <Link className="navbar-brand" to="/">
           VanLang QrCode
         </Link>
         <button
@@ -40,13 +40,13 @@ const NavBar = () => {
             {isAuthenticated && (
               <React.Fragment>
                 <li className="nav-item">
-                  <NavLink className="nav-item nav-link" to="/movies">
-                    Movies
+                  <NavLink className="nav-item nav-link" to="/users">
+                    Users
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className="nav-item nav-link" to="/customers">
-                    Customers
+                  <NavLink className="nav-item nav-link" to="/semester">
+                    semester
                   </NavLink>
                 </li>
                 <li className="nav-item">

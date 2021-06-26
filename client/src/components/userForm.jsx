@@ -26,7 +26,7 @@ class UserForm extends Form {
     _id: Joi.string(),
     userId: Joi.string().min(5).max(10).required().label("User Id"),
     name: Joi.string().required().label("Display Name"),
-    mail: Joi.string().required().label("Mail"),
+    mail: Joi.string().required().email({ tlds: {allow: false} }).label("Mail"),
     degree: Joi.string().required().label("Degree"),
     facultyId: Joi.string().required().label("Faculty"),
     roleId: Joi.string().required().label("Role"),
@@ -84,9 +84,7 @@ class UserForm extends Form {
   };
 
   render() {
-    const { disable, faculties, roles } = this.state;
-    console.log("faculties la", faculties);
-    console.log("role la", roles);
+    const { faculties, roles } = this.state;
     return (
       <div className="auth-wrapper auth-inner">
         {this.state.data.name ? <h1>Update User</h1> : <h1>Create new User</h1>}
@@ -105,4 +103,3 @@ class UserForm extends Form {
 }
 
 export default UserForm;
-

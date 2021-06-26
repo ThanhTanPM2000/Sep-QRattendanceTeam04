@@ -1,9 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+
 import Table from "./common/table";
 
-class UsersTable extends Component {
-  columns = [
+const UserTable = ({ onDelete, users, onSort, sortColumn }) => {
+  const columns = [
     { path: "userId", label: "UserId" },
     {
       path: "name",
@@ -26,7 +27,7 @@ class UsersTable extends Component {
       key: "delete",
       content: (user) => (
         <button
-          onClick={() => this.props.onDelete(user)}
+          onClick={() => onDelete(user)}
           className="btn btn-danger btn-sm"
         >
           Delete
@@ -34,18 +35,15 @@ class UsersTable extends Component {
       ),
     },
   ];
-  render() {
-    const { users, onSort, sortColumn } = this.props;
-    return (
-      <Table
-        columns={this.columns}
-        data={users}
-        sortColumn={sortColumn}
-        onSort={onSort}
-      />
-    );
-  }
-}
 
-export default UsersTable;
+  return (
+    <Table
+      columns={columns}
+      data={users}
+      sortColumn={sortColumn}
+      onSort={onSort}
+    />
+  );
+};
 
+export default UserTable;

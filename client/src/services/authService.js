@@ -1,6 +1,7 @@
 import http from "./httpService";
 import { apiUrl } from "../config.json";
 import jwtDecode from "jwt-decode";
+import { Redirect } from "react-router-dom";
 
 const apiEndpoint = apiUrl + "/auth";
 const tokenKey = "token";
@@ -8,12 +9,26 @@ const tokenKey = "token";
 http.setJwt(getJwt());
 
 export async function login(data) {
-  const { data: jwt } = await http.post(`${apiEndpoint}`, {
-    name: data.displayName,
-    mail: data.mail,
-  });
+  // const { data: jwt } = await http.post(`${apiEndpoint}`, {
+  //   name: data.displayName,
+  //   mail: data.mail,
+  // });
 
-  localStorage.setItem(tokenKey, jwt);
+  http
+    .post(`${apiEndpoint}`, {
+      name: data.displayName,
+      mail: data.mail,
+    })
+    .then((res) => {
+      if (res.data === "register") {
+        return <Redirect to="/register" />;
+      } else {
+        const { data: jwt } = res;
+        console.log("jwt", jwt);
+      }
+    });
+
+  // localStorage.setItem(tokenKey, jwt);
 }
 
 export function loginWithJwt(jwt) {
