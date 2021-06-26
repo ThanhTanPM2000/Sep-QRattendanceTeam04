@@ -1,12 +1,14 @@
 import React from "react";
+import { Form, Alert } from "react-bootstrap";
 
 const Input = ({ name, label, errors, ...otherProps }) => {
   return (
-    <div className="form-group">
+    <Form.Group>
+      {/* <Form.Label htmlFor={name}>{label}</Form.Label> */}
       <label htmlFor={name}>{label}</label>
-      <input className="form-control" name={name} id={name} {...otherProps} />
-      {errors[name] && <div className="alert alert-danger">{errors[name]}</div>}
-    </div>
+      <Form.Control name={name} id={name} {...otherProps} />
+      {errors[name] && <Alert variant="danger">{errors[name]}</Alert>}
+    </Form.Group>
   );
 };
 

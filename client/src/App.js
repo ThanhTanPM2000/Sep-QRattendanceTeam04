@@ -6,7 +6,7 @@ import NavBar from "./components/NavBar";
 import UserForm from "./components/userForm";
 import Users from "./components/users";
 import Login from "./components/login";
-import notFound from "./components/NotFound";
+import NotFound from "./components/NotFound";
 import Semesters from "./components/semesters";
 import SemesterForm from "./components/semesterForm";
 
@@ -22,12 +22,11 @@ function App() {
           <Route path="/login" component={Login} />
           <Route path="/semesters/:id" component={SemesterForm} />
           <Route path="/semesters" component={Semesters} />
-          <Route path="/not-found" component={notFound} />
+          <Route path="/not-found" component={NotFound} />
           <Redirect from="/" exact to="/users" />
           <Redirect to="/not-found" />
         </Switch>
       </main>
-
     </div>
   );
 }

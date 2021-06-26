@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import LoadingComponent from "react-spinners/ClipLoader";
 import "../preLoading.css";
 
-const LoadingPage = ({ children }) => {
+const LoadingPage = ({ data, children }) => {
   const [loading, setLoading] = useState(true);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    intervalRef.current = setInterval(() => {
+      if (data.length !== 0) {
+        setLoading(false);
+      }
+    });
+    return () => {
+      clearInterval(intervalRef.current);
+    };
   });
 
   return (
@@ -16,7 +22,7 @@ const LoadingPage = ({ children }) => {
       {loading ? (
         // <div id="status" />
         <div id="preloader">
-          <LoadingComponent  color="#D0021B" loading={loading} size={50} />
+          <LoadingComponent color="#D0021B" loading={loading} size={50} />
         </div>
       ) : (
         children

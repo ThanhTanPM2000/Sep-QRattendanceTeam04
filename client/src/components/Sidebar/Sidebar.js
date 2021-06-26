@@ -38,14 +38,12 @@ function Sidebar({ color, image, routes }) {
               return (
                 <li
                   className={
-                    prop.upgrade
-                      ? "active active-pro"
-                      : activeRoute(prop.layout + prop.path)
+                    prop.upgrade ? "active active-pro" : activeRoute(prop.path)
                   }
                   key={key}
                 >
                   <NavLink
-                    to={prop.layout + prop.path}
+                    to={prop.path}
                     className="nav-link"
                     activeClassName="active"
                   >

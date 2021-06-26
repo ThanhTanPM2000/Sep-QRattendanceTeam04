@@ -5,6 +5,7 @@ import AdminNavbar from "components/Navbars/AdminNavbar";
 import Footer from "components/Footer/Footer";
 import Sidebar from "components/Sidebar/Sidebar";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+import { ToastContainer } from "react-toastify";
 
 import routes from "routes.js";
 
@@ -21,7 +22,7 @@ function Admin() {
       if (prop.layout === "/admin") {
         return (
           <Route
-            path={prop.layout + prop.path}
+            path={prop.path}
             render={(props) => <prop.component {...props} />}
             key={key}
           />
@@ -49,10 +50,19 @@ function Admin() {
   return (
     <>
       <div className="wrapper">
-        <Sidebar color={color} image={hasImage ? image : ""} routes={routes} />
+        <Sidebar
+          color={color}
+          image={hasImage ? image : ""}
+          routes={routes.filter((x) => {
+            if (x.icon) return x;
+          })}
+        />
         <div className="main-panel" ref={mainPanel}>
           <AdminNavbar />
           <div className="content">
+            <div className="rna-container">
+              <ToastContainer />
+            </div>
             <Switch>{getRoutes(routes)}</Switch>
           </div>
           <Footer />

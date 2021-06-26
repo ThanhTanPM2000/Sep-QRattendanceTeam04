@@ -26,8 +26,8 @@ ReactDOM.render(
       <App />
     </MsalProvider> */}
     <Switch>
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
+      <Route path="/" render={(props) => <AdminLayout {...props} />} />
+      <Redirect from="/" to="/users" />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
