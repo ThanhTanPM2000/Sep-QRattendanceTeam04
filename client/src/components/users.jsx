@@ -7,6 +7,7 @@ import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
 import UserTable from "../components/userTable";
+import LoadingPage from "../components/loadingPage";
 import { paginate } from "../utils/paginate";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
@@ -47,12 +48,6 @@ const Users = () => {
         setUsers(newUsers);
         setFaculties(newFaculties);
         setRoles(newRoles);
-
-        // return () => {
-        //   setUsers([]);
-        //   setFaculties([]);
-        //   setRoles([]);
-        // };
       } catch (error) {}
     }
 
@@ -132,55 +127,58 @@ const Users = () => {
   const { totalCount, data: newUsers } = getPagedData();
 
   return (
-    <div className="row">
-      <div className="col-md-3">
-        <div style={{ marginBottom: 29 }}>
+    <LoadingPage>
+      <div className="row">
+        <div className="col-md-3">
+          <div style={{ marginBottom: 29 }}>
+            <ListGroup
+              items={faculties}
+              selectedItem={selectedFaculty}
+              onItemSelect={handleFacultiesSelect}
+            />
+          </div>
           <ListGroup
-            items={faculties}
-            selectedItem={selectedFaculty}
-            onItemSelect={handleFacultiesSelect}
+            items={roles}
+            selectedItem={selectedRole}
+            onItemSelect={handleRoleSelect}
           />
         </div>
-        <ListGroup
-          items={roles}
-          selectedItem={selectedRole}
-          onItemSelect={handleRoleSelect}
-        />
-      </div>
 
-      <div className="auth-wrapper auth-inner col-md" style={{ padding: 20 }}>
-        <div className="row">
-          <div className="col-md">
-            <p>
-              Showing <span className="badge badge-primary">{totalCount}</span>{" "}
-              users in the database
-            </p>
+        <div className="auth-wrapper auth-inner col-md" style={{ padding: 20 }}>
+          <div className="row">
+            <div className="col-md">
+              <p>
+                Showing{" "}
+                <span className="badge badge-primary">{totalCount}</span> users
+                in the database
+              </p>
+            </div>
+            <div className="col-md-3">
+              <Link
+                to="/users/new"
+                className="btn btn-primary"
+                style={{ marginBottom: 20, width: 150 }}
+              >
+                Create User
+              </Link>
+            </div>
           </div>
-          <div className="col-md-3">
-            <Link
-              to="/users/new"
-              className="btn btn-primary"
-              style={{ marginBottom: 20, width: 150 }}
-            >
-              Create User
-            </Link>
-          </div>
+          <SearchBox value={searchQuery} onChange={handleSearch} />
+          <UserTable
+            users={newUsers}
+            sortColumn={sortColumn}
+            onDelete={handleDelete}
+            onSort={handleSort}
+          />
+          <Pagination
+            itemsCount={totalCount}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
-        <SearchBox value={searchQuery} onChange={handleSearch} />
-        <UserTable
-          users={newUsers}
-          sortColumn={sortColumn}
-          onDelete={handleDelete}
-          onSort={handleSort}
-        />
-        <Pagination
-          itemsCount={totalCount}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
       </div>
-    </div>
+    </LoadingPage>
   );
 };
 
