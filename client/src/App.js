@@ -2,11 +2,11 @@ import "./App.css";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import NavBar from "./components/navBar";
+import NavBar from "./components/NavBar";
 import UserForm from "./components/userForm";
 import Users from "./components/users";
 import Login from "./components/login";
-import notFound from "./components/notFound";
+import notFound from "./components/NotFound";
 import Semesters from "./components/semesters";
 import SemesterForm from "./components/semesterForm";
 

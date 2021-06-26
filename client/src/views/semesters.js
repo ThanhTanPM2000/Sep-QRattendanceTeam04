@@ -6,13 +6,11 @@ import { Link } from "react-router-dom";
 import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
-import UserTable from "../components/userTable";
+import SemesterTable from "../components/semesterTable";
 import LoadingPage from "../components/loadingPage";
 import { paginate } from "../utils/paginate";
-import { getFaculties } from "../services/facultyService";
-import { getRoles } from "../services/roleService";
-import { getUsers } from "../services/userService";
-import { deleteUser } from "../services/userService";
+import { deleteSemester, getSemesters } from "../services/semesterService";
+import { deleteSemesters } from "../services/semesterService";
 
 // react-bootstrap components
 import {
@@ -27,19 +25,9 @@ import {
   Col,
 } from "react-bootstrap";
 
-function Users() {
-  const [usersList, setUsers] = React.useState([]);
-  const [faculties, setFaculties] = React.useState([]);
-  const [roles, setRoles] = React.useState([]);
+function Semesters() {
+  const [semestersList, setSemesters] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [selectedFaculty, setSelectedFaculty] = React.useState({
-    _id: "",
-    name: "All Faculties",
-  });
-  const [selectedRole, setSelectedRole] = React.useState({
-    _id: "",
-    name: "All Roles",
-  });
   const [searchQuery, setSearchQuery] = React.useState("");
   const [pageSize, setPageSize] = React.useState(4);
   const [sortColumn, setSortColumn] = React.useState({
@@ -56,9 +44,9 @@ function Users() {
         // let { data: newRoles } = await getRoles();
         // newRoles = [selectedRole, ...newRoles];
 
-        let { data: newUsers } = await getUsers();
+        let { data: newSemesters } = await getSemesters();
 
-        setUsers(newUsers);
+        setSemesters(newSemesters);
         // setFaculties(newFaculties);
         // setRoles(newRoles);
       } catch (error) {
@@ -69,38 +57,26 @@ function Users() {
     getDataFromApi();
   }, []);
 
-  const handleDelete = async (user) => {
-    const originalUser = [...usersList];
+  const handleDelete = async (semester) => {
+    const originalSemester = [...semestersList];
 
-    const newUsers = originalUser.filter((m) => m._id !== user._id);
-    setUsers(newUsers);
+    const newSemesters = originalSemester.filter((m) => m._id !== semester._id);
+    setSemesters(newSemesters);
 
     try {
-      await deleteUser(user);
+      await deleteSemester(semester);
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        toast.error("This user has already delete");
+        toast.error("This semester has already been deleted");
       } else if (error.response && error.response.status === 403) {
         toast.error("Access denied");
       }
-      setUsers(originalUser);
+      setSemesters(originalSemester);
     }
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-  };
-
-  const handleFacultiesSelect = async (faculty) => {
-    await setSelectedFaculty(faculty);
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setSearchQuery("");
-    setCurrentPage(1);
   };
 
   const handleSort = async (sortColumn) => {
@@ -109,37 +85,25 @@ function Users() {
 
   const handleSearch = async (query) => {
     await setSearchQuery(query);
-    await setSelectedFaculty(faculties[0]);
-    await setSelectedRole(roles[0]);
     await setCurrentPage(1);
   };
 
   const getPagedData = () => {
-    let filtered = usersList;
+    let filtered = semestersList;
     if (searchQuery) {
-      filtered = usersList.filter((x) =>
+      filtered = semestersList.filter((x) =>
         x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    } else if (
-      (selectedFaculty && selectedFaculty._id) ||
-      (selectedRole && selectedRole._id)
-    ) {
-      if (selectedFaculty && selectedFaculty._id)
-        filtered = usersList.filter(
-          (m) => m.faculty._id === selectedFaculty._id
-        );
-      if (selectedRole && selectedRole._id)
-        filtered = usersList.filter((m) => m.role._id === selectedRole._id);
     }
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const users = paginate(sorted, currentPage, pageSize);
+    const semesters = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, data: users };
+    return { totalCount: filtered.length, data: semesters };
   };
 
-  const { totalCount, data: newUsers } = getPagedData();
+  const { totalCount, data: newSemesters } = getPagedData();
 
   return (
     <>
@@ -155,8 +119,8 @@ function Users() {
               </Card.Header>
               <Card.Body className="table-full-width table-responsive px-0">
                 <SearchBox value={searchQuery} onChange={handleSearch} />
-                <UserTable
-                  users={newUsers}
+                <SemesterTable
+                  semesters={newSemesters}
                   sortColumn={sortColumn}
                   onDelete={handleDelete}
                   onSort={handleSort}
@@ -176,4 +140,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default Semesters;

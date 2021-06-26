@@ -12,7 +12,7 @@ export function getSemesters() {
 }
 
 export function getSemester(id) {
-  return http.get(userUrl(id));
+  return http.get(semesterUrl(id));
 }
 
 export function saveSemester(semester) {
