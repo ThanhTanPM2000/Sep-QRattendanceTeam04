@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
 
 import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
@@ -28,6 +29,7 @@ import {
 } from "react-bootstrap";
 import ModalCommon from "components/common/modal";
 import UserForm from "./UserForm";
+import DeleteConfirm from "components/common/deleteConfirm";
 
 function Users() {
   const [usersList, setUsers] = React.useState([]);
@@ -50,6 +52,7 @@ function Users() {
   });
   const [selectedUser, setSelectedUser] = React.useState({});
   const [modalShow, setModalShow] = React.useState(false);
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -73,7 +76,12 @@ function Users() {
     getDataFromApi();
   }, []);
 
-  const handleDelete = async (user) => {
+  const handleShowConfirmDialog = (user) => {
+    setSelectedUser(user);
+    setConfirmDeleteDialog(true);
+  };
+
+  const handleUserDelete = async (user) => {
     const originalUser = [...usersList];
 
     const newUsers = originalUser.filter((m) => m._id !== user._id);
@@ -89,6 +97,7 @@ function Users() {
       }
       setUsers(originalUser);
     }
+    setConfirmDeleteDialog(false);
   };
 
   const handlePageChange = (page) => {
@@ -107,7 +116,7 @@ function Users() {
     setCurrentPage(1);
   };
 
-  const handleUserSelect = (user) => {
+  const handleShowUpdateDialog = (user) => {
     setSelectedUser(user);
     setModalShow(true);
   };
@@ -184,13 +193,19 @@ function Users() {
             selectedUser={selectedUser}
           />
         </ModalCommon>
+        <DeleteConfirm
+          onHide={() => setConfirmDeleteDialog(false)}
+          onDelete={handleUserDelete}
+          show={confirmDeleteDialog}
+          data={selectedUser}
+        />
         <Row>
           <Col md="12">
             <Card className="card-plain table-plain-bg">
               <Card.Header>
                 <Row>
                   <Col md="10">
-                    <Card.Title as="h4">Table on Plain Background</Card.Title>
+                    <Card.Title as="h4">Manage Users</Card.Title>
                     <p className="card-category">
                       Showing{" "}
                       <span className="badge badge-primary">{totalCount}</span>{" "}
@@ -217,9 +232,10 @@ function Users() {
                   <UserTable
                     users={newUsers}
                     sortColumn={sortColumn}
-                    onDelete={handleDelete}
+                    selectedData={selectedUser}
+                    onShowConfirm={handleShowConfirmDialog}
                     onSort={handleSort}
-                    onSelectedUser={handleUserSelect}
+                    onShowUpdate={handleShowUpdateDialog}
                   />
                   <Pagination
                     itemsCount={totalCount}

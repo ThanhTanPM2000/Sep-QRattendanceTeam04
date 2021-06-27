@@ -4,7 +4,13 @@ import TableCommon from "./common/table";
 
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 
-const UserTable = ({ onDelete, users, onSort, sortColumn, onSelectedUser }) => {
+const UserTable = ({
+  users,
+  sortColumn,
+  onShowConfirm,
+  onSort,
+  onShowUpdate,
+}) => {
   const columns = [
     { path: "userId", label: "UserId" },
     {
@@ -26,7 +32,7 @@ const UserTable = ({ onDelete, users, onSort, sortColumn, onSelectedUser }) => {
             className="btn-simple btn-link p-1"
             type="button"
             variant="info"
-            onClick={() => onSelectedUser(user)}
+            onClick={() => onShowUpdate(user)}
           >
             <i className="fas fa-edit"></i>
           </Button>
@@ -40,7 +46,7 @@ const UserTable = ({ onDelete, users, onSort, sortColumn, onSelectedUser }) => {
           overlay={<Tooltip id="tooltip-21130535">Remove..</Tooltip>}
         >
           <Button
-            onClick={() => onDelete(user)}
+            onClick={() => onShowConfirm(user)}
             className="btn-simple btn-link p-1"
             type="button"
             variant="danger"
