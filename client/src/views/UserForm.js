@@ -10,17 +10,7 @@ import { getUser, saveUser } from "../services/userService";
 import { toast } from "react-toastify";
 
 // react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Form,
-  Navbar,
-  Nav,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 
 class UserForm extends FormCommon {
   state = {
@@ -61,9 +51,9 @@ class UserForm extends FormCommon {
   }
 
   async populateUsers() {
-    const { user } = this.props;
-    if (_.isEmpty(user)) return;
-    this.setState({ data: this.mapToViewModel(user) });
+    const { selectedUser } = this.props;
+    if (_.isEmpty(selectedUser)) return;
+    this.setState({ data: this.mapToViewModel(selectedUser) });
     // try {
     //   const id = this.props.match.params.id;
     //   if (id === "new") return;
@@ -96,11 +86,10 @@ class UserForm extends FormCommon {
 
   doSubmit = async () => {
     try {
-      await saveUser(this.state.data);
-      this.props.history.push("/users");
-    } catch (err) {
-      console.log(err);
-    }
+      const { onUpdateUsers } = this.props;
+      const { data } = await saveUser(this.state.data);
+      onUpdateUsers(data);
+    } catch (err) {}
   };
 
   render() {

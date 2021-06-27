@@ -112,6 +112,26 @@ function Users() {
     setModalShow(true);
   };
 
+  const handleUsersUpdate = (user) => {
+    let newUserList = [...usersList];
+    const userData = newUserList.find((x) => x._id === user._id);
+    if (userData) {
+      newUserList.map((x) => {
+        if (x._id === user._id) {
+          x.userId = user.userId;
+          x.name = user.name;
+          x.degree = user.degree;
+          x.faculty = user.faculty;
+          x.role = user.role;
+        }
+      });
+    } else {
+      newUserList = [user, ...usersList];
+    }
+    setUsers(newUserList);
+    setModalShow(false);
+  };
+
   const handleSort = (sortColumn) => {
     setSortColumn(sortColumn);
   };
@@ -158,7 +178,11 @@ function Users() {
           show={modalShow}
           onHide={() => setModalShow(false)}
         >
-          <UserForm user={selectedUser} />
+          <UserForm
+            onHide={() => setModalShow(false)}
+            onUpdateUsers={handleUsersUpdate}
+            selectedUser={selectedUser}
+          />
         </ModalCommon>
         <Row>
           <Col md="12">
