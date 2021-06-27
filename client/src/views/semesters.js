@@ -9,8 +9,8 @@ import SearchBox from "../components/common/searchBox";
 import SemesterTable from "../components/semesterTable";
 import LoadingPage from "../components/loadingPage";
 import { paginate } from "../utils/paginate";
-import { deleteSemester, getSemesters } from "../services/semesterService";
-import { deleteSemesters } from "../services/semesterService";
+import { getSemesters } from "../services/semesterService";
+import { deleteSemester } from "../services/semesterService";
 
 // react-bootstrap components
 import {
@@ -24,6 +24,8 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import ModalCommon from "components/common/modal";
+import SemesterForm from "./SemesterForm";
 
 function Semesters() {
   const [semestersList, setSemesters] = React.useState([]);
@@ -34,6 +36,8 @@ function Semesters() {
     path: "name",
     order: "asc",
   });
+  const [selectedSemester, setSelectedSemester] = React.useState({});
+  const [modalShow, setModalShow] = React.useState(false);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -79,13 +83,36 @@ function Semesters() {
     setCurrentPage(page);
   };
 
-  const handleSort = async (sortColumn) => {
-    await setSortColumn(sortColumn);
+  const handleSemesterSelect = (semester) => {
+    setSelectedSemester(semester);
+    setModalShow(true);
   };
 
-  const handleSearch = async (query) => {
-    await setSearchQuery(query);
-    await setCurrentPage(1);
+  const handleSemestersUpdate = (semester) => {
+    let newSemesterList = [...semestersList];
+    const semesterData = newSemesterList.find((x) => x._id === semester._id);
+    if (semesterData) {
+      newSemesterList.map((x) => {
+        if (x._id === semester._id) {
+          x.name = semester.name;
+          x.year = semester.year;
+          x.symbol = semester.symbol;
+        }
+      });
+    } else {
+      newSemesterList = [semester, ...semestersList];
+    }
+    setSemesters(newSemesterList);
+    setModalShow(false);
+  };
+
+  const handleSort = (sortColumn) => {
+    setSortColumn(sortColumn);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
   const getPagedData = () => {
@@ -94,7 +121,7 @@ function Semesters() {
       filtered = semestersList.filter((x) =>
         x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    }
+    } 
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
@@ -108,6 +135,17 @@ function Semesters() {
   return (
     <>
       <Container fluid>
+        <ModalCommon
+          titleHeader="Create Semester"
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        >
+          <SemesterForm
+            onHide={() => setModalShow(false)}
+            onUpdateSemesters={handleSemestersUpdate}
+            selectedSemester={selectedSemester}
+          />
+        </ModalCommon>
         <Row>
           <Col md="12">
             <Card className="card-plain table-plain-bg">
@@ -123,13 +161,16 @@ function Semesters() {
                   </Col>
 
                   <Col md="2">
-                    <Link
-                      to="/semesters/new"
-                      className="btn btn-primary"
-                      style={{ marginBottom: 20, width: 170, marginLeft: -20 }}
+                    <Button
+                      onClick={() => {
+                        setSelectedSemester({});
+                        setModalShow(true);
+                      }}
+                      variant="primary"
+                      style={{ marginBottom: 20, width: 170, marginLeft: -50 }}
                     >
                       Create Semester
-                    </Link>
+                    </Button>
                   </Col>
                 </Row>
               </Card.Header>
@@ -141,6 +182,7 @@ function Semesters() {
                     sortColumn={sortColumn}
                     onDelete={handleDelete}
                     onSort={handleSort}
+                    onSelectedSemester={handleSemesterSelect}
                   />
                   <Pagination
                     itemsCount={totalCount}
