@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import TableCommon from "./common/table";
 
-const UserTable = ({ onDelete, users, onSort, sortColumn }) => {
+import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
+
+const UserTable = ({ onDelete, users, onSort, sortColumn, onSelectedUser }) => {
   const columns = [
     { path: "userId", label: "UserId" },
     {
@@ -17,20 +19,35 @@ const UserTable = ({ onDelete, users, onSort, sortColumn }) => {
     {
       key: "edit",
       content: (user) => (
-        <Link to={`/users/${user._id}`} className="btn btn-primary btn-sm">
-          Edit
-        </Link>
+        <OverlayTrigger
+          overlay={<Tooltip id="tooltip-537440761">Edit Task..</Tooltip>}
+        >
+          <Button
+            className="btn-simple btn-link p-1"
+            type="button"
+            variant="info"
+            onClick={() => onSelectedUser(user)}
+          >
+            <i className="fas fa-edit"></i>
+          </Button>
+        </OverlayTrigger>
       ),
     },
     {
       key: "delete",
       content: (user) => (
-        <button
-          onClick={() => onDelete(user)}
-          className="btn btn-danger btn-sm"
+        <OverlayTrigger
+          overlay={<Tooltip id="tooltip-21130535">Remove..</Tooltip>}
         >
-          Delete
-        </button>
+          <Button
+            onClick={() => onDelete(user)}
+            className="btn-simple btn-link p-1"
+            type="button"
+            variant="danger"
+          >
+            <i className="fas fa-times"></i>
+          </Button>
+        </OverlayTrigger>
       ),
     },
   ];
