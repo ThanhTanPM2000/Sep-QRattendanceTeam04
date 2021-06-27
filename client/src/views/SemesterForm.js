@@ -1,5 +1,6 @@
 import React from "react";
 import Joi from "joi";
+import _ from "lodash";
 
 import FormCommon from "../components/common/form";
 import LoadingPage from "../components/loadingPage";
@@ -7,17 +8,7 @@ import { getSemester, saveSemester } from "../services/semesterService";
 import { toast } from "react-toastify";
 
 // react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Form,
-  Navbar,
-  Nav,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 
 class SemesterForm extends FormCommon {
   state = {
@@ -37,17 +28,19 @@ class SemesterForm extends FormCommon {
   });
 
   async populateSemesters() {
-    try {
-      const id = this.props.match.params.id;
-      if (id === "new") return;
+    const { selectedSemester } = this.props;
+    if (_.isEmpty(selectedSemester)) return;
+    this.setState({ data: this.mapToViewModel(selectedSemester) });
+    // try {
+    //   const id = this.props.match.params.id;
+    //   if (id === "new") return;
 
-      const { data: semester } = await getSemester(id);
-      this.setState({ data: this.mapToViewModel(semester), disable: true });
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        this.props.history.replace("/not-found");
-      }
-    }
+    //   const { data: user } = await getUser(id);
+    // } catch (error) {
+    //   if (error.response && error.response.status === 404) {
+    //     this.props.history.replace("/not-found");
+    //   }
+    // }
   }
 
   async componentDidMount() {
@@ -65,44 +58,29 @@ class SemesterForm extends FormCommon {
 
   doSubmit = async () => {
     try {
-      await saveSemester(this.state.data);
-      this.props.history.push("/semesters");
-    } catch (err) {
-      console.log(err);
-    }
+      const { onUpdateSemesters } = this.props;
+      const { data } = await saveSemester(this.state.data);
+      onUpdateSemesters(data);
+    } catch (err) {}
   };
 
   render() {
     return (
       <>
-        <Container fluid>
+        <Form onSubmit={this.handleSubmit}>
           <Row>
-            <Col md="12">
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h4">Edit Semester</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Form onSubmit={this.handleSubmit}>
-                    <Row>
-                      <Col className="px-1" md="2">
-                        {this.renderInput("name", "Display Name", "Name")}
-                      </Col>
-                      <Col className="pr-1" md="5">
-                        {this.renderInput("year", "Year of Semester", "Year")}
-                      </Col>
-                      <Col className="pl-1" md="5">
-                        {this.renderInput("symbol", "Semester's symbol", "Symbol")}
-                      </Col>
-                    </Row>
-                    {this.renderSubmit("Save")}
-                    <div className="clearfix"></div>
-                  </Form>
-                </Card.Body>
-              </Card>
+            <Col className="pr-1" md="2">
+              {this.renderInput("name", "Display Name", "Name")}
+            </Col>
+            <Col className="px-1" md="5">
+              {this.renderInput("year", "Year of Semester", "Year")}
+            </Col>
+            <Col className="pl-1" md="5">
+              {this.renderInput("symbol", "Symbol of Semester", "Symbol")}
             </Col>
           </Row>
-        </Container>
+          {this.renderSubmit("Save")}
+        </Form>
       </>
     );
   }
