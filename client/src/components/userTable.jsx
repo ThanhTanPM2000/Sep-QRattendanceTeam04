@@ -26,7 +26,7 @@ const UserTable = ({
       key: "edit",
       content: (user) => (
         <OverlayTrigger
-          overlay={<Tooltip id="tooltip-537440761">Edit Task..</Tooltip>}
+          overlay={<Tooltip id="tooltip-537440761">Edit User..</Tooltip>}
         >
           <Button
             className="btn-simple btn-link p-1"

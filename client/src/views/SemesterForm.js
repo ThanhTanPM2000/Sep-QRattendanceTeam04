@@ -3,7 +3,7 @@ import Joi from "joi";
 import _ from "lodash";
 
 import FormCommon from "../components/common/form";
-import LoadingPage from "../components/loadingPage";
+import LoadingPage from "../components/common/loadingPage";
 import { getSemester, saveSemester } from "../services/semesterService";
 import { toast } from "react-toastify";
 

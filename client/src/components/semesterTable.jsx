@@ -4,12 +4,20 @@ import TableCommon from "./common/table";
 
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 
-const SemesterTable = ({ onDelete, semesters, onSort, sortColumn, onSelectedSemester }) => {
+const SemesterTable = ({
+  onDelete,
+  semesters,
+  onSort,
+  sortColumn,
+  onSelectedSemester,
+}) => {
   const columns = [
     {
       path: "name",
       label: "Display Name",
-      content: (semester) => <Link to={`/semesters/${semester._id}`}>{semester.name}</Link>,
+      content: (semester) => (
+        <Link to={`/semesters/${semester._id}`}>{semester.name}</Link>
+      ),
     },
     { path: "year", label: "Year" },
     { path: "symbol", label: "Symbol" },
@@ -17,7 +25,7 @@ const SemesterTable = ({ onDelete, semesters, onSort, sortColumn, onSelectedSeme
       key: "edit",
       content: (semester) => (
         <OverlayTrigger
-          overlay={<Tooltip id="tooltip-537440761">Edit Semester..</Tooltip>}
+          overlay={<Tooltip id="tooltip-537440761">Edit Semester.</Tooltip>}
         >
           <Button
             className="btn-simple btn-link p-1"

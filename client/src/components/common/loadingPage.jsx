@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import LoadingComponent from "react-spinners/ClipLoader";
-import "../preLoading.css";
+import "../../assets/css/preLoading.css";
 
 const LoadingPage = ({ data, children }) => {
   const [loading, setLoading] = useState(true);

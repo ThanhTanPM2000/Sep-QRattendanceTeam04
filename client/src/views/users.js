@@ -8,7 +8,7 @@ import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
 import UserTable from "../components/userTable";
-import LoadingPage from "../components/loadingPage";
+import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
@@ -221,7 +221,7 @@ function Users() {
                       }}
                       variant="primary"
                     >
-                      Create User
+                      <i class="fas fa-plus-circle"></i> Create User
                     </Button>
                   </Col>
                 </Row>

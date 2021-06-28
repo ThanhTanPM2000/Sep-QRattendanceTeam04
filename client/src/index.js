@@ -15,7 +15,8 @@ import "./assets/scss/light-bootstrap-dashboard-react.scss";
 import "./assets/css/demo.css";
 
 import "./index.css";
-import App from "./App";
+
+import Login from "./views/Login";
 import AdminLayout from "./layouts/Admin";
 import reportWebVitals from "./reportWebVitals";
 
@@ -27,8 +28,9 @@ ReactDOM.render(
       <App />
     </MsalProvider> */}
     <Switch>
-      <Route path="/" render={(props) => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/users" />
+      <Route path="/login" render={(props) => <Login {...props} />} />
+      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+      <Redirect from="/" to="/admin/users" />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
