@@ -22,6 +22,15 @@ const ProtectedRoute = ({
               }}
             />
           );
+        else if (auth.getCurrentUser().status === "nonRegister")
+          return (
+            <Redirect
+              to={{
+                pathname: "/register",
+                state: { from: props.location, data },
+              }}
+            />
+          );
         return Component ? <Component {...props} data={data} /> : render(props);
       }}
     />

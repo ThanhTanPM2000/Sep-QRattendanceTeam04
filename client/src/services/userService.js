@@ -1,5 +1,5 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { apiUrl } from "../configs/config.json";
 
 const apiEndpoint = apiUrl + "/users";
 
@@ -27,4 +27,3 @@ export function saveUser(user) {
 export function deleteUser(user) {
   return http.delete(userUrl(user._id));
 }
-

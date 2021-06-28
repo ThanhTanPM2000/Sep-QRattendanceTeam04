@@ -1,4 +1,4 @@
-import { graphConfig } from "./authConfig";
+import { graphConfig } from "../configs/authConfig";
 
 /**
  * Attaches a given access token to a MS Graph API call. Returns information about the user

@@ -1,4 +1,6 @@
+const config = require("config");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
 const { schemaFaculty } = require("./faculties");
@@ -12,6 +14,19 @@ const schemaUser = new mongoose.Schema({
   faculty: { type: schemaFaculty, required: true },
   role: { type: schemaRole, required: true },
 });
+
+schemaUser.methods.generateAuthToken = function () {
+  const token = jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      name: this.name,
+      role: this.role.name,
+    },
+    config.get("jwtPrivateKey")
+  );
+  return token;
+};
 
 const Users = mongoose.model("Users", schemaUser);
 
@@ -28,5 +43,5 @@ function validateUser(reqBodyUser) {
   return schema.validate(reqBodyUser);
 }
 
-exports.validateUser = validateUser;
 exports.Users = Users;
+exports.validateUser = validateUser;
