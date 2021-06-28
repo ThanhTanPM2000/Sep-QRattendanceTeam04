@@ -3,7 +3,7 @@ import Joi from "joi";
 import _ from "lodash";
 
 import FormCommon from "../components/common/form";
-import LoadingPage from "../components/loadingPage";
+import LoadingPage from "../components/common/loadingPage";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
 import { getUser, saveUser } from "../services/userService";

@@ -7,7 +7,7 @@ import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
 import SemesterTable from "../components/semesterTable";
-import LoadingPage from "../components/loadingPage";
+import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
 import { getSemesters } from "../services/semesterService";
 import { deleteSemester } from "../services/semesterService";
@@ -152,7 +152,7 @@ function Semesters() {
               <Card.Header>
                 <Row>
                   <Col md="10">
-                    <Card.Title as="h4">Table on Plain Background</Card.Title>
+                    <Card.Title as="h4">Manage Semester</Card.Title>
                     <p className="card-category">
                       Showing{" "}
                       <span className="badge badge-primary">{totalCount}</span>{" "}

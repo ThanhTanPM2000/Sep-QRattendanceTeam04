@@ -14,8 +14,9 @@ const tableHeader = ({ columns, sortColumn, onSort }) => {
 
   const renderSortIcon = (column) => {
     if (column.path !== sortColumn.path) return null;
-    if (sortColumn.order === "asc") return <i className="fa fa-sort-asc" />;
-    return <i className="fa fa-sort-desc" />;
+    if (sortColumn.order === "asc")
+      return <i className="fas fa-sort-amount-up" />;
+    return <i className="fas fa-sort-amount-down-alt" />;
   };
 
   return (
