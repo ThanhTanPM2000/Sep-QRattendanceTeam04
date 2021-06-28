@@ -5,11 +5,11 @@ import TableCommon from "./common/table";
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 
 const SemesterTable = ({
-  onDelete,
   semesters,
-  onSort,
   sortColumn,
-  onSelectedSemester,
+  onShowConfirm,
+  onSort,
+  onShowUpdate,
 }) => {
   const columns = [
     {
@@ -31,7 +31,7 @@ const SemesterTable = ({
             className="btn-simple btn-link p-1"
             type="button"
             variant="info"
-            onClick={() => onSelectedSemester(semester)}
+            onClick={() => onShowUpdate(semester)}
           >
             <i className="fas fa-edit"></i>
           </Button>
@@ -45,7 +45,7 @@ const SemesterTable = ({
           overlay={<Tooltip id="tooltip-21130535">Remove Semester</Tooltip>}
         >
           <Button
-            onClick={() => onDelete(semester)}
+            onClick={() => onShowConfirm(semester)}
             className="btn-simple btn-link p-1"
             type="button"
             variant="danger"
