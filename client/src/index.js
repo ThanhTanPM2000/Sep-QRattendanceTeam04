@@ -24,14 +24,13 @@ const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(
   <BrowserRouter>
-    {/* <MsalProvider instance={msalInstance}>
-      <App />
-    </MsalProvider> */}
-    <Switch>
-      <Route path="/login" render={(props) => <Login {...props} />} />
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/users" />
-    </Switch>
+    <MsalProvider instance={msalInstance}>
+      <Switch>
+        <Route path="/login" render={(props) => <Login {...props} />} />
+        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <Redirect from="/" to="/admin/users" />
+      </Switch>
+    </MsalProvider>
   </BrowserRouter>,
   document.getElementById("root")
 );
