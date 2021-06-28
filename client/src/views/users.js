@@ -221,7 +221,7 @@ function Users() {
                       }}
                       variant="primary"
                     >
-                      <i class="fas fa-plus-circle"></i> Create User
+                      <i className="fas fa-plus-circle"></i> Create User
                     </Button>
                   </Col>
                 </Row>
