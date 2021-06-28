@@ -97,44 +97,34 @@ function Header() {
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Notification 1
+                  Luu Trung Thành vừa điểm danh lớp ... lúc 14:20 ngày 25/6
                 </Dropdown.Item>
                 <Dropdown.Item
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Notification 2
+                  Nguyễn Thành Tân vừa điểm danh lớp ... lúc 17:00 ngày 28/6
                 </Dropdown.Item>
                 <Dropdown.Item
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Notification 3
+                  Tổng kết điểm danh ngày 28/6 đã sẵn sàng để tải xuống
                 </Dropdown.Item>
                 <Dropdown.Item
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Notification 4
+                  Hãy tạo QR-Code cho lớp của bạn hôm nay!
                 </Dropdown.Item>
                 <Dropdown.Item
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Another notification
+                  Gia hạn QR-Code cho lớp ... ngày 27/6 ca 1 thành công!
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            <Nav.Item>
-              <Nav.Link
-                className="m-0"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="nc-icon nc-zoom-split"></i>
-                <span className="d-lg-block"> Search</span>
-              </Nav.Link>
-            </Nav.Item>
           </Nav>
           <Nav className="ml-auto" navbar>
             <Nav.Item>
@@ -146,7 +136,7 @@ function Header() {
                 <span className="no-icon">Account</span>
               </Nav.Link>
             </Nav.Item>
-            <Dropdown as={Nav.Item}>
+            {/* <Dropdown as={Nav.Item}>
               <Dropdown.Toggle
                 aria-expanded={false}
                 aria-haspopup={true}
@@ -191,7 +181,7 @@ function Header() {
                   Separated link
                 </Dropdown.Item>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
             <Nav.Item>
               <Nav.Link
                 className="m-0"

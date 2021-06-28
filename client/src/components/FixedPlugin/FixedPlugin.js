@@ -153,7 +153,7 @@ function FixedPlugin({
               <img alt="..." src={sideBarImage4}></img>
             </a>
           </li>
-          <li className="button-container">
+          {/* <li className="button-container">
             <div>
               <Button
                 block
@@ -216,7 +216,7 @@ function FixedPlugin({
             >
               <i className="fab fa-facebook-square"></i>· 426
             </Button>
-          </li>
+          </li> */}
         </Dropdown.Menu>
       </Dropdown>
     </div>
