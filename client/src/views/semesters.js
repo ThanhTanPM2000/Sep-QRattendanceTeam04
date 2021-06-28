@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
 
 import Pagination from "../components/common/pagination";
 import ListGroup from "../components/common/listGroup";
@@ -11,6 +12,7 @@ import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
 import { getSemesters } from "../services/semesterService";
 import { deleteSemester } from "../services/semesterService";
+import DeleteConfirm from "components/common/deleteConfirm";
 
 // react-bootstrap components
 import {
@@ -38,6 +40,7 @@ function Semesters() {
   });
   const [selectedSemester, setSelectedSemester] = React.useState({});
   const [modalShow, setModalShow] = React.useState(false);
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -61,7 +64,12 @@ function Semesters() {
     getDataFromApi();
   }, []);
 
-  const handleDelete = async (semester) => {
+  const handleShowConfirmDialog = (semester) => {
+    setSelectedSemester(semester);
+    setConfirmDeleteDialog(true);
+  };
+
+  const handleSemesterDelete = async (semester) => {
     const originalSemester = [...semestersList];
 
     const newSemesters = originalSemester.filter((m) => m._id !== semester._id);
@@ -77,13 +85,14 @@ function Semesters() {
       }
       setSemesters(originalSemester);
     }
+    setConfirmDeleteDialog(false);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSemesterSelect = (semester) => {
+  const handleShowUpdateDialog = (semester) => {
     setSelectedSemester(semester);
     setModalShow(true);
   };
@@ -146,13 +155,19 @@ function Semesters() {
             selectedSemester={selectedSemester}
           />
         </ModalCommon>
+        <DeleteConfirm
+          onHide={() => setConfirmDeleteDialog(false)}
+          onDelete={handleSemesterDelete}
+          show={confirmDeleteDialog}
+          data={selectedSemester}
+        />
         <Row>
           <Col md="12">
             <Card className="card-plain table-plain-bg">
               <Card.Header>
                 <Row>
                   <Col md="10">
-                    <Card.Title as="h4">Manage Semester</Card.Title>
+                    <Card.Title as="h4">Manage Semesters</Card.Title>
                     <p className="card-category">
                       Showing{" "}
                       <span className="badge badge-primary">{totalCount}</span>{" "}
@@ -180,9 +195,10 @@ function Semesters() {
                   <SemesterTable
                     semesters={newSemesters}
                     sortColumn={sortColumn}
-                    onDelete={handleDelete}
+                    selectedData={selectedSemester}
+                    onShowConfirm={handleShowConfirmDialog}
                     onSort={handleSort}
-                    onSelectedSemester={handleSemesterSelect}
+                    onShowUpdate={handleShowUpdateDialog}
                   />
                   <Pagination
                     itemsCount={totalCount}
