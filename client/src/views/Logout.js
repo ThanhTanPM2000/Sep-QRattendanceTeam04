@@ -15,7 +15,7 @@ const Logout = () => {
         postLogoutRedirectUri: "/login",
         mainWindowRedirectUri: "/login",
       })
-      .then(() => auth.logout();
+      .then(() => auth.logout());
     // history.replace("/login");
   });
 
