@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { Button, Image } from "react-bootstrap";
 
-import { InteractionRequiredAuthError } from "@azure/msal-browser";
+import { InteractionStatus } from "@azure/msal-browser";
 
 import { useMsal } from "@azure/msal-react";
 
@@ -17,47 +17,29 @@ const Login = ({ data }) => {
   const { instance, inProgress, accounts } = useMsal();
   const history = useHistory();
 
-  // React.useEffect(() => {
-  //   if (!user && inProgress === InteractionStatus.None) {
-  //     async function RequestProfileData() {
-  //       try {
-  //         const token = await instance.acquireTokenSilent({
-  //           ...loginRequest,
-  //           account: accounts[0],
-  //         });
-  //         const secureData = await callMsGraph(token.accessToken);
-  //         await auth.login(secureData);
-  //         window.location = "/";
-  //       } catch (error) {
-  //         if (error instanceof InteractionRequiredAuthError) {
-  //           instance.acquireTokenRedirect({
-  //             ...loginRequest,
-  //             account: accounts[0],
-  //           });
-  //         }
-  //       }
-  //     }
-  //     RequestProfileData();
-  //   }
-  // }, [instance, accounts, inProgress, user]);
+  React.useEffect(() => {
+    if (!data && inProgress === InteractionStatus.None) {
+      async function handleLogin() {
+        try {
+          // await instance.loginPopup(loginRequest);
+          const accessTokenResponse = await instance.acquireTokenSilent({
+            ...loginRequest,
+            account: accounts[0],
+          });
 
-  async function handleLogin() {
-    try {
-      await instance.loginPopup(loginRequest);
-      const accessTokenResponse = await instance.acquireTokenSilent({
-        ...loginRequest,
-        account: accounts[0],
-      });
+          const response = await callMsGraph(accessTokenResponse.accessToken);
+          await auth.login(response);
+          history.replace("/");
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
-      const response = await callMsGraph(accessTokenResponse.accessToken);
-      await auth.login(response);
-      history.replace("/");
-    } catch (error) {
-      console.log(error);
+      handleLogin();
     }
-  }
+  }, [instance, accounts, inProgress, data]);
 
-  if (data) return <Redirect to="" />;
+  if (data) return <Redirect to="/" />;
 
   return (
     <React.Fragment>
@@ -65,7 +47,10 @@ const Login = ({ data }) => {
         <div className="auth-inner">
           <form>
             <h3>Sign In</h3>
-            <Button variant="danger" onClick={handleLogin}>
+            <Button
+              variant="danger"
+              onClick={() => instance.loginPopup(loginRequest)}
+            >
               <Image src={officeLogo} />
             </Button>
           </form>

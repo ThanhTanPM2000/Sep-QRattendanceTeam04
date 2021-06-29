@@ -35,13 +35,6 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/tableList",
-    name: "Table",
-    icon: "nc-icon nc-badge",
-    component: TableList,
-    layout: "/admin",
-  },
-  {
     path: "/users",
     name: "Users List",
     icon: "nc-icon nc-badge",
