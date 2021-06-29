@@ -10,11 +10,12 @@ const Logout = () => {
   const { instance } = useMsal();
 
   useEffect(() => {
-    auth.logout();
-    instance.logoutPopup({
-      postLogoutRedirectUri: "/login",
-      mainWindowRedirectUri: "/login",
-    });
+    instance
+      .logoutPopup({
+        postLogoutRedirectUri: "/login",
+        mainWindowRedirectUri: "/login",
+      })
+      .then(() => auth.logout();
     // history.replace("/login");
   });
 
