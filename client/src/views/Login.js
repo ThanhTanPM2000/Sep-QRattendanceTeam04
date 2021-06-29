@@ -1,12 +1,18 @@
 import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { Button, Image } from "react-bootstrap";
-import LoadingComponent from "react-spinners/ClipLoader";
+
 import {
   InteractionStatus,
   InteractionRequiredAuthError,
   EventType,
 } from "@azure/msal-browser";
+
+import { loginRequest } from "../configs/authConfig";
+import { callMsGraph } from "../services/graphService";
+
+import LoadingComponent from "react-spinners/ClipLoader";
+
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -14,11 +20,12 @@ import {
   useMsal,
 } from "@azure/msal-react";
 
-import { loginRequest } from "../configs/authConfig";
-import { callMsGraph } from "../services/graphService";
-import officeLogo from "../assets/img/officeLogo.png";
 import auth from "../services/authService";
 import "../assets/css/login.css";
+import "../assets/scss/login.scss";
+import { div } from "prelude-ls";
+import { height, width } from "dom-helpers";
+// import "@fortawesome/fontawesome-free/css/all.min.css"
 
 const Login = ({ data }) => {
   const { instance, inProgress, accounts } = useMsal();
@@ -35,11 +42,11 @@ const Login = ({ data }) => {
         try {
           const accessTokenResponse = await instance.acquireTokenSilent({
             ...loginRequest,
-            account: accounts[0],
+            account: instance.getActiveAccount(),
           });
-          console.log(accessTokenResponse.idToken);
+          console.log(accessTokenResponse.accessToken);
 
-          const response = await callMsGraph(accessTokenResponse.idToken);
+          const response = await callMsGraph(accessTokenResponse.accessToken);
           await auth.login(response);
           history.replace("/");
         } catch (error) {
@@ -80,23 +87,36 @@ const Login = ({ data }) => {
   if (data) return <Redirect to="/" />;
 
   return (
-    <React.Fragment>
-      <div className="auth-wrapper">
-        <div className="auth-inner">
-          <form>
-            <AuthenticatedTemplate>
-              <LoadingComponent color="#D0021B" size={50} />
-            </AuthenticatedTemplate>
-            <UnauthenticatedTemplate>
-              <h3>Sign In</h3>
-              <Button variant="danger" onClick={loginPopup}>
-                <Image src={officeLogo} />
-              </Button>
-            </UnauthenticatedTemplate>
-          </form>
+    <div className="auth-wrapper">
+      <section className="container">
+        <div className="span-1">
+          <div className="login">
+            <h1></h1>
+            <div className="login-content">
+              <AuthenticatedTemplate>
+                <LoadingComponent color="#FFFFFF" size={20} />
+              </AuthenticatedTemplate>
+              <UnauthenticatedTemplate>
+                <a
+                  className="button button--social-login button--microsoft"
+                  onClick={loginPopup}
+                >
+                  <i className="icon fab fa-windows" />
+                  Login With Microsoft
+                </a>
+              </UnauthenticatedTemplate>
+            </div>
+          </div>
         </div>
-      </div>
-    </React.Fragment>
+        <div className="span-2">
+          <div className="message">
+            <span className="first">Van Lang</span>
+            <span className="second">26</span>
+            <span className="third">QR-Code</span>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
