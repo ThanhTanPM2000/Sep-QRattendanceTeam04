@@ -1,6 +1,11 @@
 import React from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
+
 import Login from "./views/Login";
 import auth from "./services/authService";
 import ProtectedRoute from "./components/common/protectedRoute";
@@ -18,7 +23,6 @@ const App = () => {
 
   return (
     <Switch>
-      {" "}
       <Route
         path="/login"
         render={(props) => <Login {...props} data={user} />}

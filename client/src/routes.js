@@ -17,7 +17,6 @@
 */
 import Dashboard from "views/Dashboard.js";
 import UserProfile from "views/UserProfile.js";
-import TableList from "views/TableList.js";
 import Users from "views/Users.js";
 import Semesters from "views/Semesters.js";
 import Typography from "views/Typography.js";
