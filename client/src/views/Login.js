@@ -1,30 +1,37 @@
 import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
-import { Button, Image } from "react-bootstrap";
 
-import { InteractionStatus } from "@azure/msal-browser";
+import LoadingComponent from "react-spinners/ClipLoader";
+import { EventType, InteractionStatus } from "@azure/msal-browser";
 
-import { useMsal } from "@azure/msal-react";
+import {AuthenticatedTemplate, UnauthenticatedTemplate, useIsAuthenticated, useMsal} from "@azure/msal-react"
 
 import { loginRequest } from "../configs/authConfig";
 import { callMsGraph } from "../services/graphService";
 
-import officeLogo from "../assets/img/officeLogo.png";
 import auth from "../services/authService";
 import "../assets/css/login.css";
+import "../assets/scss/login.scss";
+import { div } from "prelude-ls";
+import { height, width } from "dom-helpers";
+// import "@fortawesome/fontawesome-free/css/all.min.css"
 
 const Login = ({ data }) => {
   const { instance, inProgress, accounts } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
   const history = useHistory();
 
+  if(accounts.length > 0){
+    instance.setActiveAccount(accounts[0])
+  }
+
   React.useEffect(() => {
-    if (!data && inProgress === InteractionStatus.None) {
+    if (!data && isAuthenticated && inProgress === InteractionStatus.None) {
       async function handleLogin() {
         try {
-          // await instance.loginPopup(loginRequest);
           const accessTokenResponse = await instance.acquireTokenSilent({
             ...loginRequest,
-            account: accounts[0],
+            account: instance.getActiveAccount(),
           });
 
           const response = await callMsGraph(accessTokenResponse.accessToken);
@@ -39,24 +46,57 @@ const Login = ({ data }) => {
     }
   }, [instance, accounts, inProgress, data]);
 
+  // instance.addEventCallback(
+  //   (event) => {
+  //     if (
+  //       event.eventType === EventType.LOGIN_SUCCESS &&
+  //       event.payload.account
+  //     ) {
+  //       const account = event.payload.account;
+  //       instance.setActiveAccount(account);
+  //     }
+  //   },
+  //   (error) => {
+  //     console.log(`error`, error);
+  //   }
+  // );
+
+  function loginPopup(){
+    const account = instance.getActiveAccount();
+    if(!account){
+      instance.loginPopup(loginRequest).catch(err => console.log(err))
+    }
+  }
+
   if (data) return <Redirect to="/" />;
 
   return (
-    <React.Fragment>
-      <div className="auth-wrapper">
-        <div className="auth-inner">
-          <form>
-            <h3>Sign In</h3>
-            <Button
-              variant="danger"
-              onClick={() => instance.loginPopup(loginRequest)}
-            >
-              <Image src={officeLogo} />
-            </Button>
-          </form>
+    <div className="auth-wrapper">
+      <section className="container">
+        <div className="span-1">
+          <div className="login">
+            <h1></h1>
+            <div className="login-content">
+              <a className="button button--social-login button--microsoft" onClick={loginPopup}>
+                <AuthenticatedTemplate>
+                  <LoadingComponent color="#FFFFFF" size={20} />
+                </AuthenticatedTemplate>
+                <UnauthenticatedTemplate>
+                <i className="icon fab fa-windows"/>Login With Microsoft
+                </UnauthenticatedTemplate>
+                </a>
+            </div>
+          </div>
         </div>
-      </div>
-    </React.Fragment>
+        <div className="span-2">
+          <div className="message">
+            <span className="first">Van Lang</span>
+            <span className="second">26</span>
+            <span className="third">QR-Code</span>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
