@@ -60,6 +60,7 @@ class SemesterForm extends FormCommon {
     try {
       const { onUpdateSemesters } = this.props;
       const { data } = await saveSemester(this.state.data);
+      toast.success("Update successfully");
       onUpdateSemesters(data);
     } catch (err) {}
   };

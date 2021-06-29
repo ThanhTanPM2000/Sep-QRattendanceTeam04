@@ -6,6 +6,7 @@ import auth from "./services/authService";
 import ProtectedRoute from "./components/common/protectedRoute";
 import AdminLayout from "./layouts/Admin";
 import { useEffect } from "react";
+// import Register from "views/Register";
 
 const App = () => {
   const [user, setUser] = React.useState();
@@ -17,7 +18,11 @@ const App = () => {
 
   return (
     <Switch>
-      <Route path="/login" render={(props) => <Login {...props} />} />
+      {" "}
+      <Route
+        path="/login"
+        render={(props) => <Login {...props} data={user} />}
+      />
       <ProtectedRoute
         path="/admin"
         render={(props) => <AdminLayout {...props} />}

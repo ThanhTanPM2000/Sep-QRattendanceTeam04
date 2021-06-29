@@ -45,7 +45,7 @@ function Users() {
     name: "All Roles",
   });
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(4);
+  const [pageSize, setPageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
     path: "name",
     order: "asc",
@@ -89,6 +89,7 @@ function Users() {
 
     try {
       await deleteUser(user);
+      toast.success("Delete user successfully");
     } catch (error) {
       if (error.response && error.response.status === 404) {
         toast.error("This user has already delete");

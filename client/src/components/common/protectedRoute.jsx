@@ -13,21 +13,21 @@ const ProtectedRoute = ({
     <Route
       {...rest}
       render={(props) => {
+        // if (!auth.getCurrentUser()._id)
+        //   return (
+        //     <Redirect
+        //       to={{
+        //         pathname: "/register",
+        //         state: { from: props.location, data },
+        //       }}
+        //     />
+        //   );
         if (!auth.getCurrentUser())
           return (
             <Redirect
               to={{
                 pathname: "/login",
                 state: { from: props.location },
-              }}
-            />
-          );
-        else if (auth.getCurrentUser().status === "nonRegister")
-          return (
-            <Redirect
-              to={{
-                pathname: "/register",
-                state: { from: props.location, data },
               }}
             />
           );

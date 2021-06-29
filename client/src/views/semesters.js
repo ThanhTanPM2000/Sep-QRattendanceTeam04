@@ -33,7 +33,7 @@ function Semesters() {
   const [semestersList, setSemesters] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(4);
+  const [pageSize, setPageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
     path: "name",
     order: "asc",
@@ -77,6 +77,7 @@ function Semesters() {
 
     try {
       await deleteSemester(semester);
+      toast.success("Delete semester successfully");
     } catch (error) {
       if (error.response && error.response.status === 404) {
         toast.error("This semester has already been deleted");
@@ -130,7 +131,7 @@ function Semesters() {
       filtered = semestersList.filter((x) =>
         x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    } 
+    }
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
