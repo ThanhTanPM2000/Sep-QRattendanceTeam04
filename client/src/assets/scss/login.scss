@@ -4,23 +4,13 @@ $base-spacing-unit: 24px;
 $half-spacing-unit: 12px;
 $border-radius-global: 5px;
 $button-width: auto;
-$button-height: 50px;
+$button-height: 60px;
 $button-text-color: white;
 
 $social-list: (
     microsoft #00A4EF,
 );
 
-body {
-  text-align: center;
-  padding: $base-spacing-unit $base-spacing-unit ($base-spacing-unit * 4);
-  font-family: 'Roboto Slab', serif;
-}
-
-h1, h2 {
-  margin-bottom: $base-spacing-unit * 2;
-  font-weight: normal;
-}
 
 %button,
 .button {

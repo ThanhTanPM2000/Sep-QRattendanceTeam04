@@ -18,7 +18,6 @@ const App = () => {
 
   return (
     <Switch>
-      {" "}
       <Route
         path="/login"
         render={(props) => <Login {...props} data={user} />}
