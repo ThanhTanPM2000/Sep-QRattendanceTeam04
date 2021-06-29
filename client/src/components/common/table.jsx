@@ -5,7 +5,7 @@ import { Table } from "react-bootstrap";
 
 const TableCommon = ({ columns, sortColumn, onSort, data }) => {
   return (
-    <Table className="table-hover">
+    <Table className="table-hover table-striped">
       <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
       <TableBody columns={columns} data={data} />
     </Table>

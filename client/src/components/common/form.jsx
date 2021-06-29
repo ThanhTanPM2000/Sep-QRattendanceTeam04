@@ -86,7 +86,7 @@ class FormCommon extends Component {
         options={options}
         value={data[name]}
         onChange={this.handleChange}
-        error={errors[name]}
+        errors={errors}
       />
     );
   };

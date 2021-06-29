@@ -18,15 +18,13 @@
 import Dashboard from "views/Dashboard.js";
 import UserProfile from "views/UserProfile.js";
 import TableList from "views/TableList.js";
-import Users from "views/users";
-import Semesters from "views/semesters";
+import Users from "views/Users.js";
+import Semesters from "views/Semesters.js";
 import Typography from "views/Typography.js";
-import UserForm from "views/UserForm.js";
-import SemesterForm from "views/SemesterForm.js"
+import Logout from "views/Logout.js";
 import Icons from "views/Icons.js";
 import Maps from "views/Maps.js";
 import Notifications from "views/Notifications.js";
-import Upgrade from "views/Upgrade.js";
 
 const dashboardRoutes = [
   {
@@ -37,22 +35,10 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/users/:id",
-    name: "User Form",
-    component: UserForm,
-    layout: "/admin",
-  },
-  {
     path: "/users",
     name: "Users List",
     icon: "nc-icon nc-badge",
     component: Users,
-    layout: "/admin",
-  },
-  {
-    path: "/semesters/:id",
-    name: "Semester Form",
-    component: SemesterForm,
     layout: "/admin",
   },
   {
@@ -95,6 +81,14 @@ const dashboardRoutes = [
     name: "Notifications",
     icon: "nc-icon nc-bell-55",
     component: Notifications,
+    layout: "/admin",
+  },
+  {
+    upgrade: true,
+    path: "/logout",
+    name: "Logout",
+    icon: "nc-icon nc-button-power",
+    component: Logout,
     layout: "/admin",
   },
 ];

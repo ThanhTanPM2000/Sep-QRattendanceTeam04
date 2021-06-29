@@ -16,6 +16,7 @@ import "../assets/css/login.css";
 const Login = ({ data }) => {
   const { instance, inProgress, accounts } = useMsal();
   const history = useHistory();
+
   React.useEffect(() => {
     if (!data && inProgress === InteractionStatus.None) {
       async function handleLogin() {

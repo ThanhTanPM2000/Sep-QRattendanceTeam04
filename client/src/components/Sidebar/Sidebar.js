@@ -28,13 +28,16 @@ function Sidebar({ color, image, routes }) {
               />
             </div>
           </a> */}
-          <a href="/">
-            <img
-              src={require("assets/img/vanlanglogo.png").default}
-              alt="Van Lang University"
-              width= "300"
-              height= "60"
-            />
+          <a href="/" className="simple-text logo-mini mx-1">
+            <div className="logo-img">
+              <img
+                src={require("assets/img/vanlanglogo.png").default}
+                alt="..."
+              />
+            </div>
+          </a>
+          <a className="simple-text" href="/">
+            VanLang University
           </a>
         </div>
         <Nav>

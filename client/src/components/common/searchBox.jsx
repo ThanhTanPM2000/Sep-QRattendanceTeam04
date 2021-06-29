@@ -1,11 +1,12 @@
 import React from "react";
+import { FormControl } from "react-bootstrap";
 
 const SearchBox = ({ value, onChange }) => {
   return (
-    <input
-      type="Search"
+    <FormControl
+      type="text"
       name="query"
-      className="form-control my-3"
+      className="mr-sm-2 mb-2"
       placeholder="Search..."
       value={value}
       onChange={(e) => onChange(e.currentTarget.value)}

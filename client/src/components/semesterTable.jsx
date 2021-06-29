@@ -12,6 +12,7 @@ const SemesterTable = ({
   onShowUpdate,
 }) => {
   const columns = [
+    { path: "year", label: "Year" },
     {
       path: "name",
       label: "Display Name",
@@ -19,7 +20,6 @@ const SemesterTable = ({
         <Link to={`/semesters/${semester._id}`}>{semester.name}</Link>
       ),
     },
-    { path: "year", label: "Year" },
     { path: "symbol", label: "Symbol" },
     {
       key: "edit",
