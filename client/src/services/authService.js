@@ -1,7 +1,7 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { apiUrl } from "../configs/config.json";
 import jwtDecode from "jwt-decode";
-import { Redirect } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const apiEndpoint = apiUrl + "/auth";
 const tokenKey = "token";
@@ -9,26 +9,17 @@ const tokenKey = "token";
 http.setJwt(getJwt());
 
 export async function login(data) {
-  // const { data: jwt } = await http.post(`${apiEndpoint}`, {
-  //   name: data.displayName,
-  //   mail: data.mail,
-  // });
-
-  http
-    .post(`${apiEndpoint}`, {
+  try {
+    const { data: jwt } = await http.post(`${apiEndpoint}`, {
       name: data.displayName,
       mail: data.mail,
-    })
-    .then((res) => {
-      if (res.data === "register") {
-        return <Redirect to="/register" />;
-      } else {
-        const { data: jwt } = res;
-        console.log("jwt", jwt);
-      }
     });
-
-  // localStorage.setItem(tokenKey, jwt);
+    localStorage.setItem(tokenKey, jwt);
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      toast.error("Data send invalid");
+    }
+  }
 }
 
 export function loginWithJwt(jwt) {

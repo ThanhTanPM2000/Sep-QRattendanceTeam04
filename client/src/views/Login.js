@@ -1,61 +1,77 @@
 import React from "react";
+import { Redirect, useHistory } from "react-router-dom";
 import { Button, Image } from "react-bootstrap";
 
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useMsal,
-} from "@azure/msal-react";
+import { InteractionRequiredAuthError } from "@azure/msal-browser";
 
-import { loginRequest } from "../authConfig";
-import { callMsGraph } from "../graph";
+import { useMsal } from "@azure/msal-react";
+
+import { loginRequest } from "../configs/authConfig";
+import { callMsGraph } from "../services/graphService";
 
 import officeLogo from "../assets/img/officeLogo.png";
 import auth from "../services/authService";
 import "../assets/css/login.css";
 
-const Login = () => {
-  const { instance, accounts } = useMsal();
-  const [graphData, setGraphData] = React.useState(null);
+const Login = ({ data }) => {
+  const { instance, inProgress, accounts } = useMsal();
+  const history = useHistory();
 
-  async function RequestProfileData() {
-    await instance.loginRedirect(loginRequest).catch((e) => {
-      console.log(e);
-    });
+  // React.useEffect(() => {
+  //   if (!user && inProgress === InteractionStatus.None) {
+  //     async function RequestProfileData() {
+  //       try {
+  //         const token = await instance.acquireTokenSilent({
+  //           ...loginRequest,
+  //           account: accounts[0],
+  //         });
+  //         const secureData = await callMsGraph(token.accessToken);
+  //         await auth.login(secureData);
+  //         window.location = "/";
+  //       } catch (error) {
+  //         if (error instanceof InteractionRequiredAuthError) {
+  //           instance.acquireTokenRedirect({
+  //             ...loginRequest,
+  //             account: accounts[0],
+  //           });
+  //         }
+  //       }
+  //     }
+  //     RequestProfileData();
+  //   }
+  // }, [instance, accounts, inProgress, user]);
 
-    const token = await instance.acquireTokenSilent({
-      ...loginRequest,
-      account: accounts[0],
-    });
-    const secureData = await callMsGraph(token.accessToken);
-    setGraphData(secureData);
+  async function handleLogin() {
+    try {
+      await instance.loginPopup(loginRequest);
+      const accessTokenResponse = await instance.acquireTokenSilent({
+        ...loginRequest,
+        account: accounts[0],
+      });
+
+      const response = await callMsGraph(accessTokenResponse.accessToken);
+      await auth.login(response);
+      history.replace("/");
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  const handleLogin = async () => {
-    try {
-      const { username, password } = this.state.data;
-      await auth.login(username, password);
-
-      const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/";
-    } catch (error) {
-      const errors = { ...this.state.errors };
-      errors.username = error.response.data;
-      this.setState({ errors });
-    }
-  };
+  if (data) return <Redirect to="" />;
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
-        <form>
-          <h3>Sign In</h3>
-          <Button variant="danger" onClick={RequestProfileData}>
-            <Image src={officeLogo} />
-          </Button>
-        </form>
+    <React.Fragment>
+      <div className="auth-wrapper">
+        <div className="auth-inner">
+          <form>
+            <h3>Sign In</h3>
+            <Button variant="danger" onClick={handleLogin}>
+              <Image src={officeLogo} />
+            </Button>
+          </form>
+        </div>
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

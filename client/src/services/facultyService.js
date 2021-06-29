@@ -1,5 +1,5 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { apiUrl } from "../configs/config.json";
 
 const apiEndpoint = apiUrl + "/faculties";
 

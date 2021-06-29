@@ -55,23 +55,26 @@ router.post("/", validate(validateUser), async (req, res, next) => {
   });
 
   await user.save();
-  res.send(_.pick(user, ["_id", "name", "mail"]));
+  res.send(user);
 });
 
 router.put(
   "/:id",
   [validateObjectId, validate(validateUser)],
   async (req, res) => {
+    const faculty = await Faculties.findById(req.body.facultyId);
+    if (!faculty) return res.status(400).send("Invalid Id faculty");
+
+    const role = await Roles.findById(req.body.roleId);
+    if (!role) return res.status(400).send("Invalid Id role");
+
     const user = await Users.findByIdAndUpdate(
       req.params.id,
-      _.pick(req.body, [
-        "userId",
-        "name",
-        "mail",
-        "degree",
-        "facultyId",
-        "roleId",
-      ]),
+      {
+        ..._.pick(req.body, ["userId", "name", "mail", "degree"]),
+        faculty,
+        role,
+      },
       { new: true }
     );
 

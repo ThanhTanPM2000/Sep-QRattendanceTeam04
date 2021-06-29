@@ -1,14 +1,28 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const _ = require("lodash");
+
 const { Users } = require("../models/users");
-const mongoose = require("mongoose");
-const express = require("express");
 const validate = require("../middleware/validate");
+
 const router = express.Router();
 
 router.post("/", validate(validateAuth), async (req, res) => {
-  let user = await Users.findOne({ mail: req.body.email });
-  if (!user) return res.send("register");
+  let user = await Users.findOne({ mail: req.body.mail });
+  if (!user) {
+    const token = jwt.sign(
+      {
+        email: req.body.mail,
+        name: req.body.name,
+        role: "lecturer",
+      },
+      config.get("jwtPrivateKey")
+    );
+    return res.send(token);
+  }
 
   const token = user.generateAuthToken();
   res.send(token);

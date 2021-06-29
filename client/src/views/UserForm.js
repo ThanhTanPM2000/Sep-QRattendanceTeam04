@@ -88,6 +88,7 @@ class UserForm extends FormCommon {
     try {
       const { onUpdateUsers } = this.props;
       const { data } = await saveUser(this.state.data);
+      toast.success("Update successfully");
       onUpdateUsers(data);
     } catch (err) {}
   };
