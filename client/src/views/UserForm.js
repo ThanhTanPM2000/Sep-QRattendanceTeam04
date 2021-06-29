@@ -3,14 +3,12 @@ import Joi from "joi";
 import _ from "lodash";
 
 import FormCommon from "../components/common/form";
-import LoadingPage from "../components/common/loadingPage";
 import { getFaculties } from "../services/facultyService";
 import { getRoles } from "../services/roleService";
-import { getUser, saveUser } from "../services/userService";
-import { toast } from "react-toastify";
+import { saveUser } from "../services/userService";
 
 // react-bootstrap components
-import { Form, Row, Col } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 
 class UserForm extends FormCommon {
   state = {
@@ -54,16 +52,6 @@ class UserForm extends FormCommon {
     const { selectedUser } = this.props;
     if (_.isEmpty(selectedUser)) return;
     this.setState({ data: this.mapToViewModel(selectedUser) });
-    // try {
-    //   const id = this.props.match.params.id;
-    //   if (id === "new") return;
-
-    //   const { data: user } = await getUser(id);
-    // } catch (error) {
-    //   if (error.response && error.response.status === 404) {
-    //     this.props.history.replace("/not-found");
-    //   }
-    // }
   }
 
   async componentDidMount() {
@@ -88,7 +76,6 @@ class UserForm extends FormCommon {
     try {
       const { onUpdateUsers } = this.props;
       const { data } = await saveUser(this.state.data);
-      toast.success("Update successfully");
       onUpdateUsers(data);
     } catch (err) {}
   };
@@ -98,92 +85,12 @@ class UserForm extends FormCommon {
     return (
       <>
         <Form onSubmit={this.handleSubmit}>
-          <Row>
-            <Col className="pr-1" md="2">
-              {this.renderInput("userId", "User Id", "Id")}
-            </Col>
-            <Col className="px-1" md="5">
-              {this.renderInput("name", "Display Name", "Name")}
-            </Col>
-            <Col className="pl-1" md="5">
-              {this.renderInput("mail", "Email Address", "Mail")}
-            </Col>
-          </Row>
-          <Row>
-            <Col className="pr-1" md="6">
-              {this.renderInput("degree", "Degree", "Degree")}
-            </Col>
-            {/* <Col className="pl-1" md="6">
-                        <Form.Group>
-                          <label>Last Name</label>
-                          <Form.Control
-                            defaultValue="Andrew"
-                            placeholder="Last Name"
-                            type="text"
-                          ></Form.Control>
-                        </Form.Group>
-                      </Col> */}
-          </Row>
-          <Row>
-            <Col md="12">
-              {this.renderSelect("facultyId", "Faculties", faculties)}
-              {/* <Form.Group>
-                          <label>Address</label>
-                          <Form.Control
-                            defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                            placeholder="Home Address"
-                            type="text"
-                          ></Form.Control>
-                        </Form.Group> */}
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              {this.renderSelect("roleId", "Roles", roles)}
-              {/* <Form.Group>
-                          <label>City</label>
-                          <Form.Control
-                            defaultValue="Mike"
-                            placeholder="City"
-                            type="text"
-                          ></Form.Control>
-                        </Form.Group> */}
-            </Col>
-            {/* <Col className="px-1" md="4">
-                        <Form.Group>
-                          <label>Country</label>
-                          <Form.Control
-                            defaultValue="Andrew"
-                            placeholder="Country"
-                            type="text"
-                          ></Form.Control>
-                        </Form.Group>
-                      </Col>
-                      <Col className="pl-1" md="4">
-                        <Form.Group>
-                          <label>Postal Code</label>
-                          <Form.Control
-                            placeholder="ZIP Code"
-                            type="number"
-                          ></Form.Control>
-                        </Form.Group>
-                      </Col> */}
-          </Row>
-          {/* <Row>
-                      <Col md="12">
-                        <Form.Group>
-                          <label>About Me</label>
-                          <Form.Control
-                            cols="80"
-                            defaultValue="Lamborghini Mercy, Your chick she so thirsty, I'm in
-                          that two seat Lambo."
-                            placeholder="Here can be your description"
-                            rows="4"
-                            as="textarea"
-                          ></Form.Control>
-                        </Form.Group>
-                      </Col>
-                    </Row> */}
+          {this.renderInput("userId", "User Id", "Id")}
+          {this.renderInput("name", "Display Name", "Name")}
+          {this.renderInput("mail", "Email Address", "Mail")}
+          {this.renderInput("degree", "Degree", "Degree")}
+          {this.renderSelect("facultyId", "Faculties", faculties)}
+          {this.renderSelect("roleId", "Roles", roles)}
           {this.renderSubmit("Save")}
         </Form>
       </>

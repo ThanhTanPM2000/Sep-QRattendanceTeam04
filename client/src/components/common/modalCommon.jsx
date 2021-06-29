@@ -1,6 +1,5 @@
-import { findLastIndex } from "lodash";
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 const ModalCommon = ({ titleHeader, children, onHide, ...otherProps }) => {
   return (

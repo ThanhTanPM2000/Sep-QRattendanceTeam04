@@ -1,35 +1,20 @@
 import React from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import { confirmAlert } from "react-confirm-alert";
 
 import Pagination from "../components/common/pagination";
-import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
 import UserTable from "../components/userTable";
 import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
-import { getFaculties } from "../services/facultyService";
-import { getRoles } from "../services/roleService";
 import { getUsers } from "../services/userService";
 import { deleteUser } from "../services/userService";
 
 // react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Navbar,
-  Nav,
-  Table,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
-import ModalCommon from "components/common/modal";
+import { Button, Card, Container, Row, Col } from "react-bootstrap";
+import ModalCommon from "components/common/modalCommon";
 import UserForm from "./UserForm";
-import DeleteConfirm from "components/common/deleteConfirm";
+import ModalConfirm from "components/common/modalConfirm";
 
 function Users() {
   const [usersList, setUsers] = React.useState([]);
@@ -57,12 +42,6 @@ function Users() {
   React.useEffect(() => {
     async function getDataFromApi() {
       try {
-        // let { data: newFaculties } = await getFaculties();
-        // newFaculties = [selectedFaculty, ...newFaculties];
-
-        // let { data: newRoles } = await getRoles();
-        // newRoles = [selectedRole, ...newRoles];
-
         let { data: newUsers } = await getUsers();
 
         setUsers(newUsers);
@@ -194,7 +173,7 @@ function Users() {
             selectedUser={selectedUser}
           />
         </ModalCommon>
-        <DeleteConfirm
+        <ModalConfirm
           onHide={() => setConfirmDeleteDialog(false)}
           onDelete={handleUserDelete}
           show={confirmDeleteDialog}
@@ -202,34 +181,33 @@ function Users() {
         />
         <Row>
           <Col md="12">
-            <Card className="card-plain table-plain-bg">
+            <Card className="striped-tabled-with-hover">
               <Card.Header>
-                <Row>
-                  <Col md="10">
-                    <Card.Title as="h4">Manage Users</Card.Title>
-                    <p className="card-category">
-                      Showing{" "}
-                      <span className="badge badge-primary">{totalCount}</span>{" "}
-                      users in the database
-                    </p>
-                  </Col>
-
-                  <Col md="2">
-                    <Button
-                      onClick={() => {
-                        setSelectedUser({});
-                        setModalShow(true);
-                      }}
-                      variant="primary"
-                    >
-                      <i className="fas fa-plus-circle"></i> Create User
-                    </Button>
-                  </Col>
-                </Row>
+                <Card.Title as="h4">Manage Users</Card.Title>
+                <p className="card-category">
+                  Showing{" "}
+                  <span className="badge badge-primary">{totalCount}</span>{" "}
+                  users in the database
+                </p>
               </Card.Header>
               <Card.Body className="table-full-width table-responsive px-0">
                 <LoadingPage data={usersList}>
-                  <SearchBox value={searchQuery} onChange={handleSearch} />
+                  <Row>
+                    <Col md="10" className="ml-3">
+                      <SearchBox value={searchQuery} onChange={handleSearch} />
+                    </Col>
+                    <Col>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setSelectedUser({});
+                          setModalShow(true);
+                        }}
+                      >
+                        <i className="fas fa-plus-circle"></i> Create User
+                      </Button>
+                    </Col>
+                  </Row>
                   <UserTable
                     users={newUsers}
                     sortColumn={sortColumn}
@@ -238,12 +216,14 @@ function Users() {
                     onSort={handleSort}
                     onShowUpdate={handleShowUpdateDialog}
                   />
-                  <Pagination
-                    itemsCount={totalCount}
-                    pageSize={pageSize}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                  />
+                  <div className="ml-3">
+                    <Pagination
+                      itemsCount={totalCount}
+                      pageSize={pageSize}
+                      currentPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
                 </LoadingPage>
               </Card.Body>
             </Card>

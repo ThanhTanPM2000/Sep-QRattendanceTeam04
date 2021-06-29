@@ -1,30 +1,30 @@
 import React from "react";
-import { Form, Alert } from "react-bootstrap";
+import { InputGroup, Form, Alert } from "react-bootstrap";
 
-const Select = ({ name, label, options, error, ...otherProps }) => {
+const Select = ({ name, label, options, errors, ...otherProps }) => {
   return (
     <Form.Group>
-      <Form.Label htmlFor={name}>{label}</Form.Label>
-      <Form.Control as="select" name={name} id={name} {...otherProps}>
-        <option value="" />
-        {options.map((option) => (
-          <option key={option._id} value={option._id}>
-            {option.name}
-          </option>
-        ))}
-      </Form.Control>
-      {error && <Alert variant="danger">{error}</Alert>}
+      <InputGroup>
+        <InputGroup.Prepend>
+          <InputGroup.Text id="name">{label}</InputGroup.Text>
+        </InputGroup.Prepend>
+        <Form.Control
+          as="select"
+          name={name}
+          aria-describedby={name}
+          id={name}
+          {...otherProps}
+        >
+          <option value="" />
+          {options.map((option) => (
+            <option key={option._id} value={option._id}>
+              {option.name}
+            </option>
+          ))}
+        </Form.Control>
+      </InputGroup>
+      {errors[name] && <Alert variant="danger">{errors[name]}</Alert>}
     </Form.Group>
-    // <div className="form-group">
-    //   <select name={name} id={name} {...otherProps} className="form-control">
-    //     <option value="" />
-    //     {options.map((option) => (
-    //       <option key={option._id} value={option._id}>
-    //         {option.name}
-    //       </option>
-    //     ))}
-    //   </select>
-    // </div>
   );
 };
 

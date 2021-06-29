@@ -1,12 +1,22 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import "../../assets/css/deleteConfirm.css";
+import "../../assets/css/modalConfirm.css";
 
-const DeleteConfirm = ({ onHide, onDelete, data, ...otherProps }) => {
+const ModalConfirm = ({
+  onHide,
+  onDelete,
+  data,
+  title,
+  content,
+  cancelLabel = "No",
+  confirmLabel = "Yes",
+  ...otherProps
+}) => {
   return (
     <Modal
       backdrop="static"
       dialogClassName="modal-confirm"
+      keyboard={false}
       onHide={onHide}
       {...otherProps}
     >
@@ -34,4 +44,4 @@ const DeleteConfirm = ({ onHide, onDelete, data, ...otherProps }) => {
   );
 };
 
-export default DeleteConfirm;
+export default ModalConfirm;

@@ -1,32 +1,19 @@
 import React from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import { confirmAlert } from "react-confirm-alert";
 
 import Pagination from "../components/common/pagination";
-import ListGroup from "../components/common/listGroup";
 import SearchBox from "../components/common/searchBox";
 import SemesterTable from "../components/semesterTable";
 import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
 import { getSemesters } from "../services/semesterService";
 import { deleteSemester } from "../services/semesterService";
-import DeleteConfirm from "components/common/deleteConfirm";
+import ModalConfirm from "components/common/modalConfirm";
 
 // react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Navbar,
-  Nav,
-  Table,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
-import ModalCommon from "components/common/modal";
+import { Button, Card, Container, Row, Col } from "react-bootstrap";
+import ModalCommon from "components/common/modalCommon";
 import SemesterForm from "./SemesterForm";
 
 function Semesters() {
@@ -35,7 +22,7 @@ function Semesters() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [pageSize, setPageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
-    path: "name",
+    path: "year",
     order: "asc",
   });
   const [selectedSemester, setSelectedSemester] = React.useState({});
@@ -45,17 +32,9 @@ function Semesters() {
   React.useEffect(() => {
     async function getDataFromApi() {
       try {
-        // let { data: newFaculties } = await getFaculties();
-        // newFaculties = [selectedFaculty, ...newFaculties];
-
-        // let { data: newRoles } = await getRoles();
-        // newRoles = [selectedRole, ...newRoles];
-
         let { data: newSemesters } = await getSemesters();
 
         setSemesters(newSemesters);
-        // setFaculties(newFaculties);
-        // setRoles(newRoles);
       } catch (error) {
         console.log("hello");
       }
@@ -156,7 +135,7 @@ function Semesters() {
             selectedSemester={selectedSemester}
           />
         </ModalCommon>
-        <DeleteConfirm
+        <ModalConfirm
           onHide={() => setConfirmDeleteDialog(false)}
           onDelete={handleSemesterDelete}
           show={confirmDeleteDialog}
@@ -164,35 +143,33 @@ function Semesters() {
         />
         <Row>
           <Col md="12">
-            <Card className="card-plain table-plain-bg">
+            <Card className="striped-tabled-with-hover">
               <Card.Header>
-                <Row>
-                  <Col md="10">
-                    <Card.Title as="h4">Manage Semesters</Card.Title>
-                    <p className="card-category">
-                      Showing{" "}
-                      <span className="badge badge-primary">{totalCount}</span>{" "}
-                      semesters in the database
-                    </p>
-                  </Col>
-
-                  <Col md="2">
-                    <Button
-                      onClick={() => {
-                        setSelectedSemester({});
-                        setModalShow(true);
-                      }}
-                      variant="primary"
-                      style={{ marginBottom: 20, width: 170, marginLeft: -50 }}
-                    >
-                      Create Semester
-                    </Button>
-                  </Col>
-                </Row>
+                <Card.Title as="h4">Manage Semesters</Card.Title>
+                <p className="card-category">
+                  Showing{" "}
+                  <span className="badge badge-primary">{totalCount}</span>{" "}
+                  semesters in the database
+                </p>
               </Card.Header>
               <Card.Body className="table-full-width table-responsive px-0">
                 <LoadingPage data={semestersList}>
-                  <SearchBox value={searchQuery} onChange={handleSearch} />
+                  <Row>
+                    <Col md="10" className="md-3">
+                      <SearchBox value={searchQuery} onChange={handleSearch} />
+                    </Col>
+                    <Col>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setSelectedSemester({});
+                          setModalShow(true);
+                        }}
+                      >
+                        <i className="fas fa-plus-circle"></i> Create Semester
+                      </Button>
+                    </Col>
+                  </Row>
                   <SemesterTable
                     semesters={newSemesters}
                     sortColumn={sortColumn}

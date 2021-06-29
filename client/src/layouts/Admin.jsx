@@ -11,7 +11,7 @@ import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
 
-import ModalCommon from "../components/common/modal";
+import ModalCommon from "../components/common/modalCommon";
 import { Modal, Button } from "react-bootstrap";
 
 function Admin() {
