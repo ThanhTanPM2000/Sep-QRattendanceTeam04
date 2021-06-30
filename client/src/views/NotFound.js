@@ -27,10 +27,15 @@ const NotFound = () => {
                 Sorry, an error has occured, Requested page not found!
               </div>
               <div className="error-actions">
-                <Button size="lg" onClick={() => handleClick("home")}>
+                <Button
+                  className="btn-fill btn-wd"
+                  size="lg"
+                  onClick={() => handleClick("home")}
+                >
                   Take Me Home
                 </Button>
                 <Button
+                  className="btn-fill btn-wd"
                   variant="secondary"
                   size="lg"
                   onClick={() => handleClick("contact")}

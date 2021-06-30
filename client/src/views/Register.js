@@ -1,11 +1,16 @@
 import React from "react";
 import form from "../components/common/form";
+import Joi from "joi";
+import { getFaculties } from "services/facultyService";
+import { getRoles } from "services/roleService";
 import { Modal, Button } from "react-bootstrap";
 
-import { auth } from "../services/authService";
+import auth from "../services/authService";
+import AccountSetup from "../components/accountSetup";
 
 class Register extends form {
   state = {
+    step: 1,
     data: {
       userId: "",
       name: auth.getCurrentUser().name,
@@ -31,6 +36,18 @@ class Register extends form {
     facultyId: Joi.string().required().label("Faculty"),
   });
 
+  nextStep = () => {
+    const { step } = this.state;
+    this.setState({ step: step + 1 });
+  };
+
+  prevStep = () => {
+    const { step } = this.step;
+    this.setState({ step: step - 1 });
+  };
+
+  doSubmit = async () => {};
+
   async populateFaculties() {
     const { data: faculties } = await getFaculties();
     this.setState({ faculties });
@@ -42,8 +59,8 @@ class Register extends form {
   }
 
   async populateUsers() {
-    const user = {};
-    this.setState({ data: this.mapToViewModel(selectedUser) });
+    const user = auth.getCurrentUser();
+    this.setState({ data: this.mapToViewModel(user) });
     // try {
     //   const id = this.props.match.params.id;
     //   if (id === "new") return;
@@ -62,16 +79,35 @@ class Register extends form {
     await this.populateUsers();
   }
 
+  mapToViewModel = (user) => {
+    return {
+      userId: user.userId,
+      name: user.name,
+      mail: user.mail,
+      degree: user.degree,
+      roleId: user.role._id,
+    };
+  };
+
+  renderStep = () => {
+    const { step, data } = this.state;
+    switch (step) {
+      case 1:
+        return (
+          <AccountSetup
+            renderInput={this.renderInput}
+            data={data}
+            nextStep={this.nextStep}
+          />
+        );
+
+      default:
+        break;
+    }
+  };
+
   render() {
-    return (
-      <Modal.Dialog>
-        <Modal.Header>
-          <Modal.Title>Add more information about you</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{this.renderInput("")}</Modal.Body>
-        <Modal.Footer></Modal.Footer>
-      </Modal.Dialog>
-    );
+    return <div className="form-container">{this.renderStep()}</div>;
   }
 }
 

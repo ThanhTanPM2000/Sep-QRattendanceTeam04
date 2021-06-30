@@ -160,6 +160,7 @@ function Semesters() {
                     </Col>
                     <Col>
                       <Button
+                        className="btn-fill btn-wd"
                         variant="primary"
                         onClick={() => {
                           setSelectedSemester({});

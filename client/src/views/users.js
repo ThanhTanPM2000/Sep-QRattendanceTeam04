@@ -198,6 +198,7 @@ function Users() {
                     </Col>
                     <Col>
                       <Button
+                        className="btn-fill btn-wd"
                         variant="primary"
                         onClick={() => {
                           setSelectedUser({});

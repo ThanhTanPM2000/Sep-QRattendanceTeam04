@@ -22,7 +22,6 @@
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-chartist": "^0.14.4",
-    "react-confirm-alert": "^2.7.0",
     "react-dom": "^17.0.2",
     "react-notification-alert": "^0.0.13",
     "react-router-dom": "^5.2.0",
@@ -40,12 +39,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
-    "compile:scss": "node-sass src/assets/scss/light-bootstrap-dashboard-react.scss src/assets/css/light-bootstrap-dashboard-react.css",
-    "minify:scss": "node-sass src/assets/scss/light-bootstrap-dashboard-react.scss src/assets/css/light-bootstrap-dashboard-react.min.css --output-style compressed",
-    "map:scss": "node-sass src/assets/scss/light-bootstrap-dashboard-react.scss src/assets/css/light-bootstrap-dashboard-react.css --source-map true",
-    "build:scss": "npm run compile:scss && npm run minify:scss && npm run map:scss"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

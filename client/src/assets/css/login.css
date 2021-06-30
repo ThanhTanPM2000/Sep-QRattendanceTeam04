@@ -1,7 +1,7 @@
-@import url(https://fonts.googleapis.com/css?family=Rokkitt);
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:700,400);
-@import url(https://fonts.googleapis.com/css?family=Lobster);
+@import url(../css/Rokkitt.css?family=Rokkit);
+@import url(../css/OpenSans.css?family=Open+Sans:400italic,400,700);
+@import url(../css/RobotoSlab.css?family=Roboto+Slab:700,400);
+@import url(../css/Lobster.css?family=Lobster);
 
 * {
   margin: 0;
@@ -50,10 +50,6 @@ body .auth-wrapper {
 .span-1 {
   float: left;
   width: 25%;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  height: 450px;
 }
 
 .span-2 {

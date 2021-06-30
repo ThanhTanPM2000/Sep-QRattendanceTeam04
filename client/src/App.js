@@ -9,6 +9,7 @@ import auth from "./services/authService";
 import ProtectedRoute from "./components/common/protectedRoute";
 import AdminLayout from "./layouts/Admin";
 import { useEffect } from "react";
+import Register from "views/Register";
 // import Register from "views/Register";
 
 const App = () => {
@@ -27,6 +28,10 @@ const App = () => {
         render={(props) => (
           <Login {...props} data={user} isAuth={isAuthenticated} />
         )}
+      />
+      <Route
+        path="/register"
+        render={(props) => <Register {...props} isAuth={isAuthenticated} />}
       />
       <ProtectedRoute
         path="/admin"
