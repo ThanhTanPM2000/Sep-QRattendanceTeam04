@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import { useLocation, Route, Switch } from "react-router-dom";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
@@ -10,7 +10,6 @@ import { ToastContainer } from "react-toastify";
 import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
-
 
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);

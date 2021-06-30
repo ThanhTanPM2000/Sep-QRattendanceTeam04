@@ -1,6 +1,8 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
+import auth from "../../services/authService";
+
 const ProtectedRoute = ({
   path,
   component: Component,
@@ -12,7 +14,7 @@ const ProtectedRoute = ({
     <Route
       {...rest}
       render={(props) => {
-        if (!isAuth)
+        if (!auth.getCurrentUser())
           return (
             <Redirect
               to={{

@@ -16,8 +16,8 @@ const NotFound = () => {
   }
 
   return (
-    <div className="NotFound">
-      <div className="container">
+    <div className="not-found">
+      <div className="form-container">
         <div className="row">
           <div className="col-md-12">
             <div className="error-template">
