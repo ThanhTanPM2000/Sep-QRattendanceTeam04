@@ -1,7 +1,7 @@
-@import url(https://fonts.googleapis.com/css?family=Rokkitt);
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:700,400);
-@import url(https://fonts.googleapis.com/css?family=Lobster);
+@import url(../css/Rokkitt.css?family=Rokkit);
+@import url(../css/OpenSans.css?family=Open+Sans:400italic,400,700);
+@import url(../css/RobotoSlab.css?family=Roboto+Slab:700,400);
+@import url(../css/Lobster.css?family=Lobster);
 
 * {
   margin: 0;
@@ -17,7 +17,7 @@ h1 {
 body .auth-wrapper {
   flex: 1;
   align-items: center;
-  background-image: url("../img/vanlangBackground.jpg");
+  background-image: url("../img/vanlangBackground-min.jpg");
   background-repeat: no-repeat;
   background-position: center; /* Center the image */
   background-size: cover; /* Resize the background image to cover the entire container */
