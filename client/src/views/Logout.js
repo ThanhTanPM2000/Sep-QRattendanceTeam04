@@ -10,11 +10,12 @@ const Logout = () => {
   useEffect(() => {
     instance
       .logoutPopup({
+        account: instance.getActiveAccount(),
         postLogoutRedirectUri: "/login",
         mainWindowRedirectUri: "/login",
       })
       .then(() => auth.logout())
-      .catch((err) => console.log("err", err));
+      .catch((err) => console.log(err));
   }, []);
 
   return null;

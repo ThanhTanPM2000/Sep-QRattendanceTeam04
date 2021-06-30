@@ -1,12 +1,10 @@
 import React from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-} from "@azure/msal-react";
+import { useIsAuthenticated } from "@azure/msal-react";
 
 import Login from "./views/Login";
+import NotFound from "views/NotFound";
 import auth from "./services/authService";
 import ProtectedRoute from "./components/common/protectedRoute";
 import AdminLayout from "./layouts/Admin";
@@ -15,6 +13,7 @@ import { useEffect } from "react";
 
 const App = () => {
   const [user, setUser] = React.useState();
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     const newUser = auth.getCurrentUser();
@@ -25,13 +24,18 @@ const App = () => {
     <Switch>
       <Route
         path="/login"
-        render={(props) => <Login {...props} data={user} />}
+        render={(props) => (
+          <Login {...props} data={user} isAuth={isAuthenticated} />
+        )}
       />
       <ProtectedRoute
         path="/admin"
         render={(props) => <AdminLayout {...props} />}
+        isAuth={isAuthenticated}
       />
-      <Redirect from="/" to="/admin/users" />
+      <Route path="/Not-Found" component={NotFound} />
+      <Redirect from="/" exact to="/admin/users" />
+      <Redirect to="/Not-Found" />
     </Switch>
   );
 };

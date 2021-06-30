@@ -16,20 +16,15 @@ import LoadingComponent from "react-spinners/ClipLoader";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
-  useIsAuthenticated,
   useMsal,
 } from "@azure/msal-react";
 
 import auth from "../services/authService";
 import "../assets/css/login.css";
 import "../assets/scss/login.scss";
-import { div } from "prelude-ls";
-import { height, width } from "dom-helpers";
-// import "@fortawesome/fontawesome-free/css/all.min.css"
 
-const Login = ({ data }) => {
+const Login = ({ data, isAuth }) => {
   const { instance, inProgress, accounts } = useMsal();
-  const isAuthenticated = useIsAuthenticated();
   const history = useHistory();
 
   if (accounts.length > 0) {
@@ -37,7 +32,7 @@ const Login = ({ data }) => {
   }
 
   React.useEffect(() => {
-    if (!data && isAuthenticated && inProgress === InteractionStatus.None) {
+    if (!data && isAuth && inProgress === InteractionStatus.None) {
       async function handleLogin() {
         try {
           const accessTokenResponse = await instance.acquireTokenSilent({
@@ -84,9 +79,12 @@ const Login = ({ data }) => {
       instance.loginPopup(loginRequest).catch((err) => console.log(err));
   }
 
-  if (data) return <Redirect to="/" />;
+  // if (isAuthenticated) console.log("hello world");
+  // if (data) return <Redirect to="/admin/users" />;
 
-  return (
+  return isAuth ? (
+    <Redirect to="/" /> // <Redirect to="/admin/users" />
+  ) : (
     <div className="auth-wrapper">
       <section className="container">
         <div className="span-1">
