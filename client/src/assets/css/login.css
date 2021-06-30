@@ -1,7 +1,7 @@
-@import url(https://fonts.googleapis.com/css?family=Rokkitt);
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700);
-@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:700,400);
-@import url(https://fonts.googleapis.com/css?family=Lobster);
+@import url(../css/Rokkitt.css?family=Rokkit);
+@import url(../css/OpenSans.css?family=Open+Sans:400italic,400,700);
+@import url(../css/RobotoSlab.css?family=Roboto+Slab:700,400);
+@import url(../css/Lobster.css?family=Lobster);
 
 * {
   margin: 0;
@@ -15,32 +15,36 @@ h1 {
 }
 
 body .auth-wrapper {
-  flex: 1;
-  align-items: center;
-  background-image: url("../img/vanlangBackground.jpg");
+  background: #f46b45; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to top,
+    #eea849,
+    #f46b45
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to top,
+    #eea849,
+    #f46b45
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   background-repeat: no-repeat;
   background-position: center; /* Center the image */
   background-size: cover; /* Resize the background image to cover the entire container */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  text-align: center;
+  align-content: center;
 }
 
 .container {
-  margin-top: 100px;
   flex: 1;
-  width: 66%;
-  min-width: 800px;
-  position: fixed;
-  top: 10%;
   justify-content: center;
   align-items: center;
   display: flex;
 }
 .span-1 {
-  margin-top: 100px;
   float: left;
   width: 25%;
   height: 450px;
