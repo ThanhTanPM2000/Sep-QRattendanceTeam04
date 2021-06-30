@@ -20,7 +20,6 @@ const LoadingPage = ({ data, children }) => {
   return (
     <React.Fragment>
       {loading ? (
-        // <div id="status" />
         <div id="preloader">
           <LoadingComponent color="#D0021B" loading={loading} size={50} />
         </div>

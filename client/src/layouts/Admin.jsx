@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React  from "react";
 import { useLocation, Route, Switch } from "react-router-dom";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
@@ -11,8 +11,6 @@ import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
 
-import ModalCommon from "../components/common/modalCommon";
-import { Modal, Button } from "react-bootstrap";
 
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);
