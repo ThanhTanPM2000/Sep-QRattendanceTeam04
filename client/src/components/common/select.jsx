@@ -1,7 +1,15 @@
 import React from "react";
 import { InputGroup, Form, Alert } from "react-bootstrap";
 
-const Select = ({ name, label, options, errors, ...otherProps }) => {
+const Select = ({
+  name,
+  label,
+  options,
+  errors,
+  value,
+  isReadOnly,
+  ...otherProps
+}) => {
   return (
     <Form.Group>
       <InputGroup>
@@ -13,11 +21,15 @@ const Select = ({ name, label, options, errors, ...otherProps }) => {
           name={name}
           aria-describedby={name}
           id={name}
+          value={value}
           {...otherProps}
         >
-          <option value="" />
           {options.map((option) => (
-            <option key={option._id} value={option._id}>
+            <option
+              disabled={option._id !== value && isReadOnly}
+              key={option._id}
+              value={option._id}
+            >
               {option.name}
             </option>
           ))}

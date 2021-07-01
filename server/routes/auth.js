@@ -11,12 +11,26 @@ const validate = require("../middleware/validate");
 const router = express.Router();
 
 router.post("/", validate(validateAuth), async (req, res) => {
+  let { mail, name } = req.body;
+  name = _.replace(name, "\t", "");
+
+  if (_.endsWith(mail, "@vanlanguni.vn")) {
+    name = _.split(name, "-", 2)[1].trim();
+  } else if (
+    _.endsWith(
+      mail,
+      "@vanlanguni.edu.vn" || _.endsWith(mail, "@vlu.edu.vn")
+    ).trim()
+  ) {
+    name = _.split(name, "-", 2)[0];
+  }
+
   let user = await Users.findOne({ mail: req.body.mail });
   if (!user) {
     const token = jwt.sign(
       {
-        email: req.body.mail,
-        name: req.body.name,
+        mail,
+        name,
         role: "lecturer",
       },
       config.get("jwtPrivateKey")

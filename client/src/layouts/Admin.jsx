@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
+import auth from "services/authService";
 
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);

@@ -3,10 +3,18 @@ import form from "../components/common/form";
 import Joi from "joi";
 import { getFaculties } from "services/facultyService";
 import { getRoles } from "services/roleService";
-import { Modal, Button } from "react-bootstrap";
+import _ from "lodash";
 
 import auth from "../services/authService";
 import AccountSetup from "../components/accountSetup";
+import UserTerm from "../components/userTerm";
+
+import "../assets/css/register.css";
+import Confirm from "components/confirm";
+import RegisteredAcc from "components/registeredAcc";
+import { saveUser } from "services/userService";
+import { toast } from "react-toastify";
+import { Redirect } from "react-router-dom";
 
 class Register extends form {
   state = {
@@ -19,6 +27,7 @@ class Register extends form {
       facultyId: "",
       roleId: "60cfdfd15be490cbb63461bf",
     },
+    isRegistered: false,
     faculties: [],
     roles: [],
     errors: {},
@@ -34,6 +43,7 @@ class Register extends form {
       .label("Mail"),
     degree: Joi.string().required().label("Degree"),
     facultyId: Joi.string().required().label("Faculty"),
+    roleId: Joi.string().required().label("Role"),
   });
 
   nextStep = () => {
@@ -42,15 +52,36 @@ class Register extends form {
   };
 
   prevStep = () => {
-    const { step } = this.step;
+    const { step } = this.state;
     this.setState({ step: step - 1 });
   };
 
-  doSubmit = async () => {};
+  doSubmit = async () => {
+    await this.nextStep();
+
+    const { step } = this.state;
+
+    if (step > 3) {
+      this.doRegister();
+    }
+  };
+
+  doRegister = async () => {
+    try {
+      const { data, headers } = await saveUser(this.state.data);
+      if (data._id) this.setState({ isRegistered: true });
+      auth.loginWithJwt(headers["x-auth-token"]);
+    } catch (err) {
+      toast.error(err.response.data);
+      window.location = "/Not-Found";
+    }
+  };
 
   async populateFaculties() {
     const { data: faculties } = await getFaculties();
-    this.setState({ faculties });
+    const myData = { ...this.state.data };
+    myData["facultyId"] = faculties[0]._id;
+    this.setState({ faculties, data: myData });
   }
 
   async populateRoles() {
@@ -60,54 +91,68 @@ class Register extends form {
 
   async populateUsers() {
     const user = auth.getCurrentUser();
-    this.setState({ data: this.mapToViewModel(user) });
-    // try {
-    //   const id = this.props.match.params.id;
-    //   if (id === "new") return;
-
-    //   const { data: user } = await getUser(id);
-    // } catch (error) {
-    //   if (error.response && error.response.status === 404) {
-    //     this.props.history.replace("/not-found");
-    //   }
-    // }
   }
 
   async componentDidMount() {
     await this.populateFaculties();
     await this.populateRoles();
-    await this.populateUsers();
   }
 
-  mapToViewModel = (user) => {
-    return {
-      userId: user.userId,
-      name: user.name,
-      mail: user.mail,
-      degree: user.degree,
-      roleId: user.role._id,
-    };
+  doChange = (input, data) => {
+    return data;
   };
 
-  renderStep = () => {
-    const { step, data } = this.state;
+  render() {
+    const { step, data, faculties, isRegistered, roles } = this.state;
     switch (step) {
       case 1:
         return (
-          <AccountSetup
-            renderInput={this.renderInput}
-            data={data}
+          <React.Fragment>
+            {auth.getCurrentUser()._id ? (
+              <Redirect to="Not-Found" />
+            ) : (
+              <AccountSetup
+                renderInput={(name, label, placeholder, isReadOnly = false) =>
+                  this.renderInput(name, label, placeholder, isReadOnly)
+                }
+                renderSelect={(name, label, options, isReadOnly = false) =>
+                  this.renderSelect(name, label, options, isReadOnly)
+                }
+                renderSubmit={(label) => this.renderSubmit(label)}
+                user={data}
+                faculties={faculties}
+                roles={roles}
+                onValidation={this.validation}
+                nextStep={this.handleSubmit}
+              />
+            )}
+          </React.Fragment>
+        );
+      case 2:
+        return (
+          <UserTerm
+            renderSelect={(name, label, options, isReadOnly = false) =>
+              this.renderSelect(name, label, options, isReadOnly)
+            }
             nextStep={this.nextStep}
+            roles={roles}
+            prevStep={this.prevStep}
+          />
+        );
+      case 3:
+        return (
+          <Confirm
+            data={data}
+            faculties={faculties}
+            roles={roles}
+            nextStep={this.handleSubmit}
+            prevStep={this.prevStep}
           />
         );
 
       default:
-        break;
+        return <RegisteredAcc isRegistered={isRegistered} />;
     }
-  };
-
-  render() {
-    return <div className="form-container">{this.renderStep()}</div>;
   }
 }
 

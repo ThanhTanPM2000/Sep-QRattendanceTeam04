@@ -7,7 +7,9 @@ import "../assets/css/notFound.css";
 const NotFound = () => {
   const history = useHistory();
 
-  function handleClick(goto) {
+  function handleClick(e, goto) {
+    e.preventDefault();
+
     if (goto === "home") {
       history.push("/");
     } else {
@@ -30,7 +32,7 @@ const NotFound = () => {
                 <Button
                   className="btn-fill btn-wd"
                   size="lg"
-                  onClick={() => handleClick("home")}
+                  onClick={(e) => handleClick(e, "home")}
                 >
                   Take Me Home
                 </Button>

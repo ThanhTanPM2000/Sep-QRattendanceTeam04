@@ -4,6 +4,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import { Nav } from "react-bootstrap";
 
 import logo from "assets/img/reactlogo.png";
+import { createBootstrapComponent } from "react-bootstrap/esm/ThemeProvider";
 
 function Sidebar({ color, image, routes }) {
   const location = useLocation();
@@ -20,14 +21,6 @@ function Sidebar({ color, image, routes }) {
       />
       <div className="sidebar-wrapper">
         <div className="logo d-flex align-items-center justify-content-center">
-          {/* <a href="/" className="simple-text logo-mini mx-1">
-            <div className="logo-img">
-              <img
-                src={require("assets/img/vanlanglogo.png").default}
-                alt="Van Lang University"
-              />
-            </div>
-          </a> */}
           <a href="/" className="simple-text logo-mini mx-1">
             <div className="logo-img">
               <img

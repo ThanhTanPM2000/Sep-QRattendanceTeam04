@@ -19,7 +19,7 @@ schemaUser.methods.generateAuthToken = function () {
   const token = jwt.sign(
     {
       _id: this._id,
-      email: this.email,
+      mail: this.mail,
       name: this.name,
       role: this.role.name,
     },

@@ -55,7 +55,9 @@ router.post("/", validate(validateUser), async (req, res, next) => {
   });
 
   await user.save();
-  res.send(user);
+
+  const token = user.generateAuthToken();
+  res.header("x-auth-token", token).send(user);
 });
 
 router.put(

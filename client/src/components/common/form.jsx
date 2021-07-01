@@ -21,6 +21,8 @@ class FormCommon extends Component {
 
     for (let item of error.details) errors[item.path[0]] = item.message;
 
+    console.log(errors);
+
     return errors;
   };
 
@@ -36,7 +38,10 @@ class FormCommon extends Component {
     e.preventDefault();
 
     const errors = this.validate();
-    if (errors) this.setState({ errors: errors || {} });
+    if (errors) {
+      this.setState({ errors: errors || {} });
+      return;
+    }
 
     this.doSubmit();
   };
@@ -47,13 +52,15 @@ class FormCommon extends Component {
     if (errorMessage) errors[input.name] = errorMessage;
     else delete errors[input.name];
 
-    const data = { ...this.state.data };
+    let data = { ...this.state.data };
     data[input.name] = input.value;
+
+    data = this.doChange(input, data);
 
     this.setState({ data, errors });
   };
 
-  renderInput = (name, label, placeholder) => {
+  renderInput = (name, label, placeholder, isReadonly = false) => {
     const { data, errors } = this.state;
 
     return (
@@ -64,19 +71,25 @@ class FormCommon extends Component {
         errors={errors}
         placeholder={placeholder}
         onChange={this.handleChange}
+        readOnly={isReadonly}
       />
     );
   };
 
   renderSubmit = (label) => {
     return (
-      <Button disabled={this.validate()} className="btn btn-primary btn-lg">
+      <Button
+        type="submit"
+        disabled={this.validate()}
+        variant="primary"
+        className="btn-fill btn-wd"
+      >
         {label}
       </Button>
     );
   };
 
-  renderSelect = (name, label, options) => {
+  renderSelect = (name, label, options, isReadOnly = false) => {
     const { data, errors } = this.state;
 
     return (
@@ -87,6 +100,7 @@ class FormCommon extends Component {
         value={data[name]}
         onChange={this.handleChange}
         errors={errors}
+        isReadOnly={isReadOnly}
       />
     );
   };

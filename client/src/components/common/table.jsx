@@ -3,12 +3,20 @@ import TableHeader from "./tableHeader";
 import TableBody from "./tableBody";
 import { Table } from "react-bootstrap";
 
+import LoadingPage from "./loadingPage";
+
 const TableCommon = ({ columns, sortColumn, onSort, data }) => {
   return (
-    <Table className="table-hover table-striped">
-      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
-      <TableBody columns={columns} data={data} />
-    </Table>
+    <LoadingPage data={data}>
+      <Table className="table-hover table-striped">
+        <TableHeader
+          columns={columns}
+          sortColumn={sortColumn}
+          onSort={onSort}
+        />
+        <TableBody columns={columns} data={data} />
+      </Table>
+    </LoadingPage>
   );
 };
 

@@ -1,0 +1,28 @@
+body .register {
+  background: #f46b45; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #eea849,
+    #f46b45
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #eea849,
+    #f46b45
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  min-width: 900px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 15px 16px 0.17px rgba(0, 0, 0, 0.05);
+}

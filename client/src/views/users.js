@@ -108,6 +108,7 @@ function Users() {
       newUserList.map((x) => {
         if (x._id === user._id) {
           x.userId = user.userId;
+          x.mail = user.mail;
           x.name = user.name;
           x.degree = user.degree;
           x.faculty = user.faculty;
@@ -135,8 +136,11 @@ function Users() {
   const getPagedData = () => {
     let filtered = usersList;
     if (searchQuery) {
-      filtered = usersList.filter((x) =>
-        x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+      filtered = usersList.filter(
+        (x) =>
+          x.name.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          x.mail.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          x.userId.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     } else if (
       (selectedFaculty && selectedFaculty._id) ||
@@ -190,42 +194,40 @@ function Users() {
                   users in the database
                 </p>
               </Card.Header>
-              <Card.Body className="table-full-width table-responsive px-0">
-                <LoadingPage data={usersList}>
-                  <Row>
-                    <Col md="10" className="ml-3">
-                      <SearchBox value={searchQuery} onChange={handleSearch} />
-                    </Col>
-                    <Col>
-                      <Button
-                        className="btn-fill btn-wd"
-                        variant="primary"
-                        onClick={() => {
-                          setSelectedUser({});
-                          setModalShow(true);
-                        }}
-                      >
-                        <i className="fas fa-plus-circle"></i> Create User
-                      </Button>
-                    </Col>
-                  </Row>
-                  <UserTable
-                    users={newUsers}
-                    sortColumn={sortColumn}
-                    selectedData={selectedUser}
-                    onShowConfirm={handleShowConfirmDialog}
-                    onSort={handleSort}
-                    onShowUpdate={handleShowUpdateDialog}
+              <Card.Body className="table-full-width table-responsive px-auto py-auto">
+                <Row>
+                  <Col>
+                    <SearchBox value={searchQuery} onChange={handleSearch} />
+                  </Col>
+                  <Col>
+                    <Button
+                      className="btn-fill btn-wd"
+                      variant="primary"
+                      onClick={() => {
+                        setSelectedUser({});
+                        setModalShow(true);
+                      }}
+                    >
+                      <i className="fas fa-plus-circle"></i> Create User
+                    </Button>
+                  </Col>
+                </Row>
+                <UserTable
+                  users={newUsers}
+                  sortColumn={sortColumn}
+                  selectedData={selectedUser}
+                  onShowConfirm={handleShowConfirmDialog}
+                  onSort={handleSort}
+                  onShowUpdate={handleShowUpdateDialog}
+                />
+                <div className="ml-3">
+                  <Pagination
+                    itemsCount={totalCount}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
                   />
-                  <div className="ml-3">
-                    <Pagination
-                      itemsCount={totalCount}
-                      pageSize={pageSize}
-                      currentPage={currentPage}
-                      onPageChange={handlePageChange}
-                    />
-                  </div>
-                </LoadingPage>
+                </div>
               </Card.Body>
             </Card>
           </Col>

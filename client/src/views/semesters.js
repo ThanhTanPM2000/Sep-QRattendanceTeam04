@@ -107,8 +107,11 @@ function Semesters() {
   const getPagedData = () => {
     let filtered = semestersList;
     if (searchQuery) {
-      filtered = semestersList.filter((x) =>
-        x.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+      filtered = semestersList.filter(
+        (x) =>
+          x.year.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          x.name.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          x.symbol.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     }
 
@@ -152,40 +155,38 @@ function Semesters() {
                   semesters in the database
                 </p>
               </Card.Header>
-              <Card.Body className="table-full-width table-responsive px-0">
-                <LoadingPage data={semestersList}>
-                  <Row>
-                    <Col md="10" className="md-3">
-                      <SearchBox value={searchQuery} onChange={handleSearch} />
-                    </Col>
-                    <Col>
-                      <Button
-                        className="btn-fill btn-wd"
-                        variant="primary"
-                        onClick={() => {
-                          setSelectedSemester({});
-                          setModalShow(true);
-                        }}
-                      >
-                        <i className="fas fa-plus-circle"></i> Create Semester
-                      </Button>
-                    </Col>
-                  </Row>
-                  <SemesterTable
-                    semesters={newSemesters}
-                    sortColumn={sortColumn}
-                    selectedData={selectedSemester}
-                    onShowConfirm={handleShowConfirmDialog}
-                    onSort={handleSort}
-                    onShowUpdate={handleShowUpdateDialog}
-                  />
-                  <Pagination
-                    itemsCount={totalCount}
-                    pageSize={pageSize}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                  />
-                </LoadingPage>
+              <Card.Body className="table-full-width table-responsive px-auto py-auto">
+                <Row>
+                  <Col>
+                    <SearchBox value={searchQuery} onChange={handleSearch} />
+                  </Col>
+                  <Col>
+                    <Button
+                      className="btn-fill btn-wd"
+                      variant="primary"
+                      onClick={() => {
+                        setSelectedSemester({});
+                        setModalShow(true);
+                      }}
+                    >
+                      <i className="fas fa-plus-circle"></i> Create Semester
+                    </Button>
+                  </Col>
+                </Row>
+                <SemesterTable
+                  semesters={newSemesters}
+                  sortColumn={sortColumn}
+                  selectedData={selectedSemester}
+                  onShowConfirm={handleShowConfirmDialog}
+                  onSort={handleSort}
+                  onShowUpdate={handleShowUpdateDialog}
+                />
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
               </Card.Body>
             </Card>
           </Col>

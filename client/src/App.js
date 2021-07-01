@@ -23,23 +23,23 @@ const App = () => {
 
   return (
     <Switch>
+      <ProtectedRoute
+        path="/admin"
+        render={(props) => <AdminLayout {...props} />}
+        isAuth={user ? true : false}
+      />
+      <Redirect from="/" exact to="/admin/users" />
+      <Route
+        path="/register"
+        render={(props) => <Register {...props} isAuth={isAuthenticated} />}
+      />
       <Route
         path="/login"
         render={(props) => (
           <Login {...props} data={user} isAuth={isAuthenticated} />
         )}
       />
-      <Route
-        path="/register"
-        render={(props) => <Register {...props} isAuth={isAuthenticated} />}
-      />
-      <ProtectedRoute
-        path="/admin"
-        render={(props) => <AdminLayout {...props} />}
-        isAuth={isAuthenticated}
-      />
       <Route path="/Not-Found" component={NotFound} />
-      <Redirect from="/" exact to="/admin/users" />
       <Redirect to="/Not-Found" />
     </Switch>
   );

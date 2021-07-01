@@ -10,7 +10,7 @@ const Input = ({ name, label, errors, ...otherProps }) => {
         </InputGroup.Prepend>
         {/* <Form.Label htmlFor={name}>{label}</Form.Label> */}
         <Form.Control
-          autocomplete="off"
+          autoComplete="off"
           name={name}
           id={name}
           aria-describedby={name}
