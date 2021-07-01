@@ -79,11 +79,8 @@ const Login = ({ data, isAuth }) => {
       instance.loginPopup(loginRequest).catch((err) => console.log(err));
   }
 
-  // if (isAuthenticated) console.log("hello world");
-  // if (data) return <Redirect to="/admin/users" />;
-
-  return isAuth ? (
-    <Redirect to="/" /> // <Redirect to="/admin/users" />
+  return data ? (
+    <Redirect to="/" />
   ) : (
     <div className="auth-wrapper">
       <section className="container">

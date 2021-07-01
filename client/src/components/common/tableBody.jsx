@@ -1,5 +1,6 @@
 import React from "react";
 import _ from "lodash";
+import LoadingPage from "./loadingPage";
 
 const tableBody = ({ columns, data }) => {
   const renderCall = (item, column) => {
@@ -14,13 +15,13 @@ const tableBody = ({ columns, data }) => {
 
   return (
     <tbody>
-      {data.map((item) => (
-        <tr key={item._id}>
-          {columns.map((column) => (
-            <td key={createKey(item, column)}>{renderCall(item, column)}</td>
-          ))}
-        </tr>
-      ))}
+        {data.map((item) => (
+          <tr key={item._id}>
+            {columns.map((column) => (
+              <td key={createKey(item, column)}>{renderCall(item, column)}</td>
+            ))}
+          </tr>
+        ))}
     </tbody>
   );
 };

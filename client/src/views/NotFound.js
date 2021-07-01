@@ -7,7 +7,9 @@ import "../assets/css/notFound.css";
 const NotFound = () => {
   const history = useHistory();
 
-  function handleClick(goto) {
+  function handleClick(e, goto) {
+    e.preventDefault();
+
     if (goto === "home") {
       history.push("/");
     } else {
@@ -16,8 +18,8 @@ const NotFound = () => {
   }
 
   return (
-    <div className="NotFound">
-      <div className="container">
+    <div className="not-found">
+      <div className="form-container">
         <div className="row">
           <div className="col-md-12">
             <div className="error-template">
@@ -27,10 +29,15 @@ const NotFound = () => {
                 Sorry, an error has occured, Requested page not found!
               </div>
               <div className="error-actions">
-                <Button size="lg" onClick={() => handleClick("home")}>
+                <Button
+                  className="btn-fill btn-wd"
+                  size="lg"
+                  onClick={(e) => handleClick(e, "home")}
+                >
                   Take Me Home
                 </Button>
                 <Button
+                  className="btn-fill btn-wd"
                   variant="secondary"
                   size="lg"
                   onClick={() => handleClick("contact")}

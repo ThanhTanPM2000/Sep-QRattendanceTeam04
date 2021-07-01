@@ -3,8 +3,8 @@
     background-color: $transparent-bg;
     font-weight: $font-weight-normal;
 
-    @include opacity(.8);
-    padding: $padding-base-vertical $padding-base-horizontal;
+    // @include opacity(.8);
+    // padding: $padding-base-vertical $padding-base-horizontal;
 
     @include btn-styles($default-color, $default-states-color);
 

@@ -18,7 +18,10 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", validate(validateSemester), async (req, res) => {
-  const semester = new Semesters(_.pick(req.body, ["name", "year", "symbol"]));
+  let semester = await Semesters.findOne({ symbol: req.body.symbol });
+  if (semester) return res.status(400).send("Symbol Semester already exists");
+
+  semester = new Semesters(_.pick(req.body, ["name", "year", "symbol"]));
 
   await semester.save();
   res.send(semester);
@@ -51,7 +54,7 @@ router.delete("/:id", validateObjectId, async (req, res) => {
   if (!semester)
     return res.status(404).send("The Semester with the given ID was not found");
 
-  const result = await Semesters.remove(semester);
+  const result = await Semesters.deleteOne(semester);
   res.send(result);
 });
 

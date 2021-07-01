@@ -18,18 +18,13 @@ export function getUser(id) {
 }
 
 export function saveUser(user) {
-  let response;
-
+  console.log("here is user you want", user);
   if (user._id) {
     const body = { ...user };
     delete body._id;
-    response = http.put(userUrl(user._id), body);
-    toast.success("Update successfully");
-    return response;
+    return http.put(userUrl(user._id), body);
   }
-  response = http.post(apiEndpoint, user);
-  toast.success("Create successfully");
-  return response;
+  return http.post(apiEndpoint, user);
 }
 
 export function deleteUser(user) {

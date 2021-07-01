@@ -9,6 +9,7 @@ import auth from "./services/authService";
 import ProtectedRoute from "./components/common/protectedRoute";
 import AdminLayout from "./layouts/Admin";
 import { useEffect } from "react";
+import Register from "views/Register";
 // import Register from "views/Register";
 
 const App = () => {
@@ -22,19 +23,23 @@ const App = () => {
 
   return (
     <Switch>
+      <ProtectedRoute
+        path="/admin"
+        render={(props) => <AdminLayout {...props} />}
+        isAuth={user ? true : false}
+      />
+      <Redirect from="/" exact to="/admin/users" />
+      <Route
+        path="/register"
+        render={(props) => <Register {...props} isAuth={isAuthenticated} />}
+      />
       <Route
         path="/login"
         render={(props) => (
           <Login {...props} data={user} isAuth={isAuthenticated} />
         )}
       />
-      <ProtectedRoute
-        path="/admin"
-        render={(props) => <AdminLayout {...props} />}
-        isAuth={isAuthenticated}
-      />
       <Route path="/Not-Found" component={NotFound} />
-      <Redirect from="/" exact to="/admin/users" />
       <Redirect to="/Not-Found" />
     </Switch>
   );

@@ -9,6 +9,7 @@ import { saveUser } from "../services/userService";
 
 // react-bootstrap components
 import { Form } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 class UserForm extends FormCommon {
   state = {
@@ -40,12 +41,16 @@ class UserForm extends FormCommon {
 
   async populateFaculties() {
     const { data: faculties } = await getFaculties();
-    this.setState({ faculties });
+    const myData = { ...this.state.data };
+    myData["facultyId"] = faculties[0]._id;
+    this.setState({ faculties, data: myData });
   }
 
   async populateRoles() {
     const { data: roles } = await getRoles();
-    this.setState({ roles });
+    const myData = { ...this.state.data };
+    myData["roleId"] = roles[0]._id;
+    this.setState({ roles, data: myData });
   }
 
   async populateUsers() {
@@ -76,8 +81,15 @@ class UserForm extends FormCommon {
     try {
       const { onUpdateUsers } = this.props;
       const { data } = await saveUser(this.state.data);
+      toast.success("Successfully");
       onUpdateUsers(data);
-    } catch (err) {}
+    } catch (err) {
+      toast.error(err.response.data);
+    }
+  };
+
+  doChange = (input, data) => {
+    return data;
   };
 
   render() {

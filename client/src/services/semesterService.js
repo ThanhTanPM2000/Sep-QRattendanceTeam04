@@ -1,6 +1,8 @@
 import http from "./httpService";
 import { apiUrl } from "../configs/config.json";
 
+import { toast } from "react-toastify";
+
 const apiEndpoint = apiUrl + "/semesters";
 
 function semesterUrl(id) {
@@ -16,12 +18,18 @@ export function getSemester(id) {
 }
 
 export function saveSemester(semester) {
+  let response;
+  const body = {
+    year: `${semester.startYear}-${semester.endYear}`,
+    name: semester.name,
+    symbol: semester.symbol,
+  };
   if (semester._id) {
-    const body = { ...semester };
-    delete body._id;
-    return http.put(semesterUrl(semester._id), body);
+    response = http.put(semesterUrl(semester._id), body);
+    return response;
   }
-  return http.post(apiEndpoint, semester);
+  response = http.post(apiEndpoint, body);
+  return response;
 }
 
 export function deleteSemester(semester) {

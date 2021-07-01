@@ -40,14 +40,16 @@ body .auth-wrapper {
 
 .container {
   flex: 1;
+  min-width: 800px;
+  position: fixed;
   justify-content: center;
   align-items: center;
+  align-content: center;
   display: flex;
 }
 .span-1 {
   float: left;
   width: 25%;
-  height: 450px;
 }
 
 .span-2 {
@@ -57,6 +59,8 @@ body .auth-wrapper {
 
 .login {
   background-color: rgba(54, 54, 54, 0.883);
+  justify-content: center;
+  align-items: center;
   text-align: center;
   box-shadow: 0 0 30px #000;
 }
