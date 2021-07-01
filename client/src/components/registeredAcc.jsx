@@ -4,6 +4,7 @@ import LoadingComponent from "react-spinners/ClipLoader";
 
 import { Button } from "react-bootstrap";
 import { Redirect, useHistory } from "react-router-dom";
+import "../assets/css/registered.css";
 
 const RegisteredAcc = ({ isRegistered }) => {
   const history = useHistory();
@@ -15,23 +16,30 @@ const RegisteredAcc = ({ isRegistered }) => {
 
   return (
     <div className="register">
-      <div className="form-container">
+      <div className="login">
+        <h1></h1>
+        <div className="login-content">
         {isRegistered ? (
           <>
-            <div className="icon-box">
-              <i className="nc-icon nc-simple-remove">&#xE5CD;</i>
-            </div>
-            <Button
+            {/* <Button
               className="btn-fill btn-wd"
               size="lg"
               onClick={(e) => handleClick(e)}
             >
               Take Me Home
-            </Button>
+            </Button> */}
+               <a
+                  className="button button--social-login button--microsoft"
+                  onClick={(e) => handleClick(e)}
+                >
+                  <i className="icon far fa-check-circle" />
+                  Success - Return Home
+                </a>
           </>
         ) : (
-          <LoadingComponent color="#D0021B" loading={!isRegistered} size={50} />
+          <LoadingComponent color="#FFFFFF" loading={!isRegistered} size={50} />
         )}
+        </div>
       </div>
     </div>
   );

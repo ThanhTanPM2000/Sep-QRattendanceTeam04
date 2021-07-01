@@ -72,7 +72,7 @@ body .auth-wrapper {
 }
 .login-content,
 .message {
-  padding: 40px 30px 40px 30px;
+  padding: 40px 30px 40px 40px;
 }
 .login-content a {
   text-decoration: none;
