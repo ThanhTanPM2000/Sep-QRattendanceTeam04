@@ -49,13 +49,12 @@ router.put(
 );
 
 router.delete("/:id", validateObjectId, async (req, res) => {
-  const semester = await Semesters.findById(req.params.id);
+  const semester = await Semesters.findByIdAndDelete(req.params.id);
 
   if (!semester)
     return res.status(404).send("The Semester with the given ID was not found");
 
-  const result = await Semesters.deleteOne(semester);
-  res.send(result);
+  res.send("Delete successfully");
 });
 
 module.exports = router;
