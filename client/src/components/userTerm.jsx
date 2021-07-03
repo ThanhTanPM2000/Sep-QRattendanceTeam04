@@ -26,13 +26,14 @@ const UserTerm = ({ renderSelect, roles, nextStep, prevStep }) => {
         {renderSelect("roleId", "Role", roles, true)}
 
         <p className="text-warning">
-          First Time login will have a lecture role
+          You can only register with Van Lang lecturer account and have "Lecturer" role
+          in your first time login.
         </p>
 
         <Table>
           <tbody>
             <tr>
-              <td style={{ width: "10%" }}>
+              <td style={{ width: "5%" }}>
                 <Form.Check className="mb-2 pl-0">
                   <Form.Check.Label>
                     <Form.Check.Input
@@ -45,7 +46,7 @@ const UserTerm = ({ renderSelect, roles, nextStep, prevStep }) => {
                   </Form.Check.Label>
                 </Form.Check>
               </td>
-              <td>I Agree with this policy</td>
+              <td>I agree with this term</td>
             </tr>
           </tbody>
         </Table>
