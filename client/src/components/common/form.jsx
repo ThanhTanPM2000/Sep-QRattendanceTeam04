@@ -3,8 +3,10 @@ import Joi from "joi";
 
 import Input from "./input";
 import Select from "./select";
+import DateRangerPicker from "./datePicker";
+import moment from "moment";
 
-import { Form, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 class FormCommon extends Component {
   state = {
@@ -20,8 +22,6 @@ class FormCommon extends Component {
     if (!error) return null;
 
     for (let item of error.details) errors[item.path[0]] = item.message;
-
-    console.log(errors);
 
     return errors;
   };
@@ -60,6 +60,23 @@ class FormCommon extends Component {
     this.setState({ data, errors });
   };
 
+  handleDatePickerChange = (update) => {
+    const errors = {};
+    if (update[0] === null) errors["startDate"] = "Start Date not empty";
+    else delete errors["startDate"];
+
+    if (update[1] === null) errors["endDate"] = "End Date not empty";
+    else delete errors["endDate"];
+
+    this.setState({ errors });
+
+    const data = { ...this.state.data };
+    data.startDate = update[0];
+    data.endDate = update[1];
+    this.setState({ data });
+    console.log("data ", data);
+  };
+
   renderInput = (name, label, placeholder, isReadonly = false) => {
     const { data, errors } = this.state;
 
@@ -89,7 +106,13 @@ class FormCommon extends Component {
     );
   };
 
-  renderSelect = (name, label, options, isReadOnly = false) => {
+  renderSelect = (
+    name,
+    label,
+    options,
+    propDisplay = "name",
+    isReadOnly = false
+  ) => {
     const { data, errors } = this.state;
 
     return (
@@ -100,7 +123,23 @@ class FormCommon extends Component {
         value={data[name]}
         onChange={this.handleChange}
         errors={errors}
+        propDisplay={propDisplay}
         isReadOnly={isReadOnly}
+      />
+    );
+  };
+
+  renderDatePicker = (propStartDate, propEndDate, label) => {
+    const { data, errors } = this.state;
+    return (
+      <DateRangerPicker
+        propStartDate={propStartDate}
+        propEndDate={propEndDate}
+        label={label}
+        startDate={data[propStartDate]}
+        endDate={data[propEndDate]}
+        errors={errors}
+        onChange={this.handleDatePickerChange}
       />
     );
   };

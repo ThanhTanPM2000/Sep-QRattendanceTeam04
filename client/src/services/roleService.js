@@ -7,10 +7,17 @@ function rolesUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getRoles() {
+function getRoles() {
   return http.get(apiEndpoint);
 }
 
-export function getRole(id) {
+function getRole(id) {
   return http.get(rolesUrl(id));
 }
+
+const RoleService = {
+  getRoles,
+  getRole,
+};
+
+export default RoleService;

@@ -1,23 +1,21 @@
 import http from "./httpService";
 import { apiUrl } from "../configs/config.json";
 
-import { toast } from "react-toastify";
-
 const apiEndpoint = apiUrl + "/semesters";
 
 function semesterUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getSemesters() {
+function getSemesters() {
   return http.get(apiEndpoint);
 }
 
-export function getSemester(id) {
+function getSemester(id) {
   return http.get(semesterUrl(id));
 }
 
-export function saveSemester(semester) {
+function saveSemester(semester) {
   let response;
   const body = {
     year: `${semester.startYear}-${semester.endYear}`,
@@ -32,6 +30,15 @@ export function saveSemester(semester) {
   return response;
 }
 
-export function deleteSemester(semester) {
+function deleteSemester(semester) {
   return http.delete(semesterUrl(semester._id));
 }
+
+const SemesterService = {
+  getSemesters,
+  getSemester,
+  saveSemester,
+  deleteSemester,
+};
+
+export default SemesterService;

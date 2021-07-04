@@ -23,11 +23,11 @@ const UserTerm = ({ renderSelect, roles, nextStep, prevStep }) => {
     <div className="register">
       <div className="form-container">
         <h1 className="mb-5">User Term</h1>
-        {renderSelect("roleId", "Role", roles, true)}
+        {renderSelect("roleId", "Role", roles,"name", true, )}
 
         <p className="text-warning">
-          You can only register with Van Lang lecturer account and have "Lecturer" role
-          in your first time login.
+          You can only register with Van Lang lecturer account and have
+          "Lecturer" role in your first time login.
         </p>
 
         <Table>

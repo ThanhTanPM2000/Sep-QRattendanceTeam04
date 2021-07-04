@@ -39,16 +39,26 @@ router.post("/", validate(validateClass), async (req, res) => {
     dayOfWeek,
     numOfWeek,
     semesterId,
-    lecturerId,
+    lecturerMail,
   } = req.body;
 
-  let semester = await Semesters.findById(semesterId);
+  let myClass = await Classes.findOne({ classTermId });
+  if (myClass) return res.status(400).send("Class Term Id was exist");
+
+  let semester = await Semesters.findOne({ symbol: semesterId });
   if (!semester) return res.status(400).send("Semester not found");
 
-  const lecturer = await Users.findById(lecturerId);
-  if (!lecturer) return res.status(400).send("Invalid Lecturer");
+  let lecturer = await Users.findOne({ mail: lecturerMail });
+  if (!lecturer) {
+    lecturer = {
+      name: "waiting lecturer registered...",
+      userId: "waiting lecturer registered",
+      mail: lecturerMail,
+      degree: "lecturer",
+    };
+  }
 
-  const classes = new Classes({
+  myClass = new Classes({
     classTermId,
     name,
     numOfCredits,
@@ -67,7 +77,6 @@ router.post("/", validate(validateClass), async (req, res) => {
     },
     lecturer: {
       lecturerId: lecturer.userId,
-      degree: lecturer.degree,
       name: lecturer.name,
       mail: lecturer.mail,
       degree: lecturer.degree,
@@ -75,11 +84,22 @@ router.post("/", validate(validateClass), async (req, res) => {
     lessons: generateLessons(numOfWeek),
   });
 
-  await classes.save();
-  res.send(classes);
+  try {
+    const task = new Fawn.Task();
+    task.save("classes", myClass);
+    task.update(
+      "users",
+      { mail: lecturer.mail },
+      {
+        $push: { classes: myClass._id },
+      }
+    );
+    await task.run({ useMongoose: true });
+    res.send(myClass);
+  } catch (error) {
+    res.status(500).send("Something failed on server");
+  }
 });
-
-router.get;
 
 router.post(
   "/:id/addStudent",
@@ -91,9 +111,6 @@ router.post(
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Given class id not found");
 
-    let name = "";
-    let studentId = "";
-
     const studentExist = myClass.lessons[0].students.find(
       (x) => x?.mail === mail
     );
@@ -101,51 +118,49 @@ router.post(
 
     const student = await Students.findOne({ mail });
     if (!student) {
-      name = "Student not login yet";
-      studentId = "Student not login yet";
-    } else {
-      name = student.name;
-      studentId = student.studentId;
+      student = {
+        name: "Student not login yet",
+        studentId: "Student not login yet",
+      };
     }
 
-    try {
-      await new Fawn.Task()
-        .update(
-          "classes",
-          { _id: myClass?._id },
-          {
-            $push: {
-              "lessons.$[].students": {
-                mail,
-                name,
-                studentId,
-                status: false,
-              },
-            },
-            $inc: {
-              numOfStudents: 1,
-            },
-          }
-        )
-        .update(
-          "students",
-          { mail },
-          {
-            $push: {
-              classes: {
-                _id: myClass._id,
-                classTermId: myClass.classTermId,
-                name: myClass.name,
-              },
-            },
-          }
-        )
-        .run();
+    myClass.lessons.forEach((x) => {
+      x.students.push({
+        mail,
+        name: student["name"],
+        studentId: student["studentId"],
+        status: false,
+      });
+    });
+    myClass.numOfStudents++;
 
-      myClass = await Classes.findById(id);
+    try {
+      const task = new Fawn.Task();
+      task.update(
+        "classes",
+        { _id: myClass?._id },
+        {
+          $set: {
+            lessons: myClass.lessons,
+          },
+        }
+      );
+      task.update(
+        "students",
+        { mail },
+        {
+          $push: {
+            classes: {
+              _id: myClass._id,
+              classTermId: myClass.classTermId,
+              name: myClass.name,
+            },
+          },
+        }
+      );
+      await task.run();
       res.send(myClass);
     } catch (error) {
-      console.log(error);
       res.status(500).send("Something failed");
     }
   }
@@ -164,11 +179,12 @@ router.put(
     if (!myClass) return res.status(400).send("Given input not found");
 
     const student = myClass.lessons[0].students.find((x) => x?.mail === mail);
-    if (!student) return res.status(400).send("Not found Student in Class");
+    if (!student) return res.status(400).send("Student not found in Class");
 
     myClass.lessons[orderLesson - 1].students.find(
       (x) => x.mail === mail
     ).status = status;
+    await myClass.save();
 
     res.send(myClass);
   }
@@ -178,45 +194,101 @@ router.put(
   "/:id",
   [validateObjectId, validate(validateClass)],
   async (req, res) => {
-    const { semesterId, lecturerId } = req.body;
+    const { id } = req.params;
+    const {
+      classTermId,
+      name,
+      numOfCredits,
+      courseType,
+      schoolYear,
+      startDate,
+      endDate,
+      room,
+      numOfWeek,
+      dayOfWeek,
+      session,
+      semesterId,
+      lectureMail,
+    } = req.body;
 
-    const lecture = await Users.findOne({ _id: lecturerId });
-    if (!lecture) return res.status(400).send("Invalid lecture Id");
+    let myClass = await Classes.findById(id);
+    if (!myClass) return res.status(400).send("Invalid class id");
+
+    const lecturer = await Users.findOne({ mail: lectureMail });
+    if (!lecturer) {
+      lecturer["name"] = "waiting lecturer registered...";
+      lecturer["lecturerId"] = "waiting lecturer registered";
+      lecturer["mail"] = lecturerMail;
+      lecturer["degree"] = "lecturer";
+    }
 
     const semester = await Semesters.findOne({ _id: semesterId });
     if (!semester) return res.status(400).send("Invalid semester Id");
 
-    const classes = await Classes.findByIdAndUpdate(
-      req.params.id,
-      {
-        ..._.pick(req.body, [
-          "classTermId",
-          "name",
-          "numOfCredits",
-          "courseType",
-          "schoolYear",
-          "startData",
-          "endDate",
-          "room",
-          "dayOfWeek",
-          "numOfWeek",
-        ]),
-        semester: {
-          year: semester.year,
-          name: semester.name,
-          symbol: semester.symbol,
-        },
-        lecturer: {
-          lecturerId: lecture.userId,
-          name: lecture.name,
-          mail: lecture.mail,
-          degree: lecture.degree,
-        },
-      },
-      { new: true }
-    );
+    // myClass.classTermId = classTermId;
+    // myClass.name = name;
+    // myClass.numOfCredits = numOfCredits;
+    // myClass.courseType = courseType;
+    // myClass.schoolYear = schoolYear;
+    // myClass.startDate = startDate;
+    // myClass.endDate = endDate;
+    // myClass.room = room;
+    // myClass.numOfWeek = numOfWeek;
+    // myClass.dayOfWeek = dayOfWeek;
+    // myClass.session = session;
+    // myClass.semesterId = semester;
+    // myClass.lecturer = lecturer;
 
-    res.send(classes);
+    try {
+      const task = new Fawn.Task();
+
+      task.update(
+        "classes",
+        { _id: myClass._id },
+        {
+          $set: {
+            classTermId,
+            name,
+            numOfCredits,
+            courseType,
+            schoolYear,
+            startDate,
+            endDate,
+            room,
+            numOfWeek,
+            dayOfWeek,
+            session,
+            lecturer,
+            semester,
+          },
+        }
+      );
+      if (myClass.lecturer.mail !== lecturerMail) {
+        task.update(
+          "users",
+          { mail: myClass.lecturer.mail },
+          {
+            $pull: { classes: myClass._id },
+          }
+        );
+      }
+      task.update(
+        "users",
+        { mail: lecturerMail },
+        {
+          $push: { classes: myClass._id },
+        }
+      );
+
+      await task
+        .run({ useMongoose: true })
+        .then((result) => console.log(result[0]));
+
+      myClass = await Classes.findById(id);
+      res.send(myClass);
+    } catch (error) {
+      res.status(500).send("Something failed on server");
+    }
   }
 );
 
@@ -241,8 +313,6 @@ async function renderStudent(students) {
 
     return { mail: x?.mail, studentId: "Not login yet", name: "Not login yet" };
   });
-
-  console.log(result);
 
   return result;
 }

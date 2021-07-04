@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 
@@ -27,12 +27,6 @@ function Header() {
       }
     }
     return "Brand";
-  };
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-    localStorage.removeItem("token");
-    history.push("/login");
   };
 
   return (

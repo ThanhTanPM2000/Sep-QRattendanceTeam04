@@ -19,33 +19,33 @@ const schemaClass = new mongoose.Schema({
   numOfCredits: { type: Number, required: true },
   courseType: { type: String, required: true },
   schoolYear: { type: String, required: true },
-  startDate: { type: String },
-  endDate: { type: String },
+  startDate: { type: Date },
+  endDate: { type: Date },
   room: { type: String, required: true },
-  dayOfWeek: { type: String, required: true },
+  dayOfWeek: { type: Number, required: true },
   numOfWeek: { type: Number, required: true },
+  session: { type: String, required: true },
   numOfStudents: Number,
   semester: { type: schemaSemester, required: true },
   lecturer: {
-    type: new mongoose.Schema({
-      lecturerId: {
-        type: String,
-        required: true,
-        trim: true,
+    type: new mongoose.Schema(
+      {
+        lecturerId: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
+        mail: {
+          type: String,
+          required: true,
+        },
+        degree: {
+          type: String,
+        },
       },
-      name: {
-        type: String,
-        required: true,
-      },
-      mail: {
-        type: String,
-        required: true,
-      },
-      degree: {
-        type: String,
-        required: true,
-      },
-    }),
+      { _id: false }
+    ),
   },
   lessons: [
     {
@@ -70,13 +70,14 @@ function validateClass(reqBody) {
     numOfCredits: Joi.number().required(),
     courseType: Joi.string().required(),
     schoolYear: Joi.string().required(),
-    startDate: Joi.date().iso().utc(),
-    endDate: Joi.date().iso().utc(),
+    startDate: Joi.date().required(),
+    endDate: Joi.date().required(),
     room: Joi.string().required(),
-    dayOfWeek: Joi.string().required(),
+    dayOfWeek: Joi.number().required(),
     numOfWeek: Joi.number().required(),
+    session: Joi.string().required(),
     semesterId: Joi.string().required(),
-    lecturerId: Joi.string().required(),
+    lecturerMail: Joi.string().email().required(),
   });
 
   return schema.validate(reqBody);

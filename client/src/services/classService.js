@@ -7,18 +7,18 @@ function classesUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export async function getClasses() {
+async function getClasses() {
   try {
     const response = await http.get(apiEndpoint);
     return response;
   } catch (error) {}
 }
 
-export function getClass(id) {
-  return http.get(ClassesUrl(id));
+function getClass(id) {
+  return http.get(classesUrl(id));
 }
 
-export function saveClass(_class) {
+function saveClass(_class) {
   if (_class._id) {
     const body = { ..._class };
     delete body._id;
@@ -27,6 +27,15 @@ export function saveClass(_class) {
   return http.post(apiEndpoint, _class);
 }
 
-export function deleteClass(_class) {
-  return http.delete(classUrl(_class._id));
+function deleteClass(_class) {
+  return http.delete(classesUrl(_class._id));
 }
+
+const ClassService = {
+  getClass,
+  getClasses,
+  saveClass,
+  deleteClass,
+};
+
+export default ClassService;

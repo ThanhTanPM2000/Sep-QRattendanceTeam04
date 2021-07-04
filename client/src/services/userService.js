@@ -1,5 +1,3 @@
-import { toast } from "react-toastify";
-
 import http from "./httpService";
 import { apiUrl } from "../configs/config.json";
 
@@ -9,16 +7,15 @@ function userUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getUsers() {
+function getUsers() {
   return http.get(apiEndpoint);
 }
 
-export function getUser(id) {
+function getUser(id) {
   return http.get(userUrl(id));
 }
 
-export function saveUser(user) {
-  console.log("here is user you want", user);
+function saveUser(user) {
   if (user._id) {
     const body = { ...user };
     delete body._id;
@@ -27,6 +24,15 @@ export function saveUser(user) {
   return http.post(apiEndpoint, user);
 }
 
-export function deleteUser(user) {
+function deleteUser(user) {
   return http.delete(userUrl(user._id));
 }
+
+const UserService = {
+  getUsers,
+  getUser,
+  saveUser,
+  deleteUser,
+};
+
+export default UserService;

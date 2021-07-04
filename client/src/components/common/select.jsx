@@ -7,6 +7,7 @@ const Select = ({
   options,
   errors,
   value,
+  propDisplay,
   isReadOnly,
   ...otherProps
 }) => {
@@ -30,7 +31,7 @@ const Select = ({
               key={option._id}
               value={option._id}
             >
-              {option.name}
+              {option[propDisplay]}
             </option>
           ))}
         </Form.Control>

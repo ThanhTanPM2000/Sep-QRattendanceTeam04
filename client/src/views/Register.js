@@ -1,8 +1,8 @@
 import React from "react";
 import form from "../components/common/form";
 import Joi from "joi";
-import { getFaculties } from "services/facultyService";
-import { getRoles } from "services/roleService";
+import FacultyService from "services/facultyService";
+import RoleService from "services/roleService";
 import _ from "lodash";
 
 import auth from "../services/authService";
@@ -12,7 +12,7 @@ import UserTerm from "../components/userTerm";
 import "../assets/css/register.css";
 import Confirm from "components/confirm";
 import RegisteredAcc from "components/registeredAcc";
-import { saveUser } from "services/userService";
+import UserService from "services/userService";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 
@@ -68,7 +68,7 @@ class Register extends form {
 
   doRegister = async () => {
     try {
-      const { data, headers } = await saveUser(this.state.data);
+      const { data, headers } = await UserService.saveUser(this.state.data);
       if (data._id) this.setState({ isRegistered: true });
       auth.loginWithJwt(headers["x-auth-token"]);
     } catch (err) {
@@ -78,14 +78,14 @@ class Register extends form {
   };
 
   async populateFaculties() {
-    const { data: faculties } = await getFaculties();
+    const { data: faculties } = await FacultyService.getFaculties();
     const myData = { ...this.state.data };
     myData["facultyId"] = faculties[0]._id;
     this.setState({ faculties, data: myData });
   }
 
   async populateRoles() {
-    const { data: roles } = await getRoles();
+    const { data: roles } = await RoleService.getRoles();
     this.setState({ roles });
   }
 
@@ -93,9 +93,9 @@ class Register extends form {
     const user = auth.getCurrentUser();
   }
 
-  async componentDidMount() {
-    await this.populateFaculties();
-    await this.populateRoles();
+  componentDidMount() {
+    this.populateFaculties();
+    this.populateRoles();
   }
 
   doChange = (input, data) => {
@@ -108,7 +108,7 @@ class Register extends form {
       case 1:
         return (
           <React.Fragment>
-            {auth.getCurrentUser()._id ? (
+            {auth.getCurrentUser()?._id ? (
               <Redirect to="Not-Found" />
             ) : (
               <AccountSetup

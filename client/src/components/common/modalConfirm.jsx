@@ -16,6 +16,7 @@ const ModalConfirm = ({
     <Modal
       backdrop="static"
       dialogClassName="modal-confirm"
+      centered
       keyboard={false}
       onHide={onHide}
       {...otherProps}

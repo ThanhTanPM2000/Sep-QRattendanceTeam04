@@ -13,6 +13,7 @@ const schemaUser = new mongoose.Schema({
   degree: { type: String, required: true },
   faculty: { type: schemaFaculty, required: true },
   role: { type: schemaRole, required: true },
+  classes: [String],
 });
 
 schemaUser.methods.generateAuthToken = function () {

@@ -5,15 +5,14 @@ import { toast } from "react-toastify";
 import Pagination from "../components/common/pagination";
 import SearchBox from "../components/common/searchBox";
 import UserTable from "../components/userTable";
-import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
-import { getUsers } from "../services/userService";
-import { deleteUser } from "../services/userService";
+import UserService from "../services/userService";
+import LoadingPage from "../components/common/loadingPage";
 
 // react-bootstrap components
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
-import ModalCommon from "components/common/modalCommon";
-import UserForm from "./UserForm";
+import ModalForm from "components/common/modalForm";
+import UserForm from "components/userForm";
 import ModalConfirm from "components/common/modalConfirm";
 
 function Users() {
@@ -39,11 +38,13 @@ function Users() {
   const [modalShow, setModalShow] = React.useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
+  const [isLoading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
     async function getDataFromApi() {
       try {
-        let { data: newUsers } = await getUsers();
-
+        let { data: newUsers } = await UserService.getUsers();
+        setLoading(false);
         setUsers(newUsers);
         // setFaculties(newFaculties);
         // setRoles(newRoles);
@@ -67,13 +68,15 @@ function Users() {
     setUsers(newUsers);
 
     try {
-      await deleteUser(user);
+      await UserService.deleteUser(user);
       toast.success("Delete user successfully");
     } catch (error) {
       if (error.response && error.response.status === 404) {
         toast.error("This user has already delete");
       } else if (error.response && error.response.status === 403) {
         toast.error("Access denied");
+      } else {
+        toast.error(error.response.data);
       }
       setUsers(originalUser);
     }
@@ -166,7 +169,7 @@ function Users() {
   return (
     <>
       <Container fluid>
-        <ModalCommon
+        <ModalForm
           titleHeader="Create User"
           show={modalShow}
           onHide={() => setModalShow(false)}
@@ -176,7 +179,7 @@ function Users() {
             onUpdateUsers={handleUsersUpdate}
             selectedUser={selectedUser}
           />
-        </ModalCommon>
+        </ModalForm>
         <ModalConfirm
           onHide={() => setConfirmDeleteDialog(false)}
           onDelete={handleUserDelete}
@@ -212,22 +215,30 @@ function Users() {
                     </Button>
                   </Col>
                 </Row>
-                <UserTable
-                  users={newUsers}
-                  sortColumn={sortColumn}
-                  selectedData={selectedUser}
-                  onShowConfirm={handleShowConfirmDialog}
-                  onSort={handleSort}
-                  onShowUpdate={handleShowUpdateDialog}
-                />
-                <div className="ml-3">
-                  <Pagination
-                    itemsCount={totalCount}
-                    pageSize={pageSize}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
+                <LoadingPage isLoading={isLoading}>
+                  {totalCount === 0 ? (
+                    <p>Data empty</p>
+                  ) : (
+                    <>
+                      <UserTable
+                        users={newUsers}
+                        sortColumn={sortColumn}
+                        selectedData={selectedUser}
+                        onShowConfirm={handleShowConfirmDialog}
+                        onSort={handleSort}
+                        onShowUpdate={handleShowUpdateDialog}
+                      />
+                      <div className="ml-3">
+                        <Pagination
+                          itemsCount={totalCount}
+                          pageSize={pageSize}
+                          currentPage={currentPage}
+                          onPageChange={handlePageChange}
+                        />
+                      </div>
+                    </>
+                  )}
+                </LoadingPage>
               </Card.Body>
             </Card>
           </Col>

@@ -1,13 +1,13 @@
 import Dashboard from "views/Dashboard.js";
 import UserProfile from "views/UserProfile.js";
 import Users from "views/Users.js";
+import Classes from "views/Classes";
 import Semesters from "views/Semesters.js";
 import Typography from "views/Typography.js";
 import Logout from "views/Logout.js";
 import Icons from "views/Icons.js";
 import Maps from "views/Maps.js";
 import Notifications from "views/Notifications.js";
-import Register from "views/Register";
 
 const dashboardRoutes = [
   {
@@ -29,6 +29,13 @@ const dashboardRoutes = [
     name: "Semesters List",
     icon: "nc-icon nc-alien-33",
     component: Semesters,
+    layout: "/admin",
+  },
+  {
+    path: "/classes",
+    name: "Classes List",
+    icon: "nc-icon nc-alien-33",
+    component: Classes,
     layout: "/admin",
   },
   {

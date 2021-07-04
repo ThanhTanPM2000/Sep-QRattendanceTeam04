@@ -4,12 +4,6 @@ import { Button } from "react-bootstrap";
 
 const confirm = ({ data, faculties, roles, nextStep, prevStep }) => {
   const { userId, name, mail, degree, facultyId, roleId } = data;
-  const facultyName = faculties.find((x) => x._id === facultyId);
-
-  const handleContinue = (e) => {
-    e.preventDefault();
-    nextStep();
-  };
 
   const handleBack = (e) => {
     e.preventDefault();

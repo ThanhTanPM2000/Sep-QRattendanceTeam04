@@ -7,10 +7,17 @@ function facultiesUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getFaculties() {
+function getFaculties() {
   return http.get(apiEndpoint);
 }
 
-export function getFaculty(id) {
+function getFaculty(id) {
   return http.get(facultiesUrl(id));
 }
+
+const FacultyService = {
+  getFaculties,
+  getFaculty,
+};
+
+export default FacultyService;

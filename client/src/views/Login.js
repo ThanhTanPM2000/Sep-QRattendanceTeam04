@@ -1,6 +1,5 @@
 import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
-import { Button, Image } from "react-bootstrap";
 
 import {
   InteractionStatus,
@@ -23,7 +22,7 @@ import auth from "../services/authService";
 import "../assets/css/login.css";
 import "../assets/scss/login.scss";
 
-const Login = ({ data, isAuth }) => {
+const Login = () => {
   const { instance, inProgress, accounts } = useMsal();
   const history = useHistory();
 
@@ -32,14 +31,13 @@ const Login = ({ data, isAuth }) => {
   }
 
   React.useEffect(() => {
-    if (!data && isAuth && inProgress === InteractionStatus.None) {
+    if (inProgress === InteractionStatus.None) {
       async function handleLogin() {
         try {
           const accessTokenResponse = await instance.acquireTokenSilent({
             ...loginRequest,
             account: instance.getActiveAccount(),
           });
-          console.log(accessTokenResponse.accessToken);
 
           const response = await callMsGraph(accessTokenResponse.accessToken);
           await auth.login(response);
@@ -56,7 +54,7 @@ const Login = ({ data, isAuth }) => {
 
       handleLogin();
     }
-  }, [instance, accounts, inProgress, data]);
+  }, [instance, accounts, inProgress]);
 
   instance.addEventCallback(
     (event) => {
@@ -79,7 +77,7 @@ const Login = ({ data, isAuth }) => {
       instance.loginPopup(loginRequest).catch((err) => console.log(err));
   }
 
-  return data ? (
+  return auth.getCurrentUser() ? (
     <Redirect to="/" />
   ) : (
     <div className="auth-wrapper">

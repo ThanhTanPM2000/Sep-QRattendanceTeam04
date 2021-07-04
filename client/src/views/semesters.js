@@ -5,16 +5,16 @@ import { toast } from "react-toastify";
 import Pagination from "../components/common/pagination";
 import SearchBox from "../components/common/searchBox";
 import SemesterTable from "../components/semesterTable";
-import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
-import { getSemesters } from "../services/semesterService";
-import { deleteSemester } from "../services/semesterService";
-import ModalConfirm from "components/common/modalConfirm";
+import SemesterService from "../services/semesterService";
+import ModalConfirm from "../components/common/modalConfirm";
+
+import LoadingPage from "../components/common/loadingPage";
 
 // react-bootstrap components
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
-import ModalCommon from "components/common/modalCommon";
-import SemesterForm from "./SemesterForm";
+import ModalForm from "../components/common/modalForm";
+import SemesterForm from "../components/semesterForm";
 
 function Semesters() {
   const [semestersList, setSemesters] = React.useState([]);
@@ -29,11 +29,14 @@ function Semesters() {
   const [modalShow, setModalShow] = React.useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
+  const [isLoading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
     async function getDataFromApi() {
       try {
-        let { data: newSemesters } = await getSemesters();
+        let { data: newSemesters } = await SemesterService.getSemesters();
 
+        setLoading(false);
         setSemesters(newSemesters);
       } catch (error) {
         console.log("hello");
@@ -55,7 +58,7 @@ function Semesters() {
     setSemesters(newSemesters);
 
     try {
-      await deleteSemester(semester);
+      await SemesterService.deleteSemester(semester);
       toast.success("Delete semester successfully");
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -127,7 +130,7 @@ function Semesters() {
   return (
     <>
       <Container fluid>
-        <ModalCommon
+        <ModalForm
           titleHeader="Create Semester"
           show={modalShow}
           onHide={() => setModalShow(false)}
@@ -137,7 +140,7 @@ function Semesters() {
             onUpdateSemesters={handleSemestersUpdate}
             selectedSemester={selectedSemester}
           />
-        </ModalCommon>
+        </ModalForm>
         <ModalConfirm
           onHide={() => setConfirmDeleteDialog(false)}
           onDelete={handleSemesterDelete}
@@ -173,20 +176,29 @@ function Semesters() {
                     </Button>
                   </Col>
                 </Row>
-                <SemesterTable
-                  semesters={newSemesters}
-                  sortColumn={sortColumn}
-                  selectedData={selectedSemester}
-                  onShowConfirm={handleShowConfirmDialog}
-                  onSort={handleSort}
-                  onShowUpdate={handleShowUpdateDialog}
-                />
-                <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
+
+                <LoadingPage isLoading={isLoading}>
+                  {totalCount === 0 ? (
+                    <p>Data empty</p>
+                  ) : (
+                    <>
+                      <SemesterTable
+                        semesters={newSemesters}
+                        sortColumn={sortColumn}
+                        selectedData={selectedSemester}
+                        onShowConfirm={handleShowConfirmDialog}
+                        onSort={handleSort}
+                        onShowUpdate={handleShowUpdateDialog}
+                      />
+                      <Pagination
+                        itemsCount={totalCount}
+                        pageSize={pageSize}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                      />
+                    </>
+                  )}
+                </LoadingPage>
               </Card.Body>
             </Card>
           </Col>

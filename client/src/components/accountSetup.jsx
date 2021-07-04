@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Button } from "react-bootstrap";
-
 const AccountSetup = ({
   renderInput,
   renderSelect,
@@ -20,7 +18,7 @@ const AccountSetup = ({
           {renderInput("userId", "User Id", "UserId")}
           {renderInput("mail", "Email Address", "Email", true)}
           {renderInput("degree", "Degree", "degree")}
-          {renderSelect("facultyId", "Faculty", faculties)}
+          {renderSelect("facultyId", "Faculty", faculties, "name")}
           <div className="text-right">{renderSubmit("Continue")}</div>
         </form>
       </div>
