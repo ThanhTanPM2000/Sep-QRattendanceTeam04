@@ -7,9 +7,9 @@ const { schemaFaculty } = require("./faculties");
 const { schemaRole } = require("./roles");
 
 const schemaUser = new mongoose.Schema({
-  userId: { type: String, required: true, index: true },
+  userId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  mail: { type: String, required: true, index: true },
+  mail: { type: String, required: true, unique: true },
   degree: { type: String, required: true },
   faculty: { type: schemaFaculty, required: true },
   role: { type: schemaRole, required: true },

@@ -31,7 +31,6 @@ router.post("/", validate(validateUser), async (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.body.facultyId)) {
     return res.status(404).send("Invalid Id");
   }
-  console.log(Faculties);
   const faculty = await Faculties.findById(req.body.facultyId);
   if (!faculty) return res.status(400).send("Faculty not found");
 
@@ -88,13 +87,12 @@ router.put(
 );
 
 router.delete("/:id", validateObjectId, async (req, res) => {
-  const user = await Users.findById(req.params.id);
+  const user = await Users.findByIdAndDelete(req.params.id);
 
   if (!user)
     return res.status(404).send("The User with the given ID was not found");
 
-  const result = await Users.remove(user);
-  res.send(result);
+  res.send("Delete Successfully");
 });
 
 module.exports = router;

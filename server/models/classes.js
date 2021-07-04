@@ -1,19 +1,30 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
+const Joi = require("joi").extend(require("@joi/date"));
 
 const { schemaSemester } = require("./semesters");
 
+const studentInClassSchema = new mongoose.Schema(
+  {
+    mail: { type: String, index: true },
+    name: String,
+    studentId: String,
+    status: Boolean,
+  },
+  { _id: false }
+);
+
 const schemaClass = new mongoose.Schema({
-  classTermId: { type: String, required: true },
+  classTermId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   numOfCredits: { type: Number, required: true },
   courseType: { type: String, required: true },
   schoolYear: { type: String, required: true },
-  startDate: { type: Date },
-  endDate: { type: Date },
+  startDate: { type: String },
+  endDate: { type: String },
   room: { type: String, required: true },
   dayOfWeek: { type: String, required: true },
   numOfWeek: { type: Number, required: true },
+  numOfStudents: Number,
   semester: { type: schemaSemester, required: true },
   lecturer: {
     type: new mongoose.Schema({
@@ -22,11 +33,15 @@ const schemaClass = new mongoose.Schema({
         required: true,
         trim: true,
       },
-      degree: {
+      name: {
         type: String,
         required: true,
       },
-      name: {
+      mail: {
+        type: String,
+        required: true,
+      },
+      degree: {
         type: String,
         required: true,
       },
@@ -35,10 +50,13 @@ const schemaClass = new mongoose.Schema({
   lessons: [
     {
       order: Number,
-      students: [String],
+      name: String,
+      students: [studentInClassSchema],
       numOfAttendance: Number,
       numOfNonAttendance: Number,
       codeAttendance: String,
+      expiredCode: Number,
+      status: Boolean,
     },
   ],
 });
@@ -52,24 +70,29 @@ function validateClass(reqBody) {
     numOfCredits: Joi.number().required(),
     courseType: Joi.string().required(),
     schoolYear: Joi.string().required(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().iso().utc(),
+    endDate: Joi.date().iso().utc(),
     room: Joi.string().required(),
     dayOfWeek: Joi.string().required(),
     numOfWeek: Joi.number().required(),
-    semesterSymbol: Joi.string().required(),
-    lecturerMail: Joi.string().email().required(),
-    // lessons: Joi.object({
-    //   order: Joi.number,
-    //   students: Joi.array().items(Joi.string()),
-    //   numOfAttendance: Joi.string(),
-    //   numOfNonAttendance: Joi.number(),
-    //   codeAttendance: Joi.string(),
-    // }),i
+    semesterId: Joi.string().required(),
+    lecturerId: Joi.string().required(),
+  });
+
+  return schema.validate(reqBody);
+}
+
+function validateStudentInClass(reqBody) {
+  const schema = Joi.object({
+    mail: Joi.string().required(),
+    name: Joi.string(),
+    studentId: Joi.string(),
+    status: Joi.boolean(),
   });
 
   return schema.validate(reqBody);
 }
 
 exports.validateClass = validateClass;
+exports.validateStudentInClass = validateStudentInClass;
 exports.Classes = Classes;
