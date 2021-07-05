@@ -35,6 +35,7 @@ router.post("/", validate(validateClass), async (req, res) => {
     schoolYear,
     startDate,
     endDate,
+    session,
     room,
     dayOfWeek,
     numOfWeek,
@@ -68,6 +69,7 @@ router.post("/", validate(validateClass), async (req, res) => {
     endDate,
     room,
     dayOfWeek,
+    session,
     numOfWeek,
     numOfStudents: 0,
     semester: {
@@ -101,77 +103,76 @@ router.post("/", validate(validateClass), async (req, res) => {
   }
 });
 
-router.post(
-  "/:id/addStudent",
-  validate(validateStudentInClass),
-  async (req, res) => {
-    const { id } = req.params;
-    const { mail } = req.body;
+router.post("/:id", validate(validateStudentInClass), async (req, res) => {
+  const { id } = req.params;
+  const { mail } = req.body;
 
-    let myClass = await Classes.findById(id);
-    if (!myClass) return res.status(400).send("Given class id not found");
+  let myClass = await Classes.findById(id);
+  if (!myClass) return res.status(400).send("Given class id not found");
 
-    const studentExist = myClass.lessons[0].students.find(
-      (x) => x?.mail === mail
-    );
-    if (studentExist) return res.status(400).send("student was exist in class");
+  const studentExist = myClass.lessons[0].students.find(
+    (x) => x?.mail === mail
+  );
+  if (studentExist) return res.status(400).send("student was exist in class");
 
-    const student = await Students.findOne({ mail });
-    if (!student) {
-      student = {
-        name: "Student not login yet",
-        studentId: "Student not login yet",
-      };
-    }
-
-    myClass.lessons.forEach((x) => {
-      x.students.push({
-        mail,
-        name: student["name"],
-        studentId: student["studentId"],
-        status: false,
-      });
-    });
-    myClass.numOfStudents++;
-
-    try {
-      const task = new Fawn.Task();
-      task.update(
-        "classes",
-        { _id: myClass?._id },
-        {
-          $set: {
-            lessons: myClass.lessons,
-          },
-        }
-      );
-      task.update(
-        "students",
-        { mail },
-        {
-          $push: {
-            classes: {
-              _id: myClass._id,
-              classTermId: myClass.classTermId,
-              name: myClass.name,
-            },
-          },
-        }
-      );
-      await task.run();
-      res.send(myClass);
-    } catch (error) {
-      res.status(500).send("Something failed");
-    }
+  let student = await Students.findOne({ mail });
+  if (!student) {
+    student = {
+      name: "Student not login yet",
+      studentId: "Student not login yet",
+    };
   }
-);
+
+  myClass.lessons.forEach((x) => {
+    x.students.push({
+      mail,
+      name: student["name"],
+      studentId: student["studentId"],
+      status: false,
+    });
+  });
+  myClass.numOfStudents++;
+
+  try {
+    const task = new Fawn.Task();
+    task.update(
+      "classes",
+      { _id: myClass?._id },
+      {
+        $set: {
+          lessons: myClass.lessons,
+        },
+        $inc: {
+          numOfStudents: 1,
+        },
+      }
+    );
+    task.update(
+      "students",
+      { mail },
+      {
+        $push: {
+          classes: {
+            _id: myClass._id,
+            classTermId: myClass.classTermId,
+            name: myClass.name,
+          },
+        },
+      }
+    );
+    await task.run();
+    res.send(myClass);
+  } catch (error) {
+    res.status(500).send("Something failed");
+  }
+});
 
 router.put(
-  "/:id/:orderLesson",
+  "/:id/:mail",
   [validateObjectId, validate(validateStudentInClass)],
   async (req, res) => {
-    const { id, orderLesson } = req.params;
-    const { mail, status } = req.body;
+    const { id, mail } = req.params;
+    const { status } = req.body;
 
     if (!status) return res.status(400).send("Status is required");
 
@@ -189,6 +190,54 @@ router.put(
     res.send(myClass);
   }
 );
+
+router.delete("/:id/:mail", async (req, res) => {
+  const { id, mail } = req.params;
+
+  let myClass = await Classes.findById(id);
+  if (!myClass) return res.status(400).send("Given input not found");
+
+  const student = myClass.lessons[0].students.find((x) => x?.mail === mail);
+  if (!student) return res.status(400).send("Student not found in Class");
+
+  try {
+    const task = new Fawn.Task();
+    task.update(
+      "classes",
+      { _id: myClass._id },
+      {
+        $pull: {
+          "lessons.$[].students": {
+            mail: student.mail,
+          },
+        },
+        $inc: {
+          numOfStudents: -1,
+        },
+      }
+    );
+    task.update(
+      "students",
+      { mail },
+      {
+        $pull: {
+          classes: {
+            $elemMatch: {
+              classTermId: myClass.classTermId,
+            },
+          },
+        },
+      },
+      { multi: true }
+    );
+    await task.run({ useMongoose: true });
+
+    const newdata = await Classes.findById(id);
+    res.send(newdata);
+  } catch (error) {
+    res.status(500).send("Something failed on server");
+  }
+});
 
 router.put(
   "/:id",
@@ -208,18 +257,20 @@ router.put(
       dayOfWeek,
       session,
       semesterId,
-      lectureMail,
+      lecturerMail,
     } = req.body;
 
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Invalid class id");
 
-    const lecturer = await Users.findOne({ mail: lectureMail });
+    const lecturer = await Users.findOne({ mail: lecturerMail });
     if (!lecturer) {
-      lecturer["name"] = "waiting lecturer registered...";
-      lecturer["lecturerId"] = "waiting lecturer registered";
-      lecturer["mail"] = lecturerMail;
-      lecturer["degree"] = "lecturer";
+      lecturer = {
+        name: "waiting lecturer registered",
+        lecturerId: "waiting lecturer registered",
+        mail: lecturerMail,
+        degree: "waiting lecturer registered",
+      };
     }
 
     const semester = await Semesters.findOne({ _id: semesterId });
@@ -285,6 +336,7 @@ router.put(
         .then((result) => console.log(result[0]));
 
       myClass = await Classes.findById(id);
+
       res.send(myClass);
     } catch (error) {
       res.status(500).send("Something failed on server");
