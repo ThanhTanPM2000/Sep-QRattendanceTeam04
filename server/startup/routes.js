@@ -7,6 +7,7 @@ const faculties = require("../routes/faculties");
 const roles = require("../routes/roles");
 const auth = require("../routes/auth");
 const students = require("../routes/students");
+const lessons = require("../routes/lessons");
 const error = require("../middleware/error");
 
 module.exports = function (app) {
@@ -16,6 +17,7 @@ module.exports = function (app) {
   app.use("/api/students", students);
   app.use("/api/classes", classes);
   app.use("/api/faculties", faculties);
+  app.use("/api/lessons", lessons);
   app.use("/api/auth", auth);
   app.use("/api/roles", roles);
   app.use(error);

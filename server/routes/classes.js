@@ -46,7 +46,12 @@ router.post("/", validate(validateClass), async (req, res) => {
   let myClass = await Classes.findOne({ classTermId });
   if (myClass) return res.status(400).send("Class Term Id was exist");
 
-  let semester = await Semesters.findOne({ symbol: semesterId });
+  let semester;
+  if (mongoose.Types.ObjectId.isValid(semesterId)) {
+    semester = await Semesters.findById(semesterId);
+  } else {
+    semester = await Semesters.findOne({ symbol: semesterId });
+  }
   if (!semester) return res.status(400).send("Semester not found");
 
   let lecturer = await Users.findOne({ mail: lecturerMail });
@@ -128,8 +133,9 @@ router.post("/:id", validate(validateStudentInClass), async (req, res) => {
       mail,
       name: student["name"],
       studentId: student["studentId"],
-      status: false,
+      status: "Not Attendance",
     });
+    x.numOfNonAttendance++;
   });
   myClass.numOfStudents++;
 
@@ -160,7 +166,7 @@ router.post("/:id", validate(validateStudentInClass), async (req, res) => {
         },
       }
     );
-    await task.run();
+    await task.run({ useMongoose: true });
     res.send(myClass);
   } catch (error) {
     res.status(500).send("Something failed");
@@ -212,6 +218,7 @@ router.delete("/:id/:mail", async (req, res) => {
           },
         },
         $inc: {
+          "lessons.$[].numOfNonAttendance": -1,
           numOfStudents: -1,
         },
       }
@@ -263,7 +270,7 @@ router.put(
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Invalid class id");
 
-    const lecturer = await Users.findOne({ mail: lecturerMail });
+    let lecturer = await Users.findOne({ mail: lecturerMail });
     if (!lecturer) {
       lecturer = {
         name: "waiting lecturer registered",
@@ -331,12 +338,9 @@ router.put(
         }
       );
 
-      await task
-        .run({ useMongoose: true })
-        .then((result) => console.log(result[0]));
+      await task.run({ useMongoose: true });
 
       myClass = await Classes.findById(id);
-
       res.send(myClass);
     } catch (error) {
       res.status(500).send("Something failed on server");
@@ -353,21 +357,7 @@ router.delete("/:id", validateObjectId, async (req, res) => {
   res.send("Delete Successfully");
 });
 
-async function renderStudent(students) {
-  const result = await students.map(async (x) => {
-    const student = await Students.findOne({ mail: x?.mail });
-    if (student)
-      return {
-        mail: student.mail,
-        studentId: student.studentId,
-        name: student.name,
-      };
-
-    return { mail: x?.mail, studentId: "Not login yet", name: "Not login yet" };
-  });
-
-  return result;
-}
+router.put("/:id");
 
 function generateLessons(numOfWeek) {
   let lessons = [];
@@ -380,8 +370,9 @@ function generateLessons(numOfWeek) {
       numOfAttendance: 0,
       numOfNonAttendance: 0,
       codeAttendance: 2,
-      expiredCode: 0,
-      status: false,
+      expiredTime: null,
+      qrCode: null,
+      status: "Availability",
     });
   }
 

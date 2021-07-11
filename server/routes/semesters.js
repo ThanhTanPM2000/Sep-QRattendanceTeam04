@@ -31,7 +31,10 @@ router.put(
   "/:id",
   [validateObjectId, validate(validateSemester)],
   async (req, res) => {
-    const semester = await Semesters.findByIdAndUpdate(
+    let semester = await Semesters.findOne({ symbol: req.body.symbol });
+    if (semester) return res.status(400).send("Symbol Semester already exists");
+
+    semester = await Semesters.findByIdAndUpdate(
       req.params.id,
       {
         ..._.pick(req.body, ["name", "year", "symbol"]),

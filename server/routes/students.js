@@ -43,22 +43,30 @@ router.post("/", validate(validateStudent), async (req, res) => {
   try {
     const task = new Fawn.Task();
     task.save("students", student);
-    classes.forEach(async (x) => {
-      await task.update(
+    classes.forEach((x) => {
+      task.update(
         "classes",
         { _id: x._id },
         {
-          $set: {
-            "lessons.$[].students.$[element]": {
+          $pull: {
+            "lessons.$[].students": {
+              mail,
+            },
+          },
+        }
+      );
+      task.update(
+        "classes",
+        { _id: x._id },
+        {
+          $push: {
+            "lessons.$[].students": {
               mail,
               name,
               studentId,
-              status: false,
+              status: "Not Attendance",
             },
           },
-        },
-        {
-          arrayFilters: [{ "element.mail": { $eq: mail } }],
         }
       );
     });
@@ -96,6 +104,13 @@ router.delete("/:id", [validateObjectId], async (req, res) => {
     return res
       .status(404)
       .send("The Student with given ID was not found in DB");
+
+      try {
+        const task = new Fawn.Task();
+        task.update("classes")
+      } catch (error) {
+        
+      }
 
   res.send("Delete Successfully");
 });

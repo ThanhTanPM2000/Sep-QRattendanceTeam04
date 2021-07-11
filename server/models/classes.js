@@ -8,7 +8,7 @@ const studentInClassSchema = new mongoose.Schema(
     mail: { type: String, index: true },
     name: String,
     studentId: String,
-    status: Boolean,
+    status: String,
   },
   { _id: false }
 );
@@ -49,14 +49,20 @@ const schemaClass = new mongoose.Schema({
   },
   lessons: [
     {
-      order: Number,
-      name: String,
-      students: [studentInClassSchema],
-      numOfAttendance: Number,
-      numOfNonAttendance: Number,
-      codeAttendance: String,
-      expiredCode: Number,
-      status: Boolean,
+      type: new mongoose.Schema(
+        {
+          order: Number,
+          name: String,
+          students: [studentInClassSchema],
+          numOfAttendance: Number,
+          numOfNonAttendance: Number,
+          codeAttendance: String,
+          expiredTime: Number,
+          qrCode: String,
+          status: String,
+        },
+        { _id: false }
+      ),
     },
   ],
 });
