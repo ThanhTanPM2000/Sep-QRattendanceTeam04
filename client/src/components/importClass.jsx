@@ -1,6 +1,6 @@
 import React from "react";
 
-import ModalImport from "./common/modalImport";
+import ModalImport from "./modalImportClass";
 
 const ImportClass = ({ show, onHide }) => {
 	

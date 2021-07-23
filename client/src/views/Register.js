@@ -29,6 +29,7 @@ class Register extends form {
     },
     isRegistered: false,
     faculties: [],
+    user: "",
     roles: [],
     errors: {},
   };
@@ -90,12 +91,14 @@ class Register extends form {
   }
 
   async populateUsers() {
-    const user = auth.getCurrentUser();
+    const { user } = this.props;
+    this.setState({ user });
   }
 
   componentDidMount() {
     this.populateFaculties();
     this.populateRoles();
+    // this.populateUsers()
   }
 
   doChange = (input, data) => {
@@ -109,7 +112,7 @@ class Register extends form {
         return (
           <React.Fragment>
             {auth.getCurrentUser()?._id ? (
-              <Redirect to="Not-Found" />
+              <Redirect to="/" />
             ) : (
               <AccountSetup
                 renderInput={(name, label, placeholder, isReadOnly = false) =>

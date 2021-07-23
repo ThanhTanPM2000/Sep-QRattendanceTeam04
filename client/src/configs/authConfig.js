@@ -16,6 +16,7 @@ export const msalConfig = {
     authority:
       "https://login.microsoftonline.com/3011a54b-0a5d-4929-bf02-a00787877c6a",
     resourceUri: "https://graph.windows.net",
+    // redirectUri: "https://vlu-qrcode-client.herokuapp.com/login",
     redirectUri: "http://localhost:3000/login",
   },
   cache: {

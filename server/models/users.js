@@ -35,7 +35,9 @@ function validateUser(reqBodyUser) {
   const schema = Joi.object({
     userId: Joi.string().required(),
     name: Joi.string().required(),
-    mail: Joi.string().email().required(),
+    mail: Joi.string()
+      .email({ tlds: { allow: false } })
+      .required(),
     degree: Joi.string().required(),
     facultyId: Joi.objectId().required(),
     roleId: Joi.objectId().required(),

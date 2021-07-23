@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const { Semesters } = require("../models/semesters");
 const Fawn = require("../utils/transaction");
 
+const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
 const {
@@ -16,8 +17,13 @@ const { Students } = require("../models/students");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const classes = await Classes.find();
+router.get("/", auth, async (req, res) => {
+  let classes = null;
+  if (req.user.role === "lecturer") {
+    classes = await Classes.find({ "lecturer.mail": req.user.mail });
+  } else {
+    classes = await Classes.find();
+  }
   res.send(classes);
 });
 
@@ -76,8 +82,13 @@ router.post("/", validate(validateClass), async (req, res) => {
     dayOfWeek,
     session,
     numOfWeek,
+    sumOfAttendance: 0,
+    sumOfNonAttendance: 0,
+    averageOfAttendance: 0,
+    averageOfNonAttendance: 0,
     numOfStudents: 0,
     semester: {
+      _id: semester._id,
       name: semester.name,
       symbol: semester.symbol,
       year: semester.year,
@@ -133,10 +144,13 @@ router.post("/:id", validate(validateStudentInClass), async (req, res) => {
       mail,
       name: student["name"],
       studentId: student["studentId"],
-      status: "Not Attendance",
+      status: "Not Attended",
     });
     x.numOfNonAttendance++;
+    x.averageOfAttendance = x.numOfAttendance / x.students.length;
+    x.averageOfNonAttendance = x.numOfNonAttendance / x.students.length;
   });
+  myClass.sumOfNonAttendance++;
   myClass.numOfStudents++;
 
   try {
@@ -150,6 +164,7 @@ router.post("/:id", validate(validateStudentInClass), async (req, res) => {
         },
         $inc: {
           numOfStudents: 1,
+          sumOfNonAttendance: myClass.lessons.length,
         },
       }
     );
@@ -206,8 +221,54 @@ router.delete("/:id/:mail", async (req, res) => {
   const student = myClass.lessons[0].students.find((x) => x?.mail === mail);
   if (!student) return res.status(400).send("Student not found in Class");
 
+  myClass.lessons.map((x) => {
+    x.students.map((y) => {
+      if (y.mail === mail) {
+        if (y.status === "Not Attended") {
+          x.numOfNonAttendance--;
+          x.averageOfNonAttendance = x.numOfNonAttendance / x.students.length;
+        } else {
+          x.numOfAttendance--;
+          x.averageOfAttendance = x.numOfAttendance / x.students.length;
+        }
+      }
+    });
+  });
+
+  // myClass.sumOfAttendance = myClass.lessons.reduce((reducer, currentValue) => {
+  //   return reducer + currentValue.numOfAttendance;
+  // });
+
+  // myClass.sumOfNonAttendance = myClass.lessons.reduce(
+  //   (reducer, currentValue) => {
+  //     return reducer + currentValue.numOfNonAttendance;
+  //   }
+  // );
+
+  // myClass.averageOfAttendance =
+  //   myClass.lessons.reduce((reducer, currentValue) => {
+  //     return reducer + currentValue.averageOfAttendance;
+  //   }) / myClass.lessons.length;
+
+  // myClass.averageOfNonAttendance =
+  //   myClass.lessons.reduce((reducer, currentValue) => {
+  //     return reducer + currentValue.averageOfNonAttendance;
+  //   }) / myClass.lessons.length;
+
   try {
     const task = new Fawn.Task();
+    task.update(
+      "classes",
+      { _id: myClass._id },
+      {
+        $inc: {
+          numOfStudents: -1,
+        },
+        $set: {
+          lessons: myClass.lessons,
+        },
+      }
+    );
     task.update(
       "classes",
       { _id: myClass._id },
@@ -217,9 +278,31 @@ router.delete("/:id/:mail", async (req, res) => {
             mail: student.mail,
           },
         },
-        $inc: {
-          "lessons.$[].numOfNonAttendance": -1,
-          numOfStudents: -1,
+      }
+    );
+    task.update(
+      "classes",
+      { _id: myClass._id },
+      {
+        $set: {
+          sumOfAttendance: myClass.lessons.reduce((reducer, currentValue) => {
+            return reducer + currentValue.numOfAttendance;
+          }, 0),
+          sumOfNonAttendance: myClass.lessons.reduce(
+            (reducer, currentValue) => {
+              return reducer + currentValue.numOfNonAttendance;
+            },
+            0
+          ),
+          averageOfAttendance:
+            myClass.lessons.reduce((reducer, currentValue) => {
+              return reducer + currentValue.averageOfAttendance;
+            }, 0) / myClass.lessons.length,
+
+          averageOfNonAttendance:
+            myClass.lessons.reduce((reducer, currentValue) => {
+              return reducer + currentValue.averageOfNonAttendance;
+            }, 0) / myClass.lessons.length,
         },
       }
     );
@@ -369,7 +452,8 @@ function generateLessons(numOfWeek) {
       students: [],
       numOfAttendance: 0,
       numOfNonAttendance: 0,
-      codeAttendance: 2,
+      averageOfAttendance: 0,
+      averageOfNonAttendance: 0,
       expiredTime: null,
       qrCode: null,
       status: "Availability",

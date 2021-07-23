@@ -15,6 +15,8 @@ import ModalForm from "components/common/modalForm";
 import UserForm from "components/userForm";
 import ModalConfirm from "components/common/modalConfirm";
 
+import auth from "../services/authService";
+
 function Users() {
   const [usersList, setUsers] = React.useState([]);
   const [faculties, setFaculties] = React.useState([]);
@@ -44,17 +46,17 @@ function Users() {
     async function getDataFromApi() {
       try {
         let { data: newUsers } = await UserService.getUsers();
+        const currentUser = auth.getCurrentUser();
+        newUsers.filter((x) => x._id !== currentUser?._id);
         setLoading(false);
         setUsers(newUsers);
-        // setFaculties(newFaculties);
-        // setRoles(newRoles);
       } catch (error) {
         console.log("hello");
       }
     }
 
     getDataFromApi();
-  }, []);
+  }, [selectedUser]);
 
   const handleShowConfirmDialog = (user) => {
     setSelectedUser(user);
@@ -170,7 +172,7 @@ function Users() {
     <>
       <Container fluid>
         <ModalForm
-          titleHeader="Create User"
+          titleHeader={!selectedUser._id ? "Create User" : "Update User"}
           show={modalShow}
           onHide={() => setModalShow(false)}
         >
@@ -248,4 +250,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default React.memo(Users);

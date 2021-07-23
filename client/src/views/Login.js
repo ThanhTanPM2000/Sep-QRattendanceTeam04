@@ -21,6 +21,7 @@ import {
 import auth from "../services/authService";
 import "../assets/css/login.css";
 import "../assets/scss/login.scss";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { instance, inProgress, accounts } = useMsal();
@@ -31,7 +32,7 @@ const Login = () => {
   }
 
   React.useEffect(() => {
-    if (inProgress === InteractionStatus.None) {
+    if (inProgress === InteractionStatus.None && accounts.length > 0) {
       async function handleLogin() {
         try {
           const accessTokenResponse = await instance.acquireTokenSilent({
@@ -41,7 +42,7 @@ const Login = () => {
 
           const response = await callMsGraph(accessTokenResponse.accessToken);
           await auth.login(response);
-          history.replace("/");
+          history.replace("/register");
         } catch (error) {
           if (error instanceof InteractionRequiredAuthError) {
             instance.acquireTokenRedirect({
@@ -51,7 +52,6 @@ const Login = () => {
           }
         }
       }
-
       handleLogin();
     }
   }, [instance, accounts, inProgress]);
@@ -77,7 +77,7 @@ const Login = () => {
       instance.loginPopup(loginRequest).catch((err) => console.log(err));
   }
 
-  return auth.getCurrentUser() ? (
+  return auth.getCurrentUser()?._id ? (
     <Redirect to="/" />
   ) : (
     <div className="auth-wrapper">
@@ -91,7 +91,7 @@ const Login = () => {
               </AuthenticatedTemplate>
               <UnauthenticatedTemplate>
                 <a
-                  className="button button--social-login button--microsoft"
+                  className="clickable button button--social-login button--microsoft"
                   onClick={loginPopup}
                 >
                   <i className="icon fab fa-windows" />

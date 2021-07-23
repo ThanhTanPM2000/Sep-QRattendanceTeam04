@@ -15,14 +15,10 @@ router.post("/", validate(validateAuth), async (req, res) => {
   name = _.replace(name, "\t", "");
 
   if (_.endsWith(mail, "@vanlanguni.vn")) {
-    name = _.split(name, "-", 2)[1].trim();
-  } else if (
-    _.endsWith(
-      mail,
-      "@vanlanguni.edu.vn" || _.endsWith(mail, "@vlu.edu.vn")
-    ).trim()
-  ) {
-    name = _.split(name, "-", 2)[0];
+    name = _.split(name, "-", 3)[1].trim();
+    // return res.status(401).send("This account don't have permission to access");
+  } else if (_.endsWith(mail, "@vlu.edu.vn")) {
+    name = _.split(name, "-", 2)[0].trim();
   }
 
   let user = await Users.findOne({ mail: req.body.mail });

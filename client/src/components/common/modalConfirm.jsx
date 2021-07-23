@@ -37,7 +37,7 @@ const ModalConfirm = ({
         <Button variant="info" onClick={onHide}>
           Cancel
         </Button>
-        <Button variant="danger" onClick={() => onDelete(data)}>
+        <Button variant="danger" onFocus onClick={() => onDelete(data)}>
           Delete
         </Button>
       </Modal.Footer>

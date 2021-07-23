@@ -54,7 +54,7 @@ router.post(
 );
 
 router.put("/:id/:order", validate(validateAttendance), async (req, res) => {
-  const { mail, status } = req.body;
+  const { mail } = req.body;
   const { id, order } = req.params;
 
   let myClass = await Classes.findById(id);
@@ -65,7 +65,6 @@ router.put("/:id/:order", validate(validateAttendance), async (req, res) => {
   }
 
   const expiredTime = myClass.lessons[order - 1].expiredTime;
-  console.log(expiredTime);
 
   const qrCode = myClass.lessons[order - 1].qrCode;
 
@@ -77,17 +76,46 @@ router.put("/:id/:order", validate(validateAttendance), async (req, res) => {
     return res.status(403).send("Expired QrCode");
   }
 
-  if (status === "Attended") {
-    myClass.lessons[order - 1].numOfAttendance++;
-    myClass.lessons[order - 1].numOfNonAttendance--;
-  } else {
-    myClass.lessons[order - 1].numOfAttendance--;
-    myClass.lessons[order - 1].numOfNonAttendance++;
-  }
-
   const result = myClass.lessons[order - 1].students.find((x) => {
     if (x.mail === mail) {
-      x.status = status;
+      const currentStatus = new Date(x.status);
+      if (currentStatus == "Invalid Date") {
+        myClass.lessons[order - 1].numOfAttendance++;
+        myClass.lessons[order - 1].numOfNonAttendance--;
+        myClass.sumOfAttendance++;
+        myClass.sumOfNonAttendance--;
+
+        myClass.lessons[order - 1].averageOfAttendance =
+          myClass.lessons.reduce((reducer, currentValue) => {
+            return reducer + currentValue.numOfAttendance;
+          }, 0) / myClass.numOfStudents;
+
+        myClass.lessons[order - 1].averageOfAttendance =
+          myClass.lessons.reduce((reducer, currentValue) => {
+            return reducer + currentValue.numOfNonAttendance;
+          }, 0) / myClass.numOfStudents;
+
+        myClass.averageOfAttendance =
+          myClass.lessons.reduce((reducer, currentValue) => {
+            return reducer + currentValue.averageOfAttendance;
+          }, 0) / myClass.lessons.length;
+
+        myClass.averageOfNonAttendance =
+          myClass.lessons.reduce((reducer, currentValue) => {
+            return reducer + currentValue.averageOfNonAttendance;
+          }, 0) / myClass.lessons.length;
+
+        const date = new Date();
+        x.status = `${date.getFullYear()}-${
+          date.getMonth() + 1
+        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+      } else {
+        myClass.lessons[order - 1].numOfAttendance--;
+        myClass.lessons[order - 1].numOfNonAttendance++;
+        myClass.sumOfAttendance--;
+        myClass.sumOfNonAttendance++;
+        x.status = "Not Attended";
+      }
       return x;
     }
   });
@@ -111,7 +139,6 @@ function validateAttendance(req) {
     mail: Joi.string()
       .email({ tlds: { allow: false } })
       .required(),
-    status: Joi.string().required(),
   });
   return schema.validate(req);
 }

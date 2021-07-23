@@ -1,0 +1,23 @@
+.attendanceMD {
+  width: 100% !important;
+  height: 95% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 95%;
+  resize: none;
+  min-width: 95%;
+  overflow-y: hidden;
+}
+
+.attendanceMD .modal-content {
+  height: 95%;
+}
+
+.attendanceMD .qrCode {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

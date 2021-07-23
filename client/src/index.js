@@ -12,6 +12,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/animate.min.css";
 import "./assets/scss/light-bootstrap-dashboard-react.scss";
+import "./assets/css/index.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./assets/css/demo.css";
 

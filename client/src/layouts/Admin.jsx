@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
+
 import auth from "services/authService";
 
 function Admin() {
@@ -19,6 +20,9 @@ function Admin() {
   const location = useLocation();
   const mainPanel = React.useRef(null);
   const getRoutes = (routes) => {
+    if (auth.getCurrentUser().role !== "admin") {
+      routes = routes.filter((x) => x.permission !== "admin");
+    }
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
         return (
@@ -54,17 +58,16 @@ function Admin() {
         <Sidebar
           color={color}
           image={hasImage ? image : ""}
-          routes={routes.filter((x) => {
-            if (x.icon) return x;
-          })}
+          routes={
+            auth.getCurrentUser().role !== "admin"
+              ? routes.filter((x) => x.permission !== "admin")
+              : routes
+          }
         />
         <div className="main-panel" ref={mainPanel}>
           <AdminNavbar />
 
           <div className="content">
-            <div className="rna-container">
-              <ToastContainer />
-            </div>
             <Switch>{getRoutes(routes)}</Switch>
           </div>
           <Footer />

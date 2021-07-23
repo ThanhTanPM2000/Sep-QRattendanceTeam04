@@ -3,15 +3,12 @@ const Joi = require("joi").extend(require("@joi/date"));
 
 const { schemaSemester } = require("./semesters");
 
-const studentInClassSchema = new mongoose.Schema(
-  {
-    mail: { type: String, index: true },
-    name: String,
-    studentId: String,
-    status: String,
-  },
-  { _id: false }
-);
+const studentInClassSchema = new mongoose.Schema({
+  mail: { type: String, index: true },
+  name: String,
+  studentId: String,
+  status: String,
+});
 
 const schemaClass = new mongoose.Schema({
   classTermId: { type: String, required: true, unique: true },
@@ -26,43 +23,43 @@ const schemaClass = new mongoose.Schema({
   numOfWeek: { type: Number, required: true },
   session: { type: String, required: true },
   numOfStudents: Number,
+  sumOfAttendance: Number,
+  sumOfNonAttendance: Number,
+  averageOfAttendance: Number,
+  averageOfNonAttendance: Number,
   semester: { type: schemaSemester, required: true },
   lecturer: {
-    type: new mongoose.Schema(
-      {
-        lecturerId: {
-          type: String,
-        },
-        name: {
-          type: String,
-        },
-        mail: {
-          type: String,
-          required: true,
-        },
-        degree: {
-          type: String,
-        },
+    type: new mongoose.Schema({
+      lecturerId: {
+        type: String,
       },
-      { _id: false }
-    ),
+      name: {
+        type: String,
+      },
+      mail: {
+        type: String,
+        required: true,
+        index: true,
+      },
+      degree: {
+        type: String,
+      },
+    }),
   },
   lessons: [
     {
-      type: new mongoose.Schema(
-        {
-          order: Number,
-          name: String,
-          students: [studentInClassSchema],
-          numOfAttendance: Number,
-          numOfNonAttendance: Number,
-          codeAttendance: String,
-          expiredTime: Number,
-          qrCode: String,
-          status: String,
-        },
-        { _id: false }
-      ),
+      type: new mongoose.Schema({
+        order: Number,
+        name: String,
+        students: [studentInClassSchema],
+        numOfAttendance: Number,
+        numOfNonAttendance: Number,
+        averageOfAttendance: Number,
+        averageOfNonAttendance: Number,
+        expiredTime: Number,
+        qrCode: String,
+        status: String,
+      }),
     },
   ],
 });
@@ -91,7 +88,9 @@ function validateClass(reqBody) {
 
 function validateStudentInClass(reqBody) {
   const schema = Joi.object({
-    mail: Joi.string().required(),
+    mail: Joi.string()
+      .email({ tlds: { allow: false } })
+      .required(),
     name: Joi.string(),
     studentId: Joi.string(),
     status: Joi.boolean(),

@@ -8,6 +8,8 @@ function Sidebar({ color, image, routes }) {
   const activeRoute = (routeName) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
+
+  
   return (
     <div className="sidebar" data-image={image} data-color={color}>
       <div

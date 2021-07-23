@@ -24,6 +24,7 @@ class UserForm extends FormCommon {
     faculties: [],
     roles: [],
     errors: {},
+    isHandling: false,
   };
 
   schema = Joi.object({
@@ -94,12 +95,18 @@ class UserForm extends FormCommon {
 
   render() {
     const { faculties, roles } = this.state;
+    const { selectedUser } = this.props;
     return (
       <>
         <Form onSubmit={this.handleSubmit}>
           {this.renderInput("userId", "User Id", "Id")}
           {this.renderInput("name", "Display Name", "Name")}
-          {this.renderInput("mail", "Email Address", "Mail")}
+          {this.renderInput(
+            "mail",
+            "Email Address",
+            "Mail",
+            selectedUser._id && true
+          )}
           {this.renderInput("degree", "Degree", "Degree")}
           {this.renderSelect("facultyId", "Faculties", faculties)}
           {this.renderSelect("roleId", "Roles", roles)}

@@ -16,8 +16,11 @@ import LoadingPage from "../components/common/loadingPage";
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
 
 import ModalForm from "components/common/modalForm";
-import ModalImport from "components/common/modalImport";
+import ModalImportClass from "components/modalImportClass";
 import ModalConfirm from "components/common/modalConfirm";
+import ExtendClassModal from "components/extendClassModal";
+
+import auth from "services/authService";
 
 function Classes() {
   const [classes, setClasses] = React.useState([]);
@@ -35,15 +38,17 @@ function Classes() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [pageSize, setPageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
-    path: "name",
+    path: "semester.name",
     order: "asc",
   });
   const [selectedClass, setSelectedClass] = React.useState({});
+  const [prevSelected, setPrevSelect] = React.useState({});
 
   // modal variable
   const [modalShow, setModalShow] = React.useState(false);
   const [modalImport, setModalImport] = React.useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
+  const [modalExtendClass, setModalExtendClass] = React.useState(false);
 
   const [isLoading, setLoading] = React.useState(true);
 
@@ -54,10 +59,16 @@ function Classes() {
 
         setLoading(false);
         setClasses(classes);
-        // setFaculties(newFaculties);
-        // setRoles(newRoles);
+
+        if (!_.isEmpty(selectedClass?._id)) {
+          const result = await classes.find((x) => x._id === selectedClass._id);
+          if (!_.isEqual(result, prevSelected)) {
+            await setSelectedClass(result);
+            await setPrevSelect(result);
+          }
+        }
       } catch (error) {
-        console.log("hello");
+        toast.error(error.response?.data);
       }
     }
 
@@ -66,6 +77,7 @@ function Classes() {
 
   const handleShowConfirmDialog = (myClass) => {
     setSelectedClass(myClass);
+    // setPrevSelect(myClass);
     setConfirmDeleteDialog(true);
   };
 
@@ -78,6 +90,7 @@ function Classes() {
     try {
       await ClassService.deleteClass(myClass);
       toast.success("Delete Class successfully");
+      setConfirmDeleteDialog(false);
     } catch (error) {
       if (error.response && error.response.status === 404) {
         toast.error("This Class has already delete");
@@ -86,28 +99,22 @@ function Classes() {
       }
       setClasses(originalClass);
     }
-    setConfirmDeleteDialog(false);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSemesterSelect = (semester) => {
-    setSelectedSemester(semester);
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
-  const handleLecturerSelect = (lecturer) => {
-    setSelectedLecturer(lecturer);
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
   const handleShowUpdateDialog = (myClass) => {
     setSelectedClass(myClass);
+    // setPrevSelect(myClass);
     setModalShow(true);
+  };
+
+  const handleShowExtendClassModal = (myClass) => {
+    setSelectedClass(myClass);
+    // setPrevSelect(myClass);
+    setModalExtendClass(true);
   };
 
   const handleClassUpdate = (myClass) => {
@@ -124,17 +131,22 @@ function Classes() {
           x.startDate = myClass.startDate;
           x.endDate = myClass.endDate;
           x.room = myClass.room;
+          x.session = myClass.session;
           x.dayOfWeek = myClass.dayOfWeek;
+          x.numOfStudents = myClass.numOfStudents;
           x.numOfWeek = myClass.numOfWeek;
           x.semester = myClass.semester;
           x.lecturer = myClass.lecturer;
+          x.lessons = myClass.lessons;
         }
       });
     } else {
       newClass = [myClass, ...classes];
     }
     setClasses(newClass);
+    setSelectedClass(myClass);
     setModalShow(false);
+    // setModalAttendance(false);
   };
 
   const handleImportExcel = (newClasses) => {
@@ -160,6 +172,7 @@ function Classes() {
         (x) =>
           x.name.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
           x.classTermId.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          x.semester.name.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
           x.lecturer.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     }
@@ -176,7 +189,7 @@ function Classes() {
     <>
       <Container fluid>
         <ModalForm
-          titleHeader="Create Classes"
+          titleHeader={!selectedClass?._id ? "Create Class" : "Update Class"}
           show={modalShow}
           onHide={() => setModalShow(false)}
         >
@@ -192,11 +205,19 @@ function Classes() {
           show={confirmDeleteDialog}
           data={selectedClass}
         />
-        <ModalImport
+        <ModalImportClass
           titleHeader="Import Classes"
           onHandleImport={handleImportExcel}
           onHide={() => setModalImport(false)}
           show={modalImport}
+        />
+        <ExtendClassModal
+          titleHeader="Import Classes"
+          onUpdateClass={handleClassUpdate}
+          onDeleteStudent={handleClassDelete}
+          selectedClass={selectedClass}
+          onHide={() => setModalExtendClass(false)}
+          show={modalExtendClass}
         />
         <Row>
           <Col md="12">
@@ -215,25 +236,29 @@ function Classes() {
                     <SearchBox value={searchQuery} onChange={handleSearch} />
                   </Col>
                   <Col>
-                    <Button
-                      className="btn-fill btn-wd"
-                      variant="primary"
-                      onClick={() => {
-                        setSelectedClass({});
-                        setModalShow(true);
-                      }}
-                    >
-                      <i className="fas fa-plus-circle"></i> Create Class
-                    </Button>
-                    <Button
-                      className="btn-fill btn-wd ml-2"
-                      variant="success"
-                      onClick={() => {
-                        setModalImport(true);
-                      }}
-                    >
-                      <i className="fas fa-plus-circle"></i> Import Class
-                    </Button>
+                    {auth.getCurrentUser()?.role === "admin" && (
+                      <React.Fragment>
+                        <Button
+                          className="btn-fill btn-wd"
+                          variant="primary"
+                          onClick={async () => {
+                            await setSelectedClass({});
+                            setModalShow(true);
+                          }}
+                        >
+                          <i className="fas fa-plus-circle"></i> Create Class
+                        </Button>
+                        <Button
+                          className="btn-fill btn-wd ml-2"
+                          variant="success"
+                          onClick={() => {
+                            setModalImport(true);
+                          }}
+                        >
+                          <i className="fas fa-file-import"></i> Import Class
+                        </Button>
+                      </React.Fragment>
+                    )}
                   </Col>
                 </Row>
 
@@ -249,6 +274,7 @@ function Classes() {
                         onShowConfirm={handleShowConfirmDialog}
                         onSort={handleSort}
                         onShowUpdate={handleShowUpdateDialog}
+                        onShowExtendClassModal={handleShowExtendClassModal}
                       />
                       <div className="ml-3">
                         <Pagination

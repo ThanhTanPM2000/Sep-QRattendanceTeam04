@@ -4,14 +4,17 @@ import TableCommon from "./common/table";
 
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 
+import auth from "services/authService";
+
 const ClassTable = ({
   classes,
   sortColumn,
   onShowConfirm,
   onSort,
   onShowUpdate,
+  onShowExtendClassModal,
 }) => {
-  const columns = [
+  const classColumns = [
     { path: "classTermId", label: "ClassTermId" },
     {
       path: "name",
@@ -22,6 +25,20 @@ const ClassTable = ({
     { path: "room", label: "Room" },
     { path: "lecturer.name", label: "Lecturer" },
     { path: "numOfStudents", label: "Num Students" },
+    { path: "semester.name", label: "Semester" },
+    {
+      key: "manageStudent",
+      content: (myClass) => (
+        <Button
+          className="btn-fill btn-wd"
+          type="button"
+          variant="warning"
+          onClick={() => onShowExtendClassModal(myClass)}
+        >
+          Tools
+        </Button>
+      ),
+    },
     {
       key: "edit",
       content: (myClass) => (
@@ -39,7 +56,13 @@ const ClassTable = ({
         </OverlayTrigger>
       ),
     },
-    {
+  ];
+
+  const [constructorHasRun, setConstructorHasRun] = React.useState(false);
+  const [columns, setColumns] = React.useState(classColumns);
+
+  const deleteColumns = () => {
+    return {
       key: "delete",
       content: (myClass) => (
         <OverlayTrigger
@@ -55,8 +78,21 @@ const ClassTable = ({
           </Button>
         </OverlayTrigger>
       ),
-    },
-  ];
+    };
+  };
+
+  const constructor = () => {
+    if (constructorHasRun) return;
+    const user = auth.getCurrentUser();
+    let newColumns = [...columns];
+    if (user.role === "admin") {
+      newColumns.push(deleteColumns());
+      setColumns(newColumns);
+    }
+    setConstructorHasRun(true);
+  };
+
+  constructor();
 
   return (
     <TableCommon

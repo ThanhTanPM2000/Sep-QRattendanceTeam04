@@ -4,6 +4,7 @@ const _ = require("lodash");
 const { Semesters, validateSemester } = require("../models/semesters");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
+const { Classes } = require("../models/classes");
 
 const router = express.Router();
 
@@ -52,6 +53,15 @@ router.put(
 );
 
 router.delete("/:id", validateObjectId, async (req, res) => {
+  const classes = await Classes.findOne({ "semester._id": req.params.id });
+  if (classes) {
+    return res
+      .status(400)
+      .send(
+        "Somewhere still have this semester, please delete that first then come back"
+      );
+  }
+
   const semester = await Semesters.findByIdAndDelete(req.params.id);
 
   if (!semester)

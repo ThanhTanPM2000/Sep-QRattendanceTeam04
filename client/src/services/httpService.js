@@ -1,12 +1,18 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
 axios.interceptors.response.use(null, (err) => {
   const errorResponse =
     err.response && err.response.status >= 400 && err.response.status < 500;
 
   if (!errorResponse) {
-    toast.error("Unexpected error occur");
+    if (!err.status) {
+      toast.error("Network Error");
+    } else {
+      toast.error("Unexpected error occur");
+    }
   }
 
   return Promise.reject(err);

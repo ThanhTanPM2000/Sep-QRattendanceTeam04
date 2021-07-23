@@ -5,12 +5,14 @@ import TableScrollbar from "react-table-scrollbar";
 import _ from "lodash";
 import moment from "moment";
 
+import writeXlsxFile from "write-excel-file";
+
 import LoadingComponent from "react-spinners/ClipLoader";
-import ClassService from "../../services/classService";
-import "../../assets/css/modalImport.css";
+import ClassService from "../services/classService";
+import "assets/css/modalImport.css";
 import { toast } from "react-toastify";
 
-const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
+const ModalImportClass = ({ titleHeader, onHandleImport, ...otherProps }) => {
   const [label, setLabel] = React.useState("Choose File");
   const [errors, setErrors] = React.useState([]);
   const [rows, setRows] = React.useState([]);
@@ -98,6 +100,130 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
     },
   };
 
+  const data = [
+    // Row #1
+    [
+      // Column #1
+      {
+        value: "Mã Lớp HP",
+        fontWeight: "bold",
+      },
+      // Column #3
+      {
+        value: "Tên học phần",
+        fontWeight: "bold",
+      },
+      // Column #4
+      {
+        value: "Số tín chỉ",
+        fontWeight: "bold",
+      },
+      // Column #4
+      {
+        value: "Loại HP",
+        fontWeight: "bold",
+      },
+      {
+        value: "Khóa",
+        fontWeight: "bold",
+      },
+      {
+        value: "Ngày bắt đầu",
+        fontWeight: "bold",
+      },
+      {
+        value: "Ngày kết thúc",
+        fontWeight: "bold",
+      },
+      {
+        value: "Phòng học",
+        fontWeight: "bold",
+      },
+      {
+        value: "Thứ",
+        fontWeight: "bold",
+      },
+      {
+        value: "Số tuần học",
+        fontWeight: "bold",
+      },
+      {
+        value: "Tiết",
+        fontWeight: "bold",
+      },
+      {
+        value: "Mã học kỳ",
+        fontWeight: "bold",
+      },
+      {
+        value: "Email GV",
+        fontWeight: "bold",
+      },
+    ],
+    [
+      // Column #1
+      {
+        type: String,
+        value: "202_DIT0030_01",
+      },
+
+      {
+        type: String,
+        value: "Kỹ năng nghề nghiệp CNTT",
+      },
+
+      {
+        type: String,
+        value: "2",
+      },
+
+      {
+        type: String,
+        value: "LT",
+      },
+
+      {
+        type: String,
+        value: "K26T",
+      },
+      // Column #2
+      {
+        type: Date,
+        value: new Date(),
+        format: "mm/dd/yyyy",
+      },
+      {
+        type: Date,
+        value: new Date(),
+        format: "mm/dd/yyyy",
+      },
+      {
+        type: String,
+        value: "CS3.A.09.01",
+      },
+      {
+        type: Number,
+        value: 2,
+      },
+      {
+        type: Number,
+        value: 11,
+      },
+      {
+        type: String,
+        value: "1-3",
+      },
+      {
+        type: String,
+        value: "HK221",
+      },
+      {
+        type: String,
+        value: "chau.lth@vlu.edu.vn",
+      },
+    ],
+  ];
+
   const raiseImport = (e) => {
     readXlsxFile(e.target.files[0], {
       schema,
@@ -107,6 +233,9 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
       .then(({ rows, errors }) => {
         setErrors(errors);
         const data = rows.filter((x) => Object.keys(x).length === 13);
+        if (data.length === 0) {
+          toast.warning("Please input valid file");
+        }
         setRows(data);
         setRowsShow(data);
         setLabel(e.target.files[0].name);
@@ -122,13 +251,13 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
     let newRows = [...rowsShow];
     let importedClasses = [];
 
-    for (var i = 0; i <= rows.length; i++) {
+    for (var i = 0; i <= rows.length - 1; i++) {
       try {
         const { data } = await ClassService.saveClass(rows[i]);
         importedClasses.push(data);
         newRows[i] = { status: "Success", ...rows[i] };
       } catch (error) {
-        console.log(error);
+        toast.error(error.response?.data);
         newRows[i] = { status: "Failed", ...rows[i] };
       }
       setRowsShow(newRows);
@@ -140,6 +269,10 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
 
     setIsHandling(false);
     setIsFinish(true);
+  };
+
+  const handleDownloadTemplate = async () => {
+    await writeXlsxFile(data, { fileName: "classImport.xlsx" });
   };
 
   const renderCall = (item, column) => {
@@ -206,7 +339,7 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
               <TableScrollbar rows={5}>
                 <Table striped bordered hover>
                   <thead className="thead-dark">
-                    <tr>
+                    <tr key="schemaHeader">
                       {Object.keys(schema).map((x) => (
                         <th key={x.replace(" ", "-")}>{x}</th>
                       ))}
@@ -263,7 +396,12 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
               )}
             </div>
           ) : (
-            <p className="mt-3">Please import valid xlsx</p>
+            <>
+              <p className="mt-3">Please import valid xlsx</p>
+              <a href="" onClick={handleDownloadTemplate}>
+                Download template
+              </a>
+            </>
           )}
         </Modal.Body>
       </Modal>
@@ -271,4 +409,4 @@ const ModalImport = ({ titleHeader, onHandleImport, ...otherProps }) => {
   );
 };
 
-export default ModalImport;
+export default ModalImportClass;

@@ -6,6 +6,7 @@ const _ = require("lodash");
 const { Users, validateUser } = require("../models/users");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
+const auth = require("../middleware/auth");
 const { Faculties } = require("../models/faculties");
 const { Roles } = require("../models/roles");
 const { Classes } = require("../models/classes");
@@ -14,12 +15,12 @@ const { x } = require("joi");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const users = await Users.find();
-  res.send(users);
+  const user = await Users.find();
+  res.send(user);
 });
 
-router.get("/:id", async (req, res) => {
-  const users = await Users.findById(req.params.id);
+router.get("/me", auth, async (req, res) => {
+  const users = await Users.findById(req.user._id);
   if (!users) return res.status(404).send("User not found");
   res.send(users);
 });

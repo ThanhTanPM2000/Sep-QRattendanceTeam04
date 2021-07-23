@@ -44,7 +44,7 @@ function Semesters() {
     }
 
     getDataFromApi();
-  }, []);
+  }, [selectedSemester]);
 
   const handleShowConfirmDialog = (semester) => {
     setSelectedSemester(semester);
@@ -61,11 +61,8 @@ function Semesters() {
       await SemesterService.deleteSemester(semester);
       toast.success("Delete semester successfully");
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        toast.error("This semester has already been deleted");
-      } else if (error.response && error.response.status === 403) {
-        toast.error("Access denied");
-      }
+      toast.error(error.response?.data);
+
       setSemesters(originalSemester);
     }
     setConfirmDeleteDialog(false);
@@ -131,7 +128,9 @@ function Semesters() {
     <>
       <Container fluid>
         <ModalForm
-          titleHeader="Create Semester"
+          titleHeader={
+            !selectedSemester._id ? "Create Semester" : "Update Semester"
+          }
           show={modalShow}
           onHide={() => setModalShow(false)}
         >
@@ -208,4 +207,4 @@ function Semesters() {
   );
 }
 
-export default Semesters;
+export default React.memo(Semesters);

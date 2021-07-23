@@ -1,9 +1,8 @@
 import http from "./httpService";
-import { apiUrl } from "../configs/config.json";
 import jwtDecode from "jwt-decode";
 import { toast } from "react-toastify";
 
-const apiEndpoint = apiUrl + "/auth";
+const apiEndpoint = "/auth";
 const tokenKey = "token";
 
 http.setJwt(getJwt());
@@ -15,9 +14,11 @@ async function login(data) {
       mail: data.mail,
     });
     localStorage.setItem(tokenKey, jwt);
+    http.setJwt(getJwt());
   } catch (error) {
-    if (error.response && error.response.status === 400) {
-      toast.error("Data send invalid");
+    if (error.response.data) {
+      toast.error(error.response.data);
+      throw new Error();
     }
   }
 }
@@ -40,6 +41,7 @@ function getCurrentUser() {
 }
 
 function getJwt() {
+  console.log(localStorage.getItem(tokenKey));
   return localStorage.getItem(tokenKey);
 }
 

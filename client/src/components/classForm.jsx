@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import _ from "lodash";
 
 import FormCommon from "./common/form";
@@ -25,12 +25,14 @@ class ClassForm extends FormCommon {
       room: "",
       dayOfWeek: "",
       numOfWeek: "",
+      session: "",
       semesterId: "",
-      lecturerId: "",
+      lecturerMail: "",
     },
     semesters: [],
     lecturers: [],
     errors: {},
+    isHandling: false,
   };
 
   schema = Joi.object({
@@ -43,35 +45,38 @@ class ClassForm extends FormCommon {
     startDate: Joi.date().required().label("Start Date"),
     endDate: Joi.date().required().label("End Date"),
     room: Joi.string().required().label("Room"),
-    dayOfWeek: Joi.string().required().label("Day Of Week"),
-    numOfWeek: Joi.number().required().label("Number Of Week"),
+    dayOfWeek: Joi.number().min(2).max(8).required().label("Day Of Week"),
+    numOfWeek: Joi.number().min(1).max(25).required().label("Number Of Week"),
+    session: Joi.string().required().label("Session"),
     semesterId: Joi.string().required().label("Semester"),
-    lecturerId: Joi.string().required().label("Lecturer"),
+    lecturerMail: Joi.string()
+      .email({ tlds: { allow: false } })
+      .required()
+      .label("Lecturer"),
   });
 
   async populateSemesters() {
     const { data: semesters } = await SemesterService.getSemesters();
     const myData = { ...this.state.data };
-    myData["semesterId"] = semesters[0]._id;
+    myData["semesterId"] = semesters[0]?._id;
     this.setState({ semesters, data: myData });
   }
 
   async populateLecturer() {
     const { data: lecturers } = await UserService.getUsers();
     const myData = { ...this.state.data };
-    myData["lecturerId"] = lecturers[0]._id;
+    myData["lecturerMail"] = lecturers[0]?.mail;
     this.setState({ lecturers, data: myData });
   }
 
-  async populateClasses() {
+  populateClasses() {
     const { selectedClass } = this.props;
     if (_.isEmpty(selectedClass)) return;
     this.setState({ data: this.mapToViewModel(selectedClass) });
   }
 
-  componentDidMount() {
-    this.populateSemesters();
-    this.populateLecturer();
+  async componentDidMount() {
+    await this.populateSemesters();
     this.populateClasses();
   }
 
@@ -85,20 +90,19 @@ class ClassForm extends FormCommon {
       schoolYear: selectedClass.schoolYear,
       startDate: new Date(selectedClass.startDate),
       endDate: new Date(selectedClass.endDate),
+      session: selectedClass.session,
       room: selectedClass.room,
       dayOfWeek: selectedClass.dayOfWeek,
       numOfWeek: selectedClass.numOfWeek,
       semesterId: selectedClass.semester._id,
-      lecturerId: selectedClass.lecturer._id,
+      lecturerMail: selectedClass.lecturer.mail,
     };
   };
 
   doSubmit = async () => {
     try {
       const { onUpdateClass } = this.props;
-      console.log("sumit data ", this.state.data);
       const { data } = await ClassService.saveClass(this.state.data);
-      console.log(data);
       toast.success("Successfully");
       onUpdateClass(data);
     } catch (err) {
@@ -111,10 +115,7 @@ class ClassForm extends FormCommon {
   };
 
   render() {
-    const { semesters, lecturers } = this.state;
-    const { show, onHide } = this.props;
-
-    console.log("data is ", this.state.data.startDate);
+    const { semesters } = this.state;
 
     return (
       <>
@@ -126,22 +127,35 @@ class ClassForm extends FormCommon {
             "Number Of Credits",
             "Number Of Credits in Class"
           )}
-          {this.renderInput("courseType", "Course Type", "Course Type")}
-          {this.renderInput("schoolYear", "School Year", "School Year")}
+          {this.renderInput(
+            "courseType",
+            "Course Type",
+            "Type of this class: TH-> Thuc hanh, LT -> Ly Thuyet"
+          )}
+          {this.renderInput(
+            "schoolYear",
+            "School Year",
+            "etc: K24T, K25PM ..."
+          )}
           {this.renderDatePicker(
             "startDate",
             "endDate",
             "Start Date - End Date"
           )}
           {this.renderInput("room", "Room", "Room of Class")}
-          {this.renderInput("dayOfWeek", "Day of Week", "etc: Monday, Friday")}
+          {this.renderInput(
+            "dayOfWeek",
+            "Day of Week",
+            "Input Number etc: 2: Monday, 3: Tuesday ... "
+          )}
           {this.renderInput(
             "numOfWeek",
             "Number of Week",
             "How many week through this Class"
           )}
+          {this.renderInput("session", "Session", "This class take how long")}
+          {this.renderInput("lecturerMail", "Lecturer", "Mail of Lecturer")}
           {this.renderSelect("semesterId", "Semester", semesters, "symbol")}
-          {this.renderSelect("lecturerId", "Lecturer", lecturers, "mail")}
           {this.renderSubmit("Save")}
         </Form>
       </>

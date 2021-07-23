@@ -7,6 +7,7 @@ import DateRangerPicker from "./datePicker";
 import moment from "moment";
 
 import { Button } from "react-bootstrap";
+import { PureComponent } from "react";
 
 class FormCommon extends Component {
   state = {
@@ -34,8 +35,10 @@ class FormCommon extends Component {
     return error ? error.details[0].message : null;
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
+
+    this.setState({ isHandling: true });
 
     const errors = this.validate();
     if (errors) {
@@ -43,7 +46,8 @@ class FormCommon extends Component {
       return;
     }
 
-    this.doSubmit();
+    await this.doSubmit();
+    this.setState({ isHandling: false });
   };
 
   handleChange = ({ currentTarget: input }) => {
@@ -55,9 +59,11 @@ class FormCommon extends Component {
     let data = { ...this.state.data };
     data[input.name] = input.value;
 
+    this.setState({ errors });
+
     data = this.doChange(input, data);
 
-    this.setState({ data, errors });
+    this.setState({ data });
   };
 
   handleDatePickerChange = (update) => {
@@ -94,7 +100,13 @@ class FormCommon extends Component {
   };
 
   renderSubmit = (label) => {
-    return (
+    const { isHandling } = this.state;
+
+    return isHandling ? (
+      <Button disabled variant="primary" className="btn-fill btn-wd">
+        Waiting
+      </Button>
+    ) : (
       <Button
         type="submit"
         disabled={this.validate()}

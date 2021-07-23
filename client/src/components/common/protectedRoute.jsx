@@ -3,7 +3,13 @@ import { Route, Redirect } from "react-router-dom";
 
 import auth from "../../services/authService";
 
-const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
+const ProtectedRoute = ({
+  path,
+  getCurrentUser,
+  component: Component,
+  render,
+  ...rest
+}) => {
   return (
     <React.Fragment>
       <Route
@@ -18,9 +24,6 @@ const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
                 }}
               />
             );
-          else if (auth.getCurrentUser() && !auth.getCurrentUser()?._id) {
-            return <Redirect to={{ pathname: "/register" }} />;
-          }
           return Component ? <Component {...props} /> : render(props);
         }}
       />

@@ -28,7 +28,7 @@ const RegisteredAcc = ({ isRegistered }) => {
               Take Me Home
             </Button> */}
               <a
-                className="button button--social-login button--microsoft"
+                className="clickable button button--social-login button--microsoft"
                 onClick={(e) => handleClick(e)}
               >
                 <i className="icon far fa-check-circle" />

@@ -64,7 +64,7 @@ router.post("/", validate(validateStudent), async (req, res) => {
               mail,
               name,
               studentId,
-              status: "Not Attendance",
+              status: "Not Attended",
             },
           },
         }
@@ -105,12 +105,10 @@ router.delete("/:id", [validateObjectId], async (req, res) => {
       .status(404)
       .send("The Student with given ID was not found in DB");
 
-      try {
-        const task = new Fawn.Task();
-        task.update("classes")
-      } catch (error) {
-        
-      }
+  try {
+    const task = new Fawn.Task();
+    task.update("classes");
+  } catch (error) {}
 
   res.send("Delete Successfully");
 });

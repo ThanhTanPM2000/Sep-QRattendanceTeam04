@@ -1,7 +1,6 @@
 import http from "./httpService";
-import { apiUrl } from "../configs/config.json";
 
-const apiEndpoint = apiUrl + "/classes";
+const apiEndpoint = "/classes";
 
 function classesUrl(id) {
   return `${apiEndpoint}/${id}`;
@@ -31,7 +30,22 @@ function deleteClass(_class) {
   return http.delete(classesUrl(_class._id));
 }
 
+function saveStudentInClass(_class, student) {
+  if (student.name !== "Student not login yet") {
+    return http.put(`${apiEndpoint}/${_class._id}/${student.mail}`, student);
+  }
+  return http.post(`${apiEndpoint}/${_class._id}`, student);
+}
+
+function deleteStudentInClass(_class, student) {
+  return http.delete(`${apiEndpoint}/${_class._id}/${student.mail}`);
+}
+
+// function attendanceInClass_()
+
 const ClassService = {
+  saveStudentInClass,
+  deleteStudentInClass,
   getClass,
   getClasses,
   saveClass,
