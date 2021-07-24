@@ -34,7 +34,7 @@ class Dashboard extends FormCommon {
     searchQuery: "",
     pageSize: 10,
     sortColumn: { path: "name", order: "asc" },
-    isLoading: false,
+    isLoading: true,
     listName: [
       { _id: "All Semesters", name: "All Semesters" },
       { _id: "hoc ky 1", name: "Hoc ky 1" },
@@ -42,6 +42,11 @@ class Dashboard extends FormCommon {
       { _id: "hoc ky 3", name: "Hoc ky 3" },
     ],
   };
+
+  constructor(props) {
+    super(props);
+    this.setState({ isLoading: true });
+  }
 
   schema = Joi.object({
     startYear: Joi.number()
@@ -61,7 +66,7 @@ class Dashboard extends FormCommon {
 
   async populateClasses() {
     const { data: classes } = await ClassService.getClasses();
-    this.setState({ classes, isHandling: false });
+    this.setState({ classes, isLoading: false });
   }
 
   componentDidMount() {

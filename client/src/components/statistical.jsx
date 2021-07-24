@@ -63,6 +63,12 @@ const Statistical = ({ myClass }) => {
         },
       ],
     },
+    plugins: {
+      title: {
+        display: true,
+        text: "Summary of students' Attended and Non-Attended of each Lessons",
+      },
+    },
   };
 
   const handlePageChange = (page) => {
@@ -90,6 +96,7 @@ const Statistical = ({ myClass }) => {
 
   return (
     <React.Fragment>
+      <h4 className="title"></h4>
       <Bar data={data} options={options} width={100} height={10} />
 
       <Card className="striped-tabled-with-hover">

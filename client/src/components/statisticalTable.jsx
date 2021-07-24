@@ -9,7 +9,7 @@ import TableScrollbar from "react-table-scrollbar";
 const StatisticalTable = ({ lessons }) => {
   return (
     <React.Fragment>
-      <div style={{ height: "400px", overflow: "auto" }}>
+      <div style={{ height: "350px", overflow: "auto" }}>
         <Table className="table-hover table-striped">
           <thead className="thead-dark">
             <tr>
