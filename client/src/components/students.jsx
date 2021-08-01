@@ -52,11 +52,9 @@ const Students = ({ myClass, onUpdateStudent }) => {
 
   const handleStudentDelete = async (student) => {
     const originalStudent = [...studentsList];
-    console.log("Delete student", student);
 
-    const newStudents = originalStudent.filter((m) => m.mail !== student.mail);
-    setStudentList(newStudents);
-    setConfirmDeleteDialog(false);
+    // const newStudents = originalStudent.filter((m) => m.mail !== student.mail);
+    // setStudentList(newStudents);
 
     try {
       const { data } = await ClassService.deleteStudentInClass(
@@ -75,6 +73,7 @@ const Students = ({ myClass, onUpdateStudent }) => {
       }
       setStudentList(originalStudent);
     }
+    setConfirmDeleteDialog(false);
   };
 
   const handlePageChange = (page) => {

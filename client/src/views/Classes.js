@@ -22,6 +22,9 @@ import ExtendClassModal from "components/extendClassModal";
 
 import auth from "services/authService";
 
+import { io } from "socket.io-client";
+const classSocket = io(`${process.env.REACT_APP_API_URL}/classes`);
+
 function Classes() {
   const [classes, setClasses] = React.useState([]);
   const [semesters, setSemesters] = React.useState([]);

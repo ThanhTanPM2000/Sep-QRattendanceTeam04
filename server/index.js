@@ -3,6 +3,15 @@ require("dotenv").config();
 const config = require("config");
 
 const app = express();
+const httpServer = require("http").createServer(app);
+
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: ["http://localhost:3000"],
+  },
+});
+
+app.set("socketio", io);
 
 require("./startup/logging")();
 require("./startup/prod")(app);
@@ -11,7 +20,12 @@ require("./startup/db")();
 require("./startup/routes")(app);
 
 const port = process.env.PORT || 3900;
-const server = app.listen(port, () => {
+
+io.on("connection", (socket) => {
+  console.log("hello ", socket.id);
+});
+
+const server = httpServer.listen(port, () => {
   console.log(`Listening on Port ${port}...`);
 });
 

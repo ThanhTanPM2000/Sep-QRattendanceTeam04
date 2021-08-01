@@ -53,7 +53,7 @@ class StudentForm extends FormCommon {
       toast.success("Successfully");
     } catch (err) {
       // console.log(err);
-      toast.error(err.response.data);
+      toast.error(err.response?.data);
     }
   };
 

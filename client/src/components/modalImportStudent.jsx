@@ -69,7 +69,7 @@ const ModalImportStudent = ({
   const handleImport = async () => {
     setIsHandling(true);
 
-    let newRows = [...rowsShow];
+    let newRows = [...rows];
     let importStudents;
 
     for (var i = 0; i <= rows.length - 1; i++) {
@@ -81,12 +81,12 @@ const ModalImportStudent = ({
         });
         importStudents = data;
         newRows[i] = { status: "Success", ...rows[i] };
-        setRowsShow(newRows);
+        // await setRowsShow(newRows);
       } catch (error) {
         toast.error(error.response?.data);
         newRows[i] = { status: "Failed", ...rows[i] };
-        setRowsShow(newRows);
       }
+      setRowsShow(newRows);
     }
 
     if (importStudents) {

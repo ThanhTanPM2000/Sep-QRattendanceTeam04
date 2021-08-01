@@ -38,6 +38,7 @@ router.post("/", validate(validateStudent), async (req, res) => {
     name,
     mail,
     classes,
+    history: [],
   });
 
   try {
@@ -72,7 +73,7 @@ router.post("/", validate(validateStudent), async (req, res) => {
     });
     await task.run({ useMongoose: true });
     const token = student.generateAuthToken();
-    res.header("x-auth-token", token).send(student);
+    res.header("x-auth-token", token).send(token);
   } catch (error) {
     console.log(error);
     res.status(500).send("Something failed to server");

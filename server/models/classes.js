@@ -59,6 +59,7 @@ const schemaClass = new mongoose.Schema({
         expiredTime: Number,
         qrCode: String,
         status: String,
+        devicesId: [String],
       }),
     },
   ],

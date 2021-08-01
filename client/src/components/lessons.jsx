@@ -32,6 +32,10 @@ const Lesson = ({ myClass, onUpdateClass }) => {
     setSelectedLesson(lesson);
   };
 
+  const handleResetLesson = () => {
+    
+  }
+
   return (
     <React.Fragment>
       <AttendanceModal

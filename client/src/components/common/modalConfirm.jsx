@@ -12,6 +12,12 @@ const ModalConfirm = ({
   confirmLabel = "Yes",
   ...otherProps
 }) => {
+  const [isDelete, setIsDelete] = React.useState(false);
+
+  const handleExit = () => {
+    setIsDelete(false);
+  };
+
   return (
     <Modal
       backdrop="static"
@@ -19,9 +25,10 @@ const ModalConfirm = ({
       centered
       keyboard={false}
       onHide={onHide}
+      onExit={handleExit}
       {...otherProps}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton={!isDelete}>
         <div className="icon-box">
           <i className="nc-icon nc-simple-remove">&#xE5CD;</i>
         </div>
@@ -34,11 +41,19 @@ const ModalConfirm = ({
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="info" onClick={onHide}>
+        <Button variant="info" disabled={isDelete} onClick={onHide}>
           Cancel
         </Button>
-        <Button variant="danger" onFocus onClick={() => onDelete(data)}>
-          Delete
+        <Button
+          variant="danger"
+          disabled={isDelete}
+          onClick={async () => {
+            setIsDelete(true);
+            await onDelete(data);
+            setIsDelete(false);
+          }}
+        >
+          {isDelete ? "Waiting" : "Delete"}
         </Button>
       </Modal.Footer>
     </Modal>
