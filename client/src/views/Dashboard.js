@@ -32,9 +32,11 @@ class Dashboard extends FormCommon {
     isHandling: false,
     currentPage: 1,
     searchQuery: "",
+    searchQueryStudent: "",
     pageSize: 10,
     sortColumn: { path: "name", order: "asc" },
     isLoading: true,
+    arrayTest: [],
     listName: [
       { _id: "All Semesters", name: "All Semesters" },
       { _id: "hoc ky 1", name: "Hoc ky 1" },
@@ -42,11 +44,6 @@ class Dashboard extends FormCommon {
       { _id: "hoc ky 3", name: "Hoc ky 3" },
     ],
   };
-
-  constructor(props) {
-    super(props);
-    this.setState({ isLoading: true });
-  }
 
   schema = Joi.object({
     startYear: Joi.number()
@@ -126,9 +123,19 @@ class Dashboard extends FormCommon {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
+  handleSearchStudent = (query) => {
+    this.setState({ searchQueryStudent: query, currentPage: 1 });
+  };
+
   getPagedData = () => {
-    const { classes, sortColumn, currentPage, pageSize, searchQuery } =
-      this.state;
+    const {
+      classes,
+      sortColumn,
+      currentPage,
+      pageSize,
+      searchQuery,
+      searchQueryStudent,
+    } = this.state;
 
     let filtered = [...classes];
 
@@ -149,6 +156,54 @@ class Dashboard extends FormCommon {
         }
       }
     });
+
+    if (searchQueryStudent) {
+      let newArray = [];
+      filtered.map(async (x) => {
+        const result = x.lessons.reduce((newArray, item) => {
+          item.students.map((y) => {
+            if (newArray[y.mail] == null) {
+              newArray[y.mail] = {
+                mail: y.mail,
+                numOfAttendance: y.status === "Not Attended" ? 0 : 1,
+                numOfNonAttendance: y.status === "Not Attended" ? 1 : 0,
+              };
+            } else {
+              newArray[y.mail] = {
+                mail: y.mail,
+                numOfAttendance:
+                  newArray[y.mail].numOfAttendance +
+                  (y.status === "Not Attended" ? 0 : 1),
+                numOfNonAttendance:
+                  newArray[y.mail].numOfNonAttendance +
+                  (y.status === "Not Attended" ? 1 : 0),
+              };
+            }
+          });
+          console.log("new Array", newArray);
+          return newArray;
+        }, {});
+
+        // result.map((item) => {
+        //   newArray.push({
+        //     classTermId: x.classTermId,
+        //     semester: x.semester,
+        //     nam: x.name,
+        //     mail: item.mail,
+        //     statistical: `${item.numOfAttendance}/${
+        //       item.numOfAttendance + item.numOfNonAttendance
+        //     }`,
+        //   });
+        //   console.log("ket qua la: ", newArray);
+        // });
+      });
+
+      filtered = filtered.filter((x) =>
+        x.lessons[0].students.find((y) =>
+          y.mail.toLowerCase().startsWith(searchQueryStudent.toLowerCase())
+        )
+      );
+    }
 
     if (searchQuery) {
       filtered = filtered.filter(
@@ -177,6 +232,7 @@ class Dashboard extends FormCommon {
       currentPage,
       isLoading,
       searchQuery,
+      searchQueryStudent,
     } = this.state;
 
     return (
@@ -218,10 +274,22 @@ class Dashboard extends FormCommon {
                         </Row>
                       </Col>
                     </Row>
-                    <SearchBox
-                      value={searchQuery}
-                      onChange={this.handleSearch}
-                    />
+                    <Row>
+                      <Col>
+                        <SearchBox
+                          value={searchQuery}
+                          onChange={this.handleSearch}
+                          placeholder="Search with class name, semester..."
+                        />
+                      </Col>
+                      <Col>
+                        <SearchBox
+                          value={searchQueryStudent}
+                          onChange={this.handleSearchStudent}
+                          placeholder="Search with student name..."
+                        />
+                      </Col>
+                    </Row>
 
                     <LoadingPage isLoading={isLoading}>
                       {totalCount === 0 ? (
@@ -231,6 +299,7 @@ class Dashboard extends FormCommon {
                           <DashboardTable
                             classes={newClasses}
                             sortColumn={sortColumn}
+                            searchQueryStudent={searchQueryStudent}
                             onSort={this.handleSort}
                           />
                           <div className="ml-3 mt-3">

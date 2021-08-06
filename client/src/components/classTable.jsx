@@ -26,6 +26,9 @@ const ClassTable = ({
     { path: "lecturer.name", label: "Lecturer" },
     { path: "numOfStudents", label: "Num Students" },
     { path: "semester.name", label: "Semester" },
+    { path: "editor", label: "Editor" },
+    { path: "lastUpdated", label: "Last Edited" },
+
     {
       key: "manageStudent",
       content: (myClass) => (
@@ -104,4 +107,4 @@ const ClassTable = ({
   );
 };
 
-export default ClassTable;
+export default React.memo(ClassTable);

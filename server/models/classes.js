@@ -63,6 +63,8 @@ const schemaClass = new mongoose.Schema({
       }),
     },
   ],
+  editor: String,
+  lastUpdated: String,
 });
 
 const Classes = mongoose.model("Classes", schemaClass);

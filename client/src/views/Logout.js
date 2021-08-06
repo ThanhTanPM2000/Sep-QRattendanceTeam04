@@ -1,3 +1,4 @@
+import { UnauthenticatedTemplate } from "@azure/msal-react";
 import { useEffect } from "react";
 
 import { useMsal } from "@azure/msal-react";
@@ -9,16 +10,18 @@ const Logout = () => {
 
   useEffect(() => {
     instance
-      .logoutPopup({
-        account: instance.getActiveAccount(),
+      .logoutRedirect({
         postLogoutRedirectUri: "/login",
-        mainWindowRedirectUri: "/login",
+        // mainWindowRedirectUri: "/login",
       })
-      .then(() => auth.logout())
-      .catch((err) => console.log(err));
-  }, []);
+      .then(() => {
+        console.log("hello");
+        auth.logout();
+      })
+      .catch((err) => console.log("heave err", err));
+  });
 
-  return null;
+  return <UnauthenticatedTemplate>{auth.logout()}</UnauthenticatedTemplate>;
 };
 
 export default Logout;

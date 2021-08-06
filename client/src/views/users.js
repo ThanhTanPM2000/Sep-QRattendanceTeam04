@@ -17,30 +17,24 @@ import ModalConfirm from "components/common/modalConfirm";
 
 import auth from "../services/authService";
 
+import { SocketContext } from "../services/socketIo";
+
 function Users() {
   const [usersList, setUsers] = React.useState([]);
-  const [faculties, setFaculties] = React.useState([]);
-  const [roles, setRoles] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [selectedFaculty, setSelectedFaculty] = React.useState({
-    _id: "",
-    name: "All Faculties",
-  });
-  const [selectedRole, setSelectedRole] = React.useState({
-    _id: "",
-    name: "All Roles",
-  });
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(10);
+  const [pageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
-    path: "name",
-    order: "asc",
+    path: "lastUpdated",
+    order: "desc",
   });
   const [selectedUser, setSelectedUser] = React.useState({});
   const [modalShow, setModalShow] = React.useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
   const [isLoading, setLoading] = React.useState(true);
+
+  const socket = React.useContext(SocketContext);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -51,12 +45,22 @@ function Users() {
         setLoading(false);
         setUsers(newUsers);
       } catch (error) {
-        console.log("hello");
+        toast.error(error?.response?.data);
       }
     }
 
     getDataFromApi();
-  }, [selectedUser]);
+
+    socket.on("getNewUsers", (users) => {
+      setUsers(users);
+    });
+
+    socket.on("deleteUser", (users) => {
+      setUsers(users);
+      setModalShow(false);
+      setConfirmDeleteDialog(false);
+    });
+  }, [socket]);
 
   const handleShowConfirmDialog = (user) => {
     setSelectedUser(user);
@@ -89,41 +93,12 @@ function Users() {
     setCurrentPage(page);
   };
 
-  const handleFacultiesSelect = async (faculty) => {
-    await setSelectedFaculty(faculty);
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
   const handleShowUpdateDialog = (user) => {
     setSelectedUser(user);
     setModalShow(true);
   };
 
   const handleUsersUpdate = (user) => {
-    let newUserList = [...usersList];
-    const userData = newUserList.find((x) => x._id === user._id);
-    if (userData) {
-      newUserList.map((x) => {
-        if (x._id === user._id) {
-          x.userId = user.userId;
-          x.mail = user.mail;
-          x.name = user.name;
-          x.degree = user.degree;
-          x.faculty = user.faculty;
-          x.role = user.role;
-        }
-      });
-    } else {
-      newUserList = [user, ...usersList];
-    }
-    setUsers(newUserList);
     setModalShow(false);
   };
 
@@ -133,8 +108,6 @@ function Users() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setSelectedFaculty(faculties[0]);
-    setSelectedRole(roles[0]);
     setCurrentPage(1);
   };
 
@@ -147,18 +120,7 @@ function Users() {
           x.mail.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
           x.userId.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    } else if (
-      (selectedFaculty && selectedFaculty._id) ||
-      (selectedRole && selectedRole._id)
-    ) {
-      if (selectedFaculty && selectedFaculty._id)
-        filtered = usersList.filter(
-          (m) => m.faculty._id === selectedFaculty._id
-        );
-      if (selectedRole && selectedRole._id)
-        filtered = usersList.filter((m) => m.role._id === selectedRole._id);
     }
-
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
     const users = paginate(sorted, currentPage, pageSize);

@@ -21,6 +21,8 @@ const SemesterTable = ({
       ),
     },
     { path: "symbol", label: "Symbol" },
+    { path: "editor", label: "Last Editor" },
+    { path: "lastUpdated", label: "Time edited" },
     {
       key: "edit",
       content: (semester) => (
@@ -67,4 +69,4 @@ const SemesterTable = ({
   );
 };
 
-export default SemesterTable;
+export default React.memo(SemesterTable);

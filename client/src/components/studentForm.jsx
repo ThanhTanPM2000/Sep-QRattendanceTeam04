@@ -45,14 +45,10 @@ class StudentForm extends FormCommon {
   doSubmit = async () => {
     try {
       const { onUpdateStudent, myClass } = this.props;
-      const { data } = await ClassService.saveStudentInClass(
-        myClass,
-        this.state.data
-      );
-      onUpdateStudent(data);
+      await ClassService.saveStudentInClass(myClass, this.state.data);
+      onUpdateStudent();
       toast.success("Successfully");
     } catch (err) {
-      // console.log(err);
       toast.error(err.response?.data);
     }
   };

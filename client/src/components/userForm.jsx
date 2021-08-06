@@ -60,10 +60,14 @@ class UserForm extends FormCommon {
     this.setState({ data: this.mapToViewModel(selectedUser) });
   }
 
-  componentDidMount() {
-    this.populateFaculties();
-    this.populateRoles();
+  async populate() {
+    await this.populateFaculties();
+    await this.populateRoles();
     this.populateUsers();
+  }
+
+  componentDidMount() {
+    this.populate();
   }
 
   mapToViewModel = (user) => {

@@ -5,6 +5,8 @@ const schemaSemester = new mongoose.Schema({
   name: { type: String, required: true },
   year: { type: String, required: true },
   symbol: { type: String, required: true, index: true },
+  editor: String,
+  lastUpdated: String,
 });
 
 const Semesters = mongoose.model("Semesters", schemaSemester);

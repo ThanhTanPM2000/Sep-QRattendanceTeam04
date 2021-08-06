@@ -21,7 +21,7 @@ const Students = ({ myClass, onUpdateStudent }) => {
   const [studentsList, setStudentList] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(7);
+  const [pageSize] = React.useState(7);
   const [sortColumn, setSortColumn] = React.useState({
     path: "name",
     order: "asc",
@@ -51,11 +51,6 @@ const Students = ({ myClass, onUpdateStudent }) => {
   };
 
   const handleStudentDelete = async (student) => {
-    const originalStudent = [...studentsList];
-
-    // const newStudents = originalStudent.filter((m) => m.mail !== student.mail);
-    // setStudentList(newStudents);
-
     try {
       const { data } = await ClassService.deleteStudentInClass(
         myClass,
@@ -64,14 +59,7 @@ const Students = ({ myClass, onUpdateStudent }) => {
       toast.success("Delete student out of Class Successfully");
       onUpdateStudent(data);
     } catch (error) {
-      if (error.response && error.response.data === 404) {
-        toast.error("This Student has already delete");
-      } else if (error.response && error.response.status === 403) {
-        toast.error("Access denied");
-      } else {
-        toast.error(error.response.data);
-      }
-      setStudentList(originalStudent);
+      toast.error(error.response?.data);
     }
     setConfirmDeleteDialog(false);
   };
@@ -85,18 +73,8 @@ const Students = ({ myClass, onUpdateStudent }) => {
     setModalShow(true);
   };
 
-  const handleStudentsUpdate = (student) => {
-    const students = student.lessons[0].students.map((x) => {
-      return {
-        name: x.name,
-        mail: x.mail,
-        studentId: x.studentId,
-      };
-    });
-    setStudentList(students);
-
+  const handleStudentsUpdate = () => {
     setModalShow(false);
-    onUpdateStudent(student);
   };
 
   const handleSort = (sortColumn) => {
@@ -124,11 +102,6 @@ const Students = ({ myClass, onUpdateStudent }) => {
     const students = paginate(sorted, currentPage, pageSize);
 
     return { totalCount: filtered.length, data: students };
-  };
-
-  const handleImportExcel = (newStudent) => {
-    const newStudents = [...studentsList, ...newStudent];
-    setStudentList(newStudents);
   };
 
   const { totalCount, data: newStudents } = getPagedData();

@@ -21,7 +21,6 @@ import {
 import auth from "../services/authService";
 import "../assets/css/login.css";
 import "../assets/scss/login.scss";
-import { toast } from "react-toastify";
 
 const Login = () => {
   const { instance, inProgress, accounts } = useMsal();
@@ -74,7 +73,7 @@ const Login = () => {
   function loginPopup() {
     const account = instance.getActiveAccount();
     if (!account)
-      instance.loginPopup(loginRequest).catch((err) => console.log(err));
+      instance.loginRedirect(loginRequest).catch((err) => console.log(err));
   }
 
   return auth.getCurrentUser()?._id ? (

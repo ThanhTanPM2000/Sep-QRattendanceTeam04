@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Tabs, Tab, Button } from "react-bootstrap";
+import { Modal, Tabs, Tab } from "react-bootstrap";
 
 import "../assets/css/extendClassModal.css";
 import Lesson from "./lessons";
@@ -28,7 +28,7 @@ const ExtendClassModal = ({
             Class {selectedClass?.name} - {selectedClass?.classTermId}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ overflowX: "auto" }}>
           <Tabs defaultActiveKey="attendance" id="uncontrolled-tab-example">
             <Tab eventKey="attendance" title="Attendance">
               <Lesson myClass={selectedClass} onUpdateClass={onUpdateClass} />
@@ -36,7 +36,6 @@ const ExtendClassModal = ({
             <Tab eventKey="students" title="Manage Student">
               <Student
                 onUpdateStudent={onUpdateClass}
-                onDeleteStudent={onDeleteStudent}
                 myClass={selectedClass}
               />
             </Tab>

@@ -18,6 +18,8 @@
 import React, { Component } from "react";
 import { Container } from "react-bootstrap";
 
+import { NavLink } from "react-router-dom";
+
 class Footer extends Component {
   render() {
     return (
@@ -26,30 +28,27 @@ class Footer extends Component {
           <nav>
             <ul className="footer-menu">
               <li>
-                <a href="/" onClick={(e) => e.preventDefault()}>
-                  Home
-                </a>
+                <NavLink to={"/admin/dashboard"}>Statistical</NavLink>
               </li>
               <li>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  User
-                </a>
+                <NavLink to={"/admin/users"}>Users</NavLink>
               </li>
               <li>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Class
-                </a>
+                <NavLink to={"/admin/semesters"}>Semesters</NavLink>
               </li>
               <li>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Student
-                </a>
+                <NavLink to={"/admin/classes"}>Classes</NavLink>
+              </li>
+              <li>
+                <NavLink to={"/admin/profile"}>Profile</NavLink>
               </li>
             </ul>
             <p className="copyright text-center">
               © {new Date().getFullYear()}{" "}
-              <a href="http://www.creative-tim.com">Creative Tim x The Invincibles</a>, made with
-              love for a better web
+              <a href="http://www.creative-tim.com">
+                Creative Tim x The Invincibles
+              </a>
+              , made with love for a better web
             </p>
           </nav>
         </Container>

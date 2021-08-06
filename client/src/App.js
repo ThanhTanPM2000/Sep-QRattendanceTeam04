@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/common/protectedRoute";
 import AdminLayout from "./layouts/Admin";
 import Register from "views/Register";
 
+
 const App = () => {
   return (
     <React.Fragment>

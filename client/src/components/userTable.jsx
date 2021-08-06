@@ -22,6 +22,8 @@ const UserTable = ({
     { path: "degree", label: "Degree" },
     { path: "faculty.name", label: "Faculty Name" },
     { path: "role.name", label: "Role" },
+    { path: "editor", label: "Last Editor" },
+    { path: "lastUpdated", label: "Time Updated" },
     {
       key: "edit",
       content: (user) => (

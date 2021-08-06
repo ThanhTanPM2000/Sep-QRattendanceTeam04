@@ -1,3 +1,5 @@
+// import moment from "moment";
+const moment = require("moment");
 const express = require("express");
 const _ = require("lodash");
 const mongoose = require("mongoose");
@@ -24,6 +26,7 @@ router.get("/", auth, async (req, res) => {
   } else {
     classes = await Classes.find();
   }
+
   res.send(classes);
 });
 
@@ -38,7 +41,7 @@ router.get("/student/:studentId", async (req, res) => {
   let classes = await Classes.find({});
 });
 
-router.post("/", validate(validateClass), async (req, res) => {
+router.post("/", [validate(validateClass), auth], async (req, res) => {
   const {
     classTermId,
     name,
@@ -54,6 +57,10 @@ router.post("/", validate(validateClass), async (req, res) => {
     semesterId,
     lecturerMail,
   } = req.body;
+
+  var io = req.app.get("socketIo");
+
+  const editor = req.user;
 
   let myClass = await Classes.findOne({ classTermId });
   if (myClass) return res.status(400).send("Class Term Id was exist");
@@ -106,6 +113,8 @@ router.post("/", validate(validateClass), async (req, res) => {
       degree: lecturer.degree,
     },
     lessons: generateLessons(numOfWeek),
+    editor: `${editor.mail} (${editor.role})`,
+    lastUpdated: moment().locale("vi").format("L LTS"),
   });
 
   try {
@@ -119,115 +128,153 @@ router.post("/", validate(validateClass), async (req, res) => {
       }
     );
     await task.run({ useMongoose: true });
+
+    const classes = await Classes.find();
+
+    // io.on("connection", (socket) => {
+    //   console.log("hello ", socket.id);
+    // });
+
+    io.emit("getNewClasses", classes);
+
     res.send(myClass);
   } catch (error) {
+    console.log(error);
     res.status(500).send("Something failed on server");
   }
 });
 
-router.post("/:id", validate(validateStudentInClass), async (req, res) => {
-  const { id } = req.params;
-  const { mail } = req.body;
+router.post(
+  "/:id",
+  [validate(validateStudentInClass), auth],
+  async (req, res) => {
+    const { id } = req.params;
+    const { mail } = req.body;
 
-  let myClass = await Classes.findById(id);
-  if (!myClass) return res.status(400).send("Given class id not found");
+    var io = req.app.get("socketIo");
 
-  const studentExist = myClass.lessons[0].students.find(
-    (x) => x?.mail === mail
-  );
-  if (studentExist) return res.status(400).send("student was exist in class");
+    var editor = req.user;
 
-  let student = await Students.findOne({ mail });
-  if (!student) {
-    student = {
-      name: "Student not login yet",
-      studentId: "Student not login yet",
-    };
-  }
+    let myClass = await Classes.findById(id);
+    if (!myClass) return res.status(400).send("Given class id not found");
 
-  myClass.lessons.forEach((x) => {
-    x.students.push({
-      mail,
-      name: student["name"],
-      studentId: student["studentId"],
-      status: "Not Attended",
+    const studentExist = myClass.lessons[0].students.find(
+      (x) => x?.mail === mail
+    );
+    if (studentExist) return res.status(400).send("student was exist in class");
+
+    let student = await Students.findOne({ mail });
+    if (!student) {
+      student = {
+        name: "Student not login yet",
+        studentId: "Student not login yet",
+      };
+    }
+
+    myClass.lessons.forEach((x) => {
+      x.students.push({
+        mail,
+        name: student["name"],
+        studentId: student["studentId"],
+        status: "Not Attended",
+      });
+      x.numOfNonAttendance++;
+      x.averageOfAttendance = x.numOfAttendance / x.students.length;
+      x.averageOfNonAttendance = x.numOfNonAttendance / x.students.length;
     });
-    x.numOfNonAttendance++;
-    x.averageOfAttendance = x.numOfAttendance / x.students.length;
-    x.averageOfNonAttendance = x.numOfNonAttendance / x.students.length;
-  });
-  myClass.sumOfNonAttendance++;
-  myClass.numOfStudents++;
 
-  try {
-    const task = new Fawn.Task();
-    task.update(
-      "classes",
-      { _id: myClass?._id },
-      {
-        $set: {
-          lessons: myClass.lessons,
-        },
-        $inc: {
-          numOfStudents: 1,
-          sumOfNonAttendance: myClass.lessons.length,
-        },
-      }
-    );
-    task.update(
-      "students",
-      { mail },
-      {
-        $push: {
-          classes: {
-            _id: myClass._id,
-            classTermId: myClass.classTermId,
-            name: myClass.name,
-            lecturer: myClass.lecturer,
+    try {
+      const task = new Fawn.Task();
+      task.update(
+        "classes",
+        { _id: myClass?._id },
+        {
+          $set: {
+            lessons: myClass.lessons,
+            editor: `${editor.mail} (${editor.role})`,
+            lastUpdated: moment().locale("vi").format("L LTS"),
           },
-          history: {
-            _id: mongoose.Types.ObjectId(),
-            time: new Date(),
-            title: "You was added in Class",
-            description: `You was Added in class ${myClass.name} - ${myClass.classTermId}`,
+          $inc: {
+            numOfStudents: 1,
+            sumOfNonAttendance: myClass.lessons.length,
           },
-        },
-      }
-    );
-    await task.run({ useMongoose: true });
-    res.send(myClass);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Something failed");
+        }
+      );
+      task.update(
+        "students",
+        { mail },
+        {
+          $push: {
+            classes: {
+              _id: myClass._id,
+              classTermId: myClass.classTermId,
+              name: myClass.name,
+              lecturer: myClass.lecturer,
+            },
+            history: {
+              _id: mongoose.Types.ObjectId(),
+              time: new Date(),
+              title: "You was added in Class",
+              description: `You was Added in class ${myClass.name} - ${myClass.classTermId}`,
+            },
+          },
+        }
+      );
+      await task.run({ useMongoose: true });
+
+      const newClasses = await Classes.find();
+      io.emit("getNewClasses", newClasses);
+      io.emit("newStudent", myClass);
+      res.send("Successfully");
+    } catch (error) {
+      res.status(500).send("Something failed");
+    }
   }
-});
+);
 
 router.put(
   "/:id/:mail",
-  [validateObjectId, validate(validateStudentInClass)],
+  [validateObjectId, validate(validateStudentInClass), auth],
   async (req, res) => {
     const { id, mail } = req.params;
-    const { status } = req.body;
+    const student = req.body;
 
-    if (!status) return res.status(400).send("Status is required");
+    var io = req.app.get("socketIo");
+
+    var editor = req.user;
 
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Given input not found");
 
-    const student = myClass.lessons[0].students.find((x) => x?.mail === mail);
-    if (!student) return res.status(400).send("Student not found in Class");
+    const isExist = myClass.lessons[0].students.find((x) => x?.mail === mail);
+    if (!isExist) return res.status(400).send("Student not found in Class");
 
-    myClass.lessons[orderLesson - 1].students.find(
-      (x) => x.mail === mail
-    ).status = status;
+    myClass.lessons.map((x) => {
+      x.students.find((y) => {
+        if (y.mail === mail) {
+          y.name = student.name;
+          y.studentId = student.studentId;
+        }
+      });
+    });
+
+    myClass.editor = `${editor.mail} (${editor.role})`;
+    myClass.lastUpdated = moment().locale("vi").format("L LTS");
     await myClass.save();
 
-    res.send(myClass);
+    const newClasses = await Classes.find();
+    io.emit("getNewClasses", newClasses);
+    io.emit("newStudent", myClass);
+    res.send("Successfully");
   }
 );
 
-router.delete("/:id/:mail", async (req, res) => {
+router.delete("/:id/:mail", auth, async (req, res) => {
   const { id, mail } = req.params;
+
+  var io = req.app.get("socketIo");
+
+  const editor = req.user;
 
   let myClass = await Classes.findById(id);
   if (!myClass) return res.status(400).send("Given input not found");
@@ -260,6 +307,8 @@ router.delete("/:id/:mail", async (req, res) => {
         },
         $set: {
           lessons: myClass.lessons,
+          editor: `${editor.mail} (${editor.role})`,
+          lastUpdated: moment().locale("vi").format("L LTS"),
         },
       }
     );
@@ -321,8 +370,12 @@ router.delete("/:id/:mail", async (req, res) => {
     );
     await task.run({ useMongoose: true });
 
-    const newdata = await Classes.findById(id);
-    res.send(newdata);
+    const newData = await Classes.findById(id);
+
+    const newClasses = await Classes.find();
+    io.emit("getNewClasses", newClasses);
+    io.emit("newStudent", newData);
+    res.send(newData);
   } catch (error) {
     res.status(500).send("Something failed on server");
   }
@@ -330,7 +383,7 @@ router.delete("/:id/:mail", async (req, res) => {
 
 router.put(
   "/:id",
-  [validateObjectId, validate(validateClass)],
+  [validateObjectId, validate(validateClass), auth],
   async (req, res) => {
     const { id } = req.params;
     const {
@@ -348,6 +401,10 @@ router.put(
       semesterId,
       lecturerMail,
     } = req.body;
+
+    var io = req.app.get("socketIo");
+
+    const editor = req.user;
 
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Invalid class id");
@@ -394,6 +451,8 @@ router.put(
             session,
             lecturer,
             semester,
+            editor: `${editor.mail} (${editor.role})`,
+            lastUpdated: moment().locale("vi").format("L LTS"),
           },
         }
       );
@@ -424,6 +483,9 @@ router.put(
       await task.run({ useMongoose: true });
 
       myClass = await Classes.findById(id);
+
+      const classes = await Classes.find();
+      io.emit("getNewClasses", classes);
       res.send(myClass);
     } catch (error) {
       res.status(500).send("Something failed on server");
@@ -433,6 +495,7 @@ router.put(
 
 router.delete("/:id", validateObjectId, async (req, res) => {
   const classes = await Classes.findById(req.params.id);
+  var io = req.app.get("socketIo");
 
   if (!classes)
     return res.status(404).send("The Classes with the given ID was not found");
@@ -454,8 +517,13 @@ router.delete("/:id", validateObjectId, async (req, res) => {
     });
     task.remove("classes", { _id: classes._id });
     await task.run({ useMongoose: true });
+    const newClasses = await Classes.find();
+    io.emit("deleteClasses", newClasses);
     res.send("Delete Successfully");
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something failed to server");
+  }
 });
 
 function generateLessons(numOfWeek) {

@@ -32,6 +32,7 @@ function deleteClass(_class) {
 
 function saveStudentInClass(_class, student) {
   if (student.name !== "Student not login yet") {
+    console.log(student);
     return http.put(`${apiEndpoint}/${_class._id}/${student.mail}`, student);
   }
   return http.post(`${apiEndpoint}/${_class._id}`, student);

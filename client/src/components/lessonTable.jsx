@@ -2,7 +2,13 @@ import React from "react";
 import { OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 import TableCommon from "./common/table";
 
-const LessonTable = ({ lessons, sortColumn, onAttendance, onSort }) => {
+const LessonTable = ({
+  lessons,
+  sortColumn,
+  onAttendance,
+  onSort,
+  onResetLesson,
+}) => {
   const columns = [
     { path: "name", label: "Lesson name" },
     {
@@ -34,7 +40,12 @@ const LessonTable = ({ lessons, sortColumn, onAttendance, onSort }) => {
         <OverlayTrigger
           overlay={<Tooltip id="tooltip-537440761">Reset..</Tooltip>}
         >
-          <Button className="btn-fill btn-wd" type="button" variant="danger">
+          <Button
+            className="btn-fill btn-wd"
+            type="button"
+            variant="danger"
+            onClick={() => onResetLesson(lesson)}
+          >
             Reset
           </Button>
         </OverlayTrigger>

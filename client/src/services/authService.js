@@ -41,7 +41,6 @@ function getCurrentUser() {
 }
 
 function getJwt() {
-  console.log(localStorage.getItem(tokenKey));
   return localStorage.getItem(tokenKey);
 }
 

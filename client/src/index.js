@@ -18,8 +18,6 @@ import "./assets/css/demo.css";
 
 // import "./index.css";
 
-import reportWebVitals from "./reportWebVitals";
-
 const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(

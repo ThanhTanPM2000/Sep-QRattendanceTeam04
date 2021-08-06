@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Joi from "joi";
 import { toast } from "react-toastify";
 import QrCode from "qrcode";
@@ -44,14 +43,14 @@ class AttendanceModal extends FormCommon {
     e.preventDefault();
 
     const { myClass, selectedLesson } = this.props;
-    const { qrCode, data } = this.state;
+    const { data } = this.state;
 
     let qrCodeText = `${myClass._id}_${
       selectedLesson.order
     }_${new Date().toISOString()}`;
 
     try {
-      const { data: _class } = await LessonService.saveQrCode(
+      await LessonService.saveQrCode(
         myClass,
         selectedLesson,
         qrCodeText,
@@ -146,7 +145,7 @@ class AttendanceModal extends FormCommon {
                   Attendance {selectedLesson?.name}
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+              <Modal.Body style={{ overflowX: "auto" }}>
                 <Row>
                   <Col className="qrCode">
                     {qrCodeImage && (

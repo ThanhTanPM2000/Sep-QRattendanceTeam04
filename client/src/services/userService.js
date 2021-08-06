@@ -10,8 +10,8 @@ function getUsers() {
   return http.get(apiEndpoint);
 }
 
-function getUser(id) {
-  return http.get(userUrl(id));
+function getUser() {
+  return http.get(`${apiEndpoint}/me`);
 }
 
 function saveUser(user) {

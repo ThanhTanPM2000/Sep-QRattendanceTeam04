@@ -23,6 +23,8 @@ router.get("/:id", async (req, res) => {
 router.post("/", validate(validateStudent), async (req, res) => {
   const { studentId, name, mail } = req.body;
 
+  var io = req.app.get("socketIo");
+
   let student = await Students.findOne({ mail });
   if (student) return res.status(400).send("Student already registered");
 
@@ -72,6 +74,8 @@ router.post("/", validate(validateStudent), async (req, res) => {
       );
     });
     await task.run({ useMongoose: true });
+    const newClasses = await Classes.find();
+    io.emit("getNewClasses", newClasses);
     const token = student.generateAuthToken();
     res.header("x-auth-token", token).send(token);
   } catch (error) {
@@ -98,6 +102,19 @@ router.put(
     res.send(student);
   }
 );
+
+router.put("/deleteHistory/:id", async (req, res) => {
+  const { mail, _id, time, title, description } = req.body;
+  const { id } = req.params.id;
+
+  const student = await Students.findOneAndUpdate(
+    { mail },
+    { $pull: { history: { _id } } }
+  );
+  console.log(student);
+  if (!student) return res.status(400).send("Student not found");
+  res.send(student);
+});
 
 router.delete("/:id", [validateObjectId], async (req, res) => {
   const student = await Students.findByIdAndDelete(req.params.id);

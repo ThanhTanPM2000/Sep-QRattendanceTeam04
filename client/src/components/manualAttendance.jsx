@@ -8,18 +8,17 @@ import LoadingPage from "../components/common/loadingPage";
 import { paginate } from "../utils/paginate";
 
 import LessonService from "services/lessonService";
-import ClassService from "services/classService";
 
-import { Button, Card, Container, Row, Col } from "react-bootstrap";
+import { Card, Container, Row, Col } from "react-bootstrap";
 import ManualAttendanceTable from "./manualAttendanceTable";
 
-const ManualAttendance = ({ myClass, lesson, show, onUpdateClass }) => {
+const ManualAttendance = ({ myClass, lesson, onUpdateClass }) => {
   const [studentsList, setStudentList] = React.useState([
     ...myClass.lessons[lesson.order - 1].students,
   ]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(7);
+  const [pageSize] = React.useState(7);
   const [sortColumn, setSortColumn] = React.useState({
     path: "status",
     order: "desc",
@@ -29,23 +28,14 @@ const ManualAttendance = ({ myClass, lesson, show, onUpdateClass }) => {
   const [isHandling, setIsHandling] = React.useState(false);
 
   React.useEffect(() => {
+    loadData();
+  }, [myClass]);
+
+  const loadData = () => {
     setLoading(false);
-    if (show) {
-      let timer1 = setInterval(async () => {
-        const { data: newClass } = await ClassService.getClass(myClass._id);
-        const students = newClass.lessons[lesson.order - 1].students;
-        setStudentList(students);
-
-        if (!_.isEqual(newClass, myClass)) {
-          onUpdateClass(newClass);
-        }
-      }, 1000);
-
-      return () => {
-        clearTimeout(timer1);
-      };
-    }
-  }, []);
+    const students = myClass.lessons[lesson.order - 1].students;
+    setStudentList(students);
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

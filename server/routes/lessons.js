@@ -58,6 +58,9 @@ router.put("/:id/:order", validate(validateAttendance), async (req, res) => {
   const { mail } = req.body;
   const { id, order } = req.params;
 
+  var io = req.app.get("socketIo");
+  console.log(io);
+
   let myClass = await Classes.findById(id);
   if (!myClass) return res.status(400).send("Id class not exist in system");
 
@@ -106,13 +109,39 @@ router.put("/:id/:order", validate(validateAttendance), async (req, res) => {
       }
     );
     await task.run({ useMongoose: true });
+    io.emit("newStudent", myClass);
     res.send(myClass);
   } catch (error) {
     res.status(500).send("Something failed with server");
   }
 });
 
-router.put("/reset/:id/:order", (req, res) => {});
+router.put("/reset/:id/:order", validateObjectId, async (req, res) => {
+  const { id, order } = req.params;
+
+  var io = req.app.get("socketIo");
+
+  const myClass = await Classes.findById(id);
+  if (!myClass) return res.status(400).send("Id Class not found");
+
+  myClass.sumOfAttendance -= myClass.lessons[order - 1].numOfAttendance;
+  myClass.sumOfNonAttendance += myClass.lessons[order - 1].numOfAttendance;
+  myClass.lessons[order - 1].devicesId = [];
+
+  myClass.lessons[order - 1].numOfNonAttendance +=
+    myClass.lessons[order - 1].numOfAttendance;
+  myClass.lessons[order - 1].status = "Availability";
+  myClass.lessons[order - 1].numOfAttendance = 0;
+
+  myClass.lessons[order - 1].students.map((x) => {
+    x.status = "Not Attended";
+  });
+
+  await myClass.save();
+
+  io.emit("newStudent", myClass);
+  res.send(myClass);
+});
 
 router.put(
   "/:id/:order/students",
@@ -120,6 +149,8 @@ router.put(
   async (req, res) => {
     const { mail, deviceId } = req.body;
     const { id, order } = req.params;
+
+    var io = req.app.get("socketIo");
 
     let myClass = await Classes.findById(id);
     if (!myClass) return res.status(400).send("Id class not exist in system");
@@ -139,6 +170,8 @@ router.put(
     if (new Date(diff).getMinutes() >= expiredTime) {
       return res.status(403).send("Expired Lesson");
     }
+
+    let error = false;
 
     const result = myClass.lessons[order - 1].students.find((x) => {
       if (x.mail === mail) {
@@ -175,18 +208,18 @@ router.put(
               return reducer + currentValue.averageOfNonAttendance;
             }, 0) / myClass.lessons.length;
 
-          const date = new Date();
-          x.status = `${date.getFullYear()}-${
-            date.getMonth() + 1
-          }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+          x.status = moment().format("DD/MM/YYYY HH:mm");
           x.deviceId = deviceId;
           myClass.lessons[order - 1].devicesId.push(deviceId);
         } else {
-          return res.status(400).send("You already attended in this lesson");
+          error = true;
         }
         return x;
       }
     });
+
+    if (error)
+      return res.status(400).send("You already attended in this lesson");
 
     if (!result) return res.status(404).send("Not find student in Class");
 
@@ -208,6 +241,7 @@ router.put(
         }
       );
       await task.run({ useMongoose: true });
+      io.emit("newStudent", myClass);
       res.send(myClass);
     } catch (error) {
       res.status(500).send("Something failed");

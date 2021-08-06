@@ -3,7 +3,6 @@ import form from "../components/common/form";
 import Joi from "joi";
 import FacultyService from "services/facultyService";
 import RoleService from "services/roleService";
-import _ from "lodash";
 
 import auth from "../services/authService";
 import AccountSetup from "../components/accountSetup";

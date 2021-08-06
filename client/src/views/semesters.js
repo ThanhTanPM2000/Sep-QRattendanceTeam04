@@ -16,20 +16,24 @@ import { Button, Card, Container, Row, Col } from "react-bootstrap";
 import ModalForm from "../components/common/modalForm";
 import SemesterForm from "../components/semesterForm";
 
+import { SocketContext } from "../services/socketIo";
+
 function Semesters() {
   const [semestersList, setSemesters] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(10);
+  const [pageSize] = React.useState(10);
   const [sortColumn, setSortColumn] = React.useState({
-    path: "year",
-    order: "asc",
+    path: "lastUpdated",
+    order: "desc",
   });
   const [selectedSemester, setSelectedSemester] = React.useState({});
   const [modalShow, setModalShow] = React.useState(false);
   const [confirmDeleteDialog, setConfirmDeleteDialog] = React.useState(false);
 
   const [isLoading, setLoading] = React.useState(true);
+
+  const socket = React.useContext(SocketContext);
 
   React.useEffect(() => {
     async function getDataFromApi() {
@@ -39,17 +43,27 @@ function Semesters() {
         setLoading(false);
         setSemesters(newSemesters);
       } catch (error) {
-        console.log("hello");
+        toast.error(error?.response?.data);
       }
     }
 
     getDataFromApi();
-  }, [selectedSemester]);
 
-  const handleShowConfirmDialog = (semester) => {
+    socket.on("getNewSemesters", (semesters) => {
+      setSemesters(semesters);
+    });
+
+    socket.on("deleteSemester", (semesters) => {
+      setSemesters(semesters);
+      setModalShow(false);
+      setConfirmDeleteDialog(false);
+    });
+  }, [socket]);
+
+  const handleShowConfirmDialog = React.useCallback((semester) => {
     setSelectedSemester(semester);
     setConfirmDeleteDialog(true);
-  };
+  }, []);
 
   const handleSemesterDelete = async (semester) => {
     const originalSemester = [...semestersList];
@@ -72,32 +86,18 @@ function Semesters() {
     setCurrentPage(page);
   };
 
-  const handleShowUpdateDialog = (semester) => {
+  const handleShowUpdateDialog = React.useCallback((semester) => {
     setSelectedSemester(semester);
     setModalShow(true);
-  };
+  }, []);
 
   const handleSemestersUpdate = (semester) => {
-    let newSemesterList = [...semestersList];
-    const semesterData = newSemesterList.find((x) => x._id === semester._id);
-    if (semesterData) {
-      newSemesterList.map((x) => {
-        if (x._id === semester._id) {
-          x.name = semester.name;
-          x.year = semester.year;
-          x.symbol = semester.symbol;
-        }
-      });
-    } else {
-      newSemesterList = [semester, ...semestersList];
-    }
-    setSemesters(newSemesterList);
     setModalShow(false);
   };
 
-  const handleSort = (sortColumn) => {
+  const handleSort = React.useCallback((sortColumn) => {
     setSortColumn(sortColumn);
-  };
+  }, []);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

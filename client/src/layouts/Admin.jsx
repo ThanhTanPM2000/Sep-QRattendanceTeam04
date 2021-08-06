@@ -1,11 +1,10 @@
 import React from "react";
-import { useLocation, Route, Switch } from "react-router-dom";
+import { useLocation, useHistory, Route, Switch } from "react-router-dom";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Footer from "components/Footer/Footer";
 import Sidebar from "components/Sidebar/Sidebar";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-import { ToastContainer } from "react-toastify";
 
 import routes from "routes.js";
 
@@ -13,12 +12,16 @@ import sidebarImage from "assets/img/sidebar-3.jpg";
 
 import auth from "services/authService";
 
+import { socket, SocketContext } from "../services/socketIo";
+
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);
   const [color, setColor] = React.useState("black");
   const [hasImage, setHasImage] = React.useState(true);
   const location = useLocation();
+  const history = useHistory();
   const mainPanel = React.useRef(null);
+  const [isFirstRender, setIsFirstRender] = React.useState(true);
   const getRoutes = (routes) => {
     if (auth.getCurrentUser().role !== "admin") {
       routes = routes.filter((x) => x.permission !== "admin");
@@ -52,8 +55,27 @@ function Admin() {
     }
   }, [location]);
 
+  const constructor = () => {
+    if (isFirstRender) {
+      socket.on("deleteToken", (id) => {
+        if (auth.getCurrentUser()._id === id) {
+          history.replace("/admin/logout");
+        }
+      });
+      socket.on("updateToken", (id, token) => {
+        if (auth.getCurrentUser()._id === id) {
+          localStorage.setItem("token", token);
+          window.location.reload();
+        }
+      });
+      setIsFirstRender(false);
+    }
+  };
+
   return (
-    <>
+    <SocketContext.Provider value={socket}>
+      {constructor()}
+
       <div className="wrapper">
         <Sidebar
           color={color}
@@ -81,7 +103,7 @@ function Admin() {
         image={image}
         setImage={(image) => setImage(image)}
       />
-    </>
+    </SocketContext.Provider>
   );
 }
 

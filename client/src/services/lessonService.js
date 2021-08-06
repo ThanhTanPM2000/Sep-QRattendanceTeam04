@@ -9,6 +9,10 @@ function saveQrCode(_class, lesson, qrCode, expiredTime) {
   });
 }
 
+function resetLesson(_class, lesson) {
+  return http.put(`${apiEndpoint}/reset/${_class._id}/${lesson.order}`);
+}
+
 function takeAttendance(_class, lesson, mail) {
   return http.put(`${apiEndpoint}/${_class._id}/${lesson.order}`, {
     mail,
@@ -18,6 +22,7 @@ function takeAttendance(_class, lesson, mail) {
 const LessonService = {
   saveQrCode,
   takeAttendance,
+  resetLesson,
 };
 
 export default LessonService;

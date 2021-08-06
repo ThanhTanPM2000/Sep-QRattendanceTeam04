@@ -1,12 +1,14 @@
 import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 
 import routes from "routes.js";
+import auth from "services/authService";
 
 function Header() {
   const location = useLocation();
-  const history = useHistory();
+
+  const user = auth.getCurrentUser();
 
   const mobileSidebarToggle = (e) => {
     e.preventDefault();
@@ -119,7 +121,7 @@ function Header() {
                 href="#pablo"
                 onClick={(e) => e.preventDefault()}
               >
-                <span className="no-icon">Account</span>
+                <span className="no-icon">Hello {user?.mail}</span>
               </Nav.Link>
             </Nav.Item>
             {/* <Dropdown as={Nav.Item}>

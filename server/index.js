@@ -7,11 +7,12 @@ const httpServer = require("http").createServer(app);
 
 const io = require("socket.io")(httpServer, {
   cors: {
+    // origin: ["https://vlu-qrcode-client.herokuapp.com"],
     origin: ["http://localhost:3000"],
   },
 });
 
-app.set("socketio", io);
+app.set("socketIo", io);
 
 require("./startup/logging")();
 require("./startup/prod")(app);
@@ -20,10 +21,6 @@ require("./startup/db")();
 require("./startup/routes")(app);
 
 const port = process.env.PORT || 3900;
-
-io.on("connection", (socket) => {
-  console.log("hello ", socket.id);
-});
 
 const server = httpServer.listen(port, () => {
   console.log(`Listening on Port ${port}...`);

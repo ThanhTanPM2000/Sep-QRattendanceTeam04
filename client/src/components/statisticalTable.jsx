@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import TableCommon from "./common/table";
 import { Table } from "react-bootstrap";
 
-import TableScrollbar from "react-table-scrollbar";
-
 const StatisticalTable = ({ lessons }) => {
   return (
     <React.Fragment>

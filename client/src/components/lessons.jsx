@@ -4,10 +4,10 @@ import LessonTable from "./lessonTable";
 
 import TableScrollbar from "react-table-scrollbar";
 
-import ClassService from "services/classService";
+import LessonService from "services/lessonService";
 
-import { Modal } from "react-bootstrap";
 import AttendanceModal from "./attendanceModal";
+import { toast } from "react-toastify";
 
 const Lesson = ({ myClass, onUpdateClass }) => {
   const [lessons, setLessons] = React.useState([]);
@@ -32,9 +32,14 @@ const Lesson = ({ myClass, onUpdateClass }) => {
     setSelectedLesson(lesson);
   };
 
-  const handleResetLesson = () => {
-    
-  }
+  const handleResetLesson = async (lesson) => {
+    try {
+      LessonService.resetLesson(myClass, lesson);
+      toast.success(`Reset ${lesson.name} successfully`);
+    } catch (error) {
+      toast.error(error?.response?.data);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -50,6 +55,7 @@ const Lesson = ({ myClass, onUpdateClass }) => {
           lessons={lessons}
           sortColumn={sortColumn}
           onAttendance={handleAttendance}
+          onResetLesson={handleResetLesson}
           selectedData={selectedLesson}
           onSort={handleSort}
         />

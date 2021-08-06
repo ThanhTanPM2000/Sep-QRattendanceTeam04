@@ -4,10 +4,8 @@ import Joi from "joi";
 import Input from "./input";
 import Select from "./select";
 import DateRangerPicker from "./datePicker";
-import moment from "moment";
 
 import { Button } from "react-bootstrap";
-import { PureComponent } from "react";
 
 class FormCommon extends Component {
   state = {

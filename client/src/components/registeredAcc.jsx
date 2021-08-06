@@ -2,12 +2,9 @@ import React from "react";
 
 import LoadingComponent from "react-spinners/ClipLoader";
 
-import { useHistory } from "react-router-dom";
 import "../assets/css/registered.css";
 
 const RegisteredAcc = ({ isRegistered }) => {
-  const history = useHistory();
-
   const handleClick = (e) => {
     e.preventDefault();
     window.location = "/";
