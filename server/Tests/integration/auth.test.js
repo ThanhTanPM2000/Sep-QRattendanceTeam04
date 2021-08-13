@@ -1,25 +1,29 @@
 const { Users } = require("../../models/users");
-const { Semesters } = require("../../models/semesters");
+const { Classes } = require("../../models/classes");
 const request = require("supertest");
+const config = require("config");
 const mongoose = require("mongoose");
+let server;
 
 describe("auth middleware", () => {
   beforeEach(() => {
     server = require("../../index");
   });
+
   afterEach(async () => {
-    await Semesters.remove({});
-    server.close();
+    await Classes.remove();
+    // await server.close();
   });
 
   let token;
 
   const exec = () => {
     return request(server)
-      .post("/api/semesters")
+      .post("/api/classes")
       .set("x-auth-token", token)
-      .send({ name: true, symbol: true, year: true });
+      .send({ _id: new mongoose.Types.ObjectId().toHexString() });
   };
+
   beforeEach(() => {
     const payloadId = new mongoose.Types.ObjectId().toHexString();
     const payload = {
@@ -31,8 +35,8 @@ describe("auth middleware", () => {
         name: "Admin",
       },
     };
-    const users = new Users(payload);
-    token = users.generateAuthToken();
+
+    token = new Users(payload).generateAuthToken();
   });
 
   it("should return 400 if no token is provided", async () => {
@@ -42,6 +46,7 @@ describe("auth middleware", () => {
 
     expect(res.status).toBe(400);
   });
+
   it("should return 400 if token is invalid", async () => {
     token = "a";
 

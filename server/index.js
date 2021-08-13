@@ -22,8 +22,10 @@ require("./startup/routes")(app);
 
 const port = process.env.PORT || 3900;
 
-const server = httpServer.listen(port, () => {
-  console.log(`Listening on Port ${port}...`);
-});
+if (process.env.NODE_ENV !== "test") {
+  httpServer.listen(port, () => {
+    console.log(`Listening on Port ${port}...`);
+  });
+}
 
-module.exports = server;
+module.exports = app;
